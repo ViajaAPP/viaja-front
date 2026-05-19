@@ -1,0 +1,48 @@
+<header class="app-header">
+  <div class="header__user">
+    <img
+      class="header__avatar"
+      [src]="dados?.user?.fotoUser"
+      [alt]="dados?.user?.name"
+    />
+    <div class="header__text">
+      <p class="header__greeting">{{ dados?.greeting }} <span class="header__name">{{ dados?.user?.name }}</span></p>
+      <h1 class="header__titulo">{{ dados?.titulo }}</h1>
+    </div>
+  </div>
+
+  <div class="header__actions">
+    <button class="header__icon-btn" aria-label="notificação"></button>
+  </div>
+
+</header>
+<div class="buscar-filtros">
+  <div class="buscar">
+    <div class="buscar__icone"></div>
+    <p>procure pela sua próxima aventura</p>
+  </div>
+
+  <button class="filtro-btn" (click)="toggleFiltros()" aria-label="Filtros">
+    <div class="filtro-btn__icone">
+        <div class="filtro-btn__icone__mo"></div>
+    </div>
+  </button>
+
+  @if (mostrarFiltros()) {
+    <div class="filtros-dropdown">
+      <div class="filtros-dropdown__header">
+        <h3>Filtrar por:</h3>
+        <button (click)="toggleFiltros()" class="filtros-dropdown__close">✕</button>
+      </div>
+
+      <div class="filtros-dropdown__options">
+        @for (tag of tagsDisponiveis(); track tag) {
+          <label class="filtro-option">
+            <input type="radio" name="filtro" [value]="tag" (change)="aplicarFiltro(tag)" />
+            <span>{{ tag }}</span>
+          </label>
+        }
+      </div>
+    </div>
+  }
+</div>

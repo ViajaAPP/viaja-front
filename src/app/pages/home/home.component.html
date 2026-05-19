@@ -1,0 +1,95 @@
+@if (dadosHome(); as data) {
+    
+    <app-header [dados]="data" />
+    
+ <section class="home__section" aria-labelledby="section-title">
+  <nav class="home__categories" aria-label="Categorias de passeios">
+    <div class="home__categories-scroll" role="list">
+      @for (cat of categories(); track cat.id) {
+        <button
+          class="home__category-chip"
+          [class.home__category-chip--active]="selectedCategoryId() === cat.id"
+          [attr.aria-pressed]="selectedCategoryId() === cat.id"
+          type="button"
+          role="listitem"
+          (click)="selectCategory(cat.id)"
+        >
+          {{ cat.label }}
+        </button>
+      }
+    </div>
+  </nav>
+
+    <h2 class="home__section-title" id="section-title">Passeios populares</h2>
+
+    <ul class="home__activities" role="list">
+      @for (activity of popularActivities(); track activity.id) {
+        <li class="activity-card" role="listitem">
+
+          <div class="activity-card__photo">
+            <img
+              class="activity-card__image"
+              [src]="activity.imageUrl"
+              [alt]="activity.title"
+              loading="lazy"
+            />
+
+            <div class="activity-card__top-row">
+              @if (activity.tag) {
+                <span class="activity-card__tag">{{ activity.tag }}</span>
+              }
+              <button
+                class="activity-card__bookmark"
+                type="button"
+                [attr.aria-label]="'Salvar ' + activity.title"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="activity-card__body">
+            <div class="activity-card__guide-row">
+              <img
+                class="activity-card__avatar"
+                [src]="activity.guideFoto || fotoUser()"
+                [alt]="'Foto de ' + activity.guide"
+                loading="lazy"
+              />
+              <div class="activity-card__guide-info">
+                <div class="activity-card__stars" [attr.aria-label]="activity.rating + ' de 5 estrelas'">
+                  @for (i of starIndexes; track i) {
+                    <span
+                      class="activity-card__star"
+                      [class.activity-card__star--on]="isStarFilled(i, activity.rating)"
+                      aria-hidden="true"
+                    >★</span>
+                  }
+                </div>
+                <span class="activity-card__guide-name">{{ activity.guide }}</span>
+              </div>
+            </div>
+
+            <div class="activity-card__bottom-row">
+              <h3 class="activity-card__title">{{ activity.title }}</h3>
+              <button
+                class="activity-card__arrow"
+                type="button"
+                [attr.aria-label]="'Ver detalhes de ' + activity.title"
+              >
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}

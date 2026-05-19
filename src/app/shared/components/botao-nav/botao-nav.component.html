@@ -1,0 +1,14 @@
+<nav class="bottom-nav" aria-label="Navegação principal">
+  @for (item of navItems; track item.id) {
+    <button
+      class="bottom-nav__btn"
+      [class.bottom-nav__btn--active]="item.id === facade.currentPage()"
+      type="button"
+      [attr.aria-label]="item.label"
+      [attr.aria-current]="item.id === facade.currentPage() ? 'page' : null"
+      (click)="onSelect(item.id)"
+    >
+      <i class="{{ item.icon }}" aria-hidden="true"></i>
+    </button>
+  }
+</nav>

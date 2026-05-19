@@ -1,0 +1,33 @@
+<div class="main-pages">
+  @if (facade.loading()) {
+      <app-loading/>
+  } @else {
+      @switch(facade.currentPage()){
+        @case ('login') {
+          @defer (on immediate){
+            <app-login/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+        @case ('home') {
+          @defer (on immediate){
+            <app-home/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+        @case ('chat') {
+          @defer (on immediate){
+            <app-chat/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+      }
+    }
+</div>
+
+<app-botao-nav *ngIf="facade.currentPage() !== 'login'"></app-botao-nav>
+
+

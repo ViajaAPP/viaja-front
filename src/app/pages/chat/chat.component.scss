@@ -1,0 +1,200 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(159deg, #FFF8EA 20%, #FFFFFF 70%);
+}
+
+.chat-page{
+    padding-top: 40%;
+}
+
+.chat-page__section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 24px 20px 14px;
+}
+
+.chat-page__section-label {
+  font-size: 12px;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  color: #545454;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+.chat-page__section-title {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.chat-page__ver-todos {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  color: #545454;
+  cursor: pointer;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+
+// ── Groups horizontal scroll ─────────────────────
+
+.chat-page__groups-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 0 20px 20px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.group-card {
+  flex-shrink: 0;
+  width: 288px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  }
+}
+
+.group-card__image-wrapper {
+  position: relative;
+  padding: 15px;
+  height: 140px;
+  overflow: hidden;
+}
+
+.group-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+    border-radius: 32px;
+
+  .group-card:hover & { transform: scale(1.04); }
+}
+
+.group-card__members-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background:#D9F18C;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-size: 9px;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  color: #444;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+
+
+.group-card__body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.group-card__name {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.group-card__event {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-family: "Poppins", sans-serif;
+  color: #888;
+
+  strong {
+    color: #555;
+    font-weight: 600;
+  }
+}
+
+
+.group-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.group-card__avatars {
+  display: flex;
+  align-items: center;
+}
+
+.group-card__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  margin-left: -6px;
+
+  &:first-child { margin-left: 0; }
+}
+
+.group-card__avatar-extra {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #e8e8e0;
+  border: 2px solid #fff;
+  margin-left: -6px;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.group-card__btn {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+
+  &:hover { 
+    background: #D9F18C; 
+    color: #1a1a1a;
+}
+}

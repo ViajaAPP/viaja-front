@@ -1,0 +1,62 @@
+import { HomeResponse } from '../enums/home.model';
+
+export const HOME_MOCK: HomeResponse = {
+  user: {
+    name: 'Ana',
+    fotoUser: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  },
+  greeting: 'Bem vinda de volta,',
+  titulo: 'Para onde vamos hoje?',
+  categories: [
+    { id: 'all', label: 'todos', active: true },
+    { id: 'most-liked', label: 'mais curtidos', active: false },
+    { id: 'most-searched', label: 'mais procurados', active: false },
+    { id: 'nearby', label: 'mais m...', active: false },
+  ],
+  popularActivities: [
+    {
+      id: '1',
+      title: 'Centro Histórico de Paraty - RJ',
+      guideFoto: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      guide: 'Guia Augusto Silva',
+      imageUrl: 'https://plus.unsplash.com/premium_photo-1680100349145-732df8b99434?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      rating: 4,
+      reviewCount: 128,
+      tag: 'Um dos mais procurados',
+      tagType: 'recommended',
+    },
+    {
+      id: '2',
+      title: 'Parque Estadual Pico Paraná – PR',
+      guideFoto: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      guide: 'Guia Regina Santos',
+      imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
+      rating: 4,
+      reviewCount: 214,
+      tag: 'Passeio recomendado',
+      tagType: 'recommended',
+    },
+    {
+      id: '3',
+      title: 'Cachoeira do Tijuípe – Bahia',
+      guideFoto: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      guide: 'Guia Carla Mendes',
+      imageUrl: 'https://images.unsplash.com/photo-1723305514451-59cbd757decb?q=80&w=691&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      rating: 5,
+      reviewCount: 342,
+      tag: 'Passeio recomendado',
+      tagType: 'recommended',
+    },
+    {
+      id: '4',
+      title: 'Trilha da Pedra do Baú – SP',
+      guideFoto: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      guide: 'Guia Marcos Oliveira',
+      imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+      rating: 4,
+      reviewCount: 87,
+      tag: 'Passeio recomendado',
+      tagType: 'recommended',
+    },
+  ],
+};
