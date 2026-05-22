@@ -30,7 +30,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     width: 127px;
-    height: 47px; 
+    height: 47px;
 
     display: flex;
     position: absolute;
@@ -38,33 +38,33 @@
     justify-self: center;
 
     margin-top:30%;
-  } 
+  }
 
   &__baixo{
     width: 100%;
     position: absolute;
-    margin-top: 157%;
+    margin-top: 70vh;
 
     &__titulo{
       font-family: "Huninn", sans-serif;
       color: #fff;
-      
+
       position: absolute;
       display: flex;
       justify-content: center;
       align-items: center;
-      
+
       width: 100%;
-      
+
       h1{
         text-align: center;
         width: 65%;
         font-weight: 200;
         font-size: 27px;
-        
+
       }
     }
-  
+
     &__actions{
       font-family: "Huninn", sans-serif;
       flex-wrap: wrap;
@@ -72,7 +72,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-  
+
       &__button{
         font-weight: 600;
         background-color: #fff;
@@ -83,7 +83,7 @@
         cursor: pointer;
         border-radius: 25px;
         margin: 27% 5% 0% 5%;
-        
+
         width: 100%;
         height: 48px;
       }
