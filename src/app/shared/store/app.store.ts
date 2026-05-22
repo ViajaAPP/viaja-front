@@ -1,7 +1,7 @@
 import {signalStore, withState, withMethods, withComputed, patchState} from '@ngrx/signals';
 import { computed } from '@angular/core';
 
-export type AppPage = 'login' | 'home' | 'chat';
+export type AppPage = 'welcome' | 'login' | 'home' | 'chat';
 
 interface AppState {
   currentPage: AppPage;
@@ -9,7 +9,7 @@ interface AppState {
 }
 
 const initialState: AppState = {
-  currentPage: 'login',
+  currentPage: 'welcome',
   loading: true,
 };
 
@@ -30,6 +30,9 @@ export const AppStore = signalStore(
     },
   })),
   withComputed((store) => ({
+    isWelcome: computed(() => store.currentPage() === 'welcome'),
     isLogin: computed(() => store.currentPage() === 'login'),
+    isHome: computed(() => store.currentPage() === 'home'),
+    isChat: computed(() => store.currentPage() === 'chat'),
   }))
 );

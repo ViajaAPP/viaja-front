@@ -1,27 +1,17 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation/navigation.service';
 
 @Component({
-  selector: 'app-login',
-  imports: [FormsModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  selector: 'app-welcome',
+  imports: [],
+  templateUrl: './welcome.component.html',
+  styleUrl: './welcome.component.scss',
   standalone: true,
 })
-export class LoginComponent implements OnInit {
+export class WelcomeComponent implements OnInit {
   private facade = inject(AppFacade);
   private navigationService = inject(NavigationService);
-
-  credentials = {
-    email: '',
-    password: '',
-  };
-
-  login(){
-    this.navigationService.navigateTo('home');
-  }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -29,7 +19,11 @@ export class LoginComponent implements OnInit {
     }, 100);
   }
 
-  navigateToWelcome(){
-    this.navigationService.navigateTo('welcome');
+  navigateToLogin(){
+    this.navigationService.navigateTo('login');
+  }
+
+  navigateToHome(){
+    this.navigationService.navigateTo('home');
   }
 }
