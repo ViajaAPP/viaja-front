@@ -4,10 +4,15 @@
     <div class="login-container__form">
         <h1 class="login-container__titulo">Bem-vindo de volta!</h1>
         <p>Faça login para continuar</p>
-        <form (submit)="login()">
+        <div class="login-container__alerta-erro" *ngIf="errorMessage">
+          <p>{{ errorMessage }}</p>
+        </div>
+        <form (ngSubmit)="login()">
             <input type="text" placeholder="Email" [(ngModel)]="credentials.email" name="email" required>
             <input type="password" placeholder="Senha" [(ngModel)]="credentials.password" name="password" required>
-            <button class="mt-1 btn-primary" type="submit">Entrar</button>
+            <button class="mt-1 btn-primary" type="submit" [disabled]="isLoggingIn">
+              {{isLoggingIn ? 'Entrando...' : 'Entrar'}}
+            </button>
         </form>
     </div>
 </div>
