@@ -1,4 +1,4 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://192.168.0.110:5000', // Troque para sua URL de ngrok quando estiver usando o túnel.
+  BASE_URL: 'https://reediest-frenzily-lakiesha.ngrok-free.dev',
   SOCKET_PATH: '/ws',
 };
