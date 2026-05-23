@@ -8,7 +8,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-evenly;
-  width: 100%;
+  width: 100vw;
 }
 
 .header{
@@ -106,7 +106,7 @@
   &__icone {
     font-size: 16px;
     font-weight: bold;
-  
+
     &__mo{
         background: url('../../../../assets/filtro.svg');
         width: 36px;
