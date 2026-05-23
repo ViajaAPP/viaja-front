@@ -35,4 +35,4 @@
     }
 </div>
 
-<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome()">
+<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.isLoading()"/>
