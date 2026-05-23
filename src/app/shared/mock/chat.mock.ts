@@ -1,45 +1,55 @@
 import { ChatResponse } from '../enums/chat.model';
 
+const TOUR_PHOTO = 'https://s2-g1.glbimg.com/yIzYsLe7tJStPzIFJ9cY4na9SfM=/0x0:1600x900/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2023/g/I/o4AQFdQYWE6NJdJWJXQA/foto-unisantos-final.jpeg';
+
 export const CHAT_MOCK: ChatResponse = {
+  direct_conversations: [],
+  tour_list: [
+    {
+      chat_id: 1,
+      chat_open: true,
+      members: [
+        {
+          first_name: 'Sophia',
+          last_name: 'Verardo de Araújo',
+          photo: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+          role: 'TOURIST',
+          user_id: 6,
+        },
+        {
+          first_name: 'Sophia',
+          last_name: 'Verardo de Araújo',
+          photo: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+          role: 'GUIDE',
+          user_id: 7,
+        },
+      ],
+      tour_date: 'Saída amanhã às 13:00',
+      tour_id: 3,
+      tour_instance_id: 4,
+      tour_photo: TOUR_PHOTO,
+      tour_title: 'Tour Teste',
+    },
+  ],
+
   activeGroups: [
     {
-      chat_id: '1',
-      name: 'Trilha Vali do Pati',
-      imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
-      memberCount: 6,
+      chat_id: 1,
+      name: 'Tour Teste',
+      imageUrl: TOUR_PHOTO,
+      memberCount: 2,
       members: [
-        { id: '1', name: 'Ana',    fotoUrl: 'https://i.pravatar.cc/40?img=1' },
-        { id: '2', name: 'Lucas',  fotoUrl: 'https://i.pravatar.cc/40?img=2' },
-        { id: '3', name: 'Maria',  fotoUrl: 'https://i.pravatar.cc/40?img=3' },
+        { id: '6', name: 'Sophia Verardo de Araújo', fotoUrl: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685' },
+        { id: '7', name: 'Sophia Verardo de Araújo', fotoUrl: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685' },
       ],
-      nextEvent: 'Próxima saída: Amanhã,',
-      nextEventTime: '08:00',
-    },
-    {
-      chat_id: '2',
-      name: 'Rota dos Vinhos – SC',
-      imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80',
-      memberCount: 12,
-      members: [
-        { id: '4', name: 'Pedro',  fotoUrl: 'https://i.pravatar.cc/40?img=4' },
-        { id: '5', name: 'Julia',  fotoUrl: 'https://i.pravatar.cc/40?img=5' },
-        { id: '6', name: 'Carlos', fotoUrl: 'https://i.pravatar.cc/40?img=6' },
-      ],
-      nextEvent: 'Evento em',
-      nextEventTime: 'andamento',
-    },
-    {
-      chat_id: '3',
-      name: 'Chapada Diamantina',
-      imageUrl: 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=600&q=80',
-      memberCount: 9,
-      members: [
-        { id: '7', name: 'Sofia',  fotoUrl: 'https://i.pravatar.cc/40?img=7' },
-        { id: '8', name: 'Thiago', fotoUrl: 'https://i.pravatar.cc/40?img=8' },
-        { id: '9', name: 'Camila', fotoUrl: 'https://i.pravatar.cc/40?img=9' },
-      ],
-      nextEvent: 'Próxima saída: Sáb,',
-      nextEventTime: '07:30',
+      nextEvent: 'Saída amanhã às 13:00',
+      nextEventTime: '',
+      chat_open: true,
+      tour_date: 'Saída amanhã às 13:00',
+      tour_id: 3,
+      tour_instance_id: 4,
+      tour_photo: TOUR_PHOTO,
+      tour_title: 'Tour Teste',
     },
   ],
 };

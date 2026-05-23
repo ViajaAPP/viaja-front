@@ -39,7 +39,7 @@
 
           <div class="group-card__footer">
             <div class="group-card__avatars">
-              @for (member of group.members.slice(0, 3); track member.id; let i = $index) {
+              @for (member of (group?.members ?? []).slice(0, 3); track member.id; let i = $index) {
                 <img
                   class="group-card__avatar"
                   [src]="member.fotoUrl"
@@ -47,8 +47,8 @@
                   [style.z-index]="10 - i"
                 />
               }
-              @if (group.memberCount > 3) {
-                <span class="group-card__avatar-extra">+{{ group.memberCount - 3 }}</span>
+              @if ((group.memberCount ?? 0) > 3) {
+                <span class="group-card__avatar-extra">+{{ (group.memberCount ?? 0) - 3 }}</span>
               }
             </div>
 
@@ -66,4 +66,8 @@
     }
   </div>
 
+  <section class="chat-page__chat-direto">
+    <h2>RECENTES</h2>
+    <h1>Conversas Diretas</h1>
+  </section>
 </div>

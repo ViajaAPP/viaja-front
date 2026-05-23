@@ -5,7 +5,7 @@ import { AppStore, AppPage } from '../../store/app.store';
 export class NavigationService {
   private store = inject(AppStore);
 
-  navigateTo(page: AppPage) {
-    this.store.navigateTo(page);
+  navigateTo(page: AppPage, selectedChatId?: number) {
+    this.store.navigateTo(page, selectedChatId);
   }
 }

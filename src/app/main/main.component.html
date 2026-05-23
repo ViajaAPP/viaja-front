@@ -31,8 +31,15 @@
             <app-loading/>
           }
         }
+        @case ('chat-tour') {
+          @defer (on immediate){
+            <app-chat-message/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
       }
     }
 </div>
 
-<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.isLoading()"/>
+<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.loading()"/>

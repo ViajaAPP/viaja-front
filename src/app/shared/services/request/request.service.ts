@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { API_CONFIG } from '../../config/api.config';
 
 @Injectable({ providedIn: 'root' })
@@ -9,7 +9,8 @@ export class RequestService {
   readonly baseUrl = API_CONFIG.BASE_URL;
 
   post<T>(endpoint: string, body?: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, body);
+    return this.http.post<T>(`${this.baseUrl}${endpoint}`, body).pipe(
+      shareReplay({ bufferSize: 1, refCount: true }));
   }
 
   get<T>(endpoint: string): Observable<T> {

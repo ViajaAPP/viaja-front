@@ -7,11 +7,12 @@ import { HomeComponent } from '../pages/home/home.component';
 import { ChatComponent } from '../pages/chat/chat.component';
 import { AppFacade } from '../shared/facade/app.facade';
 import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.component';
+import { ChatMessageComponent } from '../pages/chat-message/chat-message.component';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, WelcomeComponent, LoginComponent, BotaoNavComponent, LoadingComponent, HomeComponent, ChatComponent],
+  imports: [CommonModule, ChatMessageComponent, WelcomeComponent, LoginComponent, BotaoNavComponent, LoadingComponent, HomeComponent, ChatComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })

@@ -1,24 +1,29 @@
 import {signalStore, withState, withMethods, withComputed, patchState} from '@ngrx/signals';
 import { computed } from '@angular/core';
 
-export type AppPage = 'welcome' | 'login' | 'home' | 'chat';
+export type AppPage = 'welcome' | 'login' | 'home' | 'chat' |'chat-tour';
 
 interface AppState {
   currentPage: AppPage;
   loading: boolean;
+  selectedChatId: number | null;
 }
 
 const initialState: AppState = {
   currentPage: 'welcome',
   loading: true,
+  selectedChatId: null,
 };
 
 export const AppStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withMethods((store) => ({
-    navigateTo(page: AppPage) {
-      patchState(store, { currentPage: page });
+    navigateTo(page: AppPage, selectedChatId?: number) {
+      patchState(store, { currentPage: page, selectedChatId });
+    },
+    setSelectedChatId(chatId?: number) {
+      patchState(store, { selectedChatId: chatId });
     },
     setLoading(value: boolean) {
       patchState(store, { loading: value });
@@ -34,5 +39,6 @@ export const AppStore = signalStore(
     isLogin: computed(() => store.currentPage() === 'login'),
     isHome: computed(() => store.currentPage() === 'home'),
     isChat: computed(() => store.currentPage() === 'chat'),
+    isChatTour: computed(() => store.currentPage() === 'chat-tour'),
   }))
 );

@@ -1,6 +1,5 @@
 import { Component, inject, signal, OnInit, DestroyRef, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppFacade } from '../../shared/facade';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
@@ -16,12 +15,12 @@ import { HomeResponse, Category } from '../../shared/enums/home.model';
 export class HomeComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly dados = inject(DadosClienteService);
-  private readonly destroyRef = inject(DestroyRef);
-
+  readonly starIndexes = [0, 1, 2, 3, 4];
+  
   dadosHome = signal<HomeResponse | null>(null);
   searchQuery = signal<string>('');
   selectedCategoryId = signal<string>('all');
-
+  fotoUser = computed(() => this.dadosHome()?.user?.fotoUser ?? '');
   categories = computed(() => this.dadosHome()?.categories ?? []);
 
   popularActivities = computed(() => {
@@ -37,9 +36,6 @@ export class HomeComponent implements OnInit {
     );
   });
 
-  fotoUser = computed(() => this.dadosHome()?.user?.fotoUser ?? '');
-
-  readonly starIndexes = [0, 1, 2, 3, 4];
 
   ngOnInit(): void {
     this.facade.setLoading(true);
@@ -48,9 +44,7 @@ export class HomeComponent implements OnInit {
 
   buscarDadosHome(): void {
     this.dados
-      .getHome()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data) => {
+      .getHome().subscribe((data) => {
         console.log('<< DADOS HOME >>:', data);
         this.facade.setLoading(false);
         this.dadosHome.set(data);

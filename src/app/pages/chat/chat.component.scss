@@ -6,6 +6,27 @@
 
 .chat-page{
     padding-top: 40%;
+
+    &__chat-direto{
+      padding: 20px;
+      
+      h2{
+        font-size: 12px;
+        font-weight: 400;
+        font-family: "Poppins", sans-serif;
+        color: #545454;
+        letter-spacing: 0.08em;
+        margin-bottom: 2px;
+      }
+
+      h1{
+        font-size: 22px;
+        font-weight: 700;
+        font-family: "Poppins", sans-serif;
+        color: #1a1a1a;
+        margin: 0;
+      }
+    }
 }
 
 .chat-page__section {

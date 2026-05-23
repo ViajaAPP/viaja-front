@@ -6,6 +6,7 @@ import { DadosClienteService } from '../../shared/services/dados-cliente/dados-c
 import { HomeResponse } from '../../shared/enums/home.model';
 import { ActiveGroup, ChatResponse } from '../../shared/enums/chat.model';
 import { CHAT_MOCK } from '../../shared/mock/chat.mock';
+import { NavigationService } from '../../shared/services/navigation';
 
 @Component({
   selector: 'app-chat',
@@ -18,6 +19,7 @@ export class ChatComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly dados = inject(DadosClienteService);
   private readonly destroyRef = inject(DestroyRef);
+  private navigationService = inject(NavigationService);
  
   homeData = signal<HomeResponse | null>(null);
  
@@ -41,12 +43,11 @@ export class ChatComponent implements OnInit {
   }
  
   buscarGrupos(): void {
-    // Substituir pelo service real quando o endpoint estiver disponível
     this.chatData.set(CHAT_MOCK);
   }
  
   abrirChat(chatId: string): void {
     console.log('<< ABRIR CHAT >>:', chatId);
-    // navegar para a tela de chat individual com o chatId
+    this.navigationService.navigateTo('chat-tour', Number(chatId));
   }
 }
