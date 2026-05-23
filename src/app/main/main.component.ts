@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { WelcomeComponent } from '../pages/welcome/welcome.component';
 import { LoginComponent } from '../pages/login/login.component';
 import { LoadingComponent } from '../shared/components/loading/loading.component';
 import { HomeComponent } from '../pages/home/home.component';
@@ -10,7 +11,7 @@ import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.comp
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, LoginComponent, BotaoNavComponent, LoadingComponent, HomeComponent, ChatComponent],
+  imports: [CommonModule, WelcomeComponent, LoginComponent, BotaoNavComponent, LoadingComponent, HomeComponent, ChatComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })

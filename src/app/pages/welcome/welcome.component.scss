@@ -1,0 +1,102 @@
+.welcome-container{
+  background: url(../../../assets/fundo-login.jpg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+
+    &::before{
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.90) 0%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+  &__logo{
+    background: url(../../../assets/logo-login.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 127px;
+    height: 47px;
+
+    display: flex;
+    position: absolute;
+    align-self: center;
+    justify-self: center;
+
+    margin-top:30%;
+  }
+
+  &__baixo{
+    width: 100%;
+    position: absolute;
+    margin-top: 70vh;
+
+    &__titulo{
+      font-family: "Huninn", sans-serif;
+      color: #fff;
+
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      width: 100%;
+
+      h1{
+        text-align: center;
+        width: 65%;
+        font-weight: 200;
+        font-size: 27px;
+
+      }
+    }
+
+    &__actions{
+      font-family: "Huninn", sans-serif;
+      flex-wrap: wrap;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &__button{
+        font-weight: 600;
+        background-color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: #2c2c2c;
+        cursor: pointer;
+        border-radius: 25px;
+        margin: 27% 5% 0% 5%;
+
+        width: 100%;
+        height: 48px;
+      }
+
+      p{
+        font-weight: 100;
+        color: #fff;
+      }
+
+      &__login-link{
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+  }
+}

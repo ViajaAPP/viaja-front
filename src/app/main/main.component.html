@@ -3,6 +3,13 @@
       <app-loading/>
   } @else {
       @switch(facade.currentPage()){
+        @case ('welcome') {
+          @defer (on immediate){
+            <app-welcome/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
         @case ('login') {
           @defer (on immediate){
             <app-login/>
@@ -28,6 +35,4 @@
     }
 </div>
 
-<app-botao-nav *ngIf="facade.currentPage() !== 'login'"></app-botao-nav>
-
-
+<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.isLoading()"/>

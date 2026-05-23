@@ -1,16 +1,18 @@
 <div class="login-container">
     <div class="login-container__logo"></div>
-    
-    <section class="login-container__baixo">
-        <div class="login-container__baixo__titulo">
-            <h1>Guiado por quem vive isso</h1>
+
+    <div class="login-container__form">
+        <h1 class="login-container__titulo">Bem-vindo de volta!</h1>
+        <p>Faça login para continuar</p>
+        <div class="login-container__alerta-erro" *ngIf="errorMessage">
+          <p>{{ errorMessage }}</p>
         </div>
-
-        <section class="login-container__baixo__actions">
-            <button (click)="navigateToHome()" class="login-container__baixo__actions__button">Começar</button>
-            
-            <p>Já tem uma conta? <span (click)="navigateToLogin()" class="login-container__baixo__actions__login-link">Login</span></p>
-        </section>
-
-    </section>
+        <form (ngSubmit)="login()">
+            <input type="text" placeholder="Email" [(ngModel)]="credentials.email" name="email" required>
+            <input type="password" placeholder="Senha" [(ngModel)]="credentials.password" name="password" required>
+            <button class="mt-1 btn-primary" type="submit" [disabled]="isLoggingIn">
+              {{isLoggingIn ? 'Entrando...' : 'Entrar'}}
+            </button>
+        </form>
+    </div>
 </div>
