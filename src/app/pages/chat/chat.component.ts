@@ -39,6 +39,7 @@ export class ChatComponent implements OnInit {
 
   buscarGrupos(): void {
     this.chatMessageService.buscarPaginaChat().subscribe((data) => {
+      console.log("buscandor: ", data);
       this.chatData.set(data);
     });
   }

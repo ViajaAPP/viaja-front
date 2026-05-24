@@ -56,10 +56,11 @@ export class ChatMessageService implements OnDestroy {
         if (remetenteId === usuarioAtualId) return;
 
         const mensagem: MensagensList = {
+          id: Date.now(),
+          chat_id: dados.chat_id,
           user_id: remetenteId,
-          message_id: Date.now(),
-          content: dados.text ?? dados.payload?.text ?? dados.content ?? '',
-          send_date: new Date().toISOString(),
+          text: dados.text ?? dados.payload?.text ?? dados.content ?? '',
+          created_at: new Date().toISOString(),
         };
 
         this.mensagemRecebida$.next(mensagem);

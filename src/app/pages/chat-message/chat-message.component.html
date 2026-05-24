@@ -1,6 +1,7 @@
 @if (chatMessage(); as chat) {
   <div class="chat-wrapper">
 
+    <!-- Header -->
     <header class="chat-header">
       <button class="btn-back" aria-label="Voltar" (click)="voltar()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -29,16 +30,16 @@
     <div class="chat-messages" #messagesContainer>
 
       <div class="date-divider">
-        <span>Hoje, {{ chat.messages_list[0]?.send_date | date: 'd \'de\' MMMM' : '' : 'pt-BR' }}</span>
+        <span>Hoje, {{ chat.messages_list[0]?.created_at | date: 'd \'de\' MMMM' : '' : 'pt-BR' }}</span>
       </div>
 
-      @for (msg of chat.messages_list; track msg.message_id) {
+      @for (msg of chat.messages_list; track msg.id) {
         <div class="message-row" [class.mine]="msg.user_id === currentUserId">
           <div class="bubble"
                [class.bubble--mine]="msg.user_id === currentUserId"
                [class.bubble--other]="msg.user_id !== currentUserId">
-            <p>{{ msg.content }}</p>
-            <span class="bubble-time">{{ msg.send_date | date: 'HH:mm' }}</span>
+            <p>{{ msg.text }}</p>
+            <span class="bubble-time">{{ msg.created_at | date: 'HH:mm' }}</span>
           </div>
         </div>
       }

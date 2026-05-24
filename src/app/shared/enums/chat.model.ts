@@ -38,7 +38,7 @@ export interface ChatUser {
   user_id?: number;
 }
 
-export interface ChatMessage { 
+export interface ChatMessage {
   chat_name: string;
   messages_list: MensagensList[];
   socket_connection_url?: string;
@@ -46,14 +46,15 @@ export interface ChatMessage {
 }
 
 export interface MensagensList {
-	user_id: number;
-	message_id: number;
-	content: string;
-	send_date: string;
+  id: number;
+  chat_id?: number;
+  user_id: number;
+  text: string;
+  created_at: string;
 }
 
-export interface UserChatList{
-    user_name: string, 
-    user_id: number, 
-    role: string
+export interface UserChatList {
+  user_name: string;
+  user_id: number;
+  role: string;
 }

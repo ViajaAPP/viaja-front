@@ -46,6 +46,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
 
     this.chatMessageService.buscarChat(chatId).subscribe((data) => {
       try {
+        console.log('chat data: ', data);
         const url = data?.socket_connection_url ?? '';
         const params = new URL(url).searchParams;
         const userIdParam = params.get('user_id');
@@ -68,16 +69,16 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     if (!texto || this.chatId === null) return;
 
     this.chatMessageService.enviarPeloWebSocket(this.chatId, texto);
-
     this.chatMessageService.enviarMensagem(this.chatId, texto).subscribe();
 
     const atual = this.chatMessage();
     if (atual && this.currentUserId !== null) {
       const novaMensagem = {
+        id: Date.now(),
+        chat_id: this.chatId,
         user_id: this.currentUserId,
-        message_id: Date.now(),
-        content: texto,
-        send_date: new Date().toISOString(),
+        text: texto,
+        created_at: new Date().toISOString(),
       };
       this.chatMessage.set({
         ...atual,
