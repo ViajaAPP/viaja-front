@@ -7,12 +7,14 @@ interface AppState {
   currentPage: AppPage;
   loading: boolean;
   selectedChatId: number | null;
+  myUserId: number | null;
 }
 
 const initialState: AppState = {
   currentPage: 'welcome',
   loading: true,
   selectedChatId: null,
+  myUserId: null,
 };
 
 export const AppStore = signalStore(
@@ -33,6 +35,9 @@ export const AppStore = signalStore(
         patchState(store, { loading: false });
       }, 2000);
     },
+    setMyUserId(userId: number | null) {
+      patchState(store, { myUserId: userId });
+    }
   })),
   withComputed((store) => ({
     isWelcome: computed(() => store.currentPage() === 'welcome'),

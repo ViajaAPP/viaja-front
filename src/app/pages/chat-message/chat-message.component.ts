@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AppStore } from '../../shared/store/app.store';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { ChatMessage } from '../../shared/enums/chat.model';
+import { NavigationService } from '../../shared/services/navigation';
 
 @Component({
   selector: 'app-chat-message',
@@ -14,6 +15,7 @@ import { ChatMessage } from '../../shared/enums/chat.model';
 export class ChatMessageComponent implements OnInit, OnDestroy {
   private readonly store = inject(AppStore);
   private readonly dados = inject(DadosClienteService);
+  private navigationService = inject(NavigationService);
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
 
@@ -145,6 +147,11 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
       const el = this.messagesContainer?.nativeElement;
       if (el) el.scrollTop = el.scrollHeight;
     }, 50);
+  }
+
+  voltar(){
+    console.log('<< VOLTAR PARA LISTA DE CHATS >>');
+    this.navigationService.navigateTo('chat');
   }
 
   ngOnDestroy(): void {

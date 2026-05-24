@@ -33,7 +33,9 @@ export class LoginComponent implements OnInit {
     this.apiService.login(this.credentials).subscribe({
       next: (response) => {
         this.isLoggingIn = false;
+        console.log('Login successful:', response);
         this.authService.setToken(response.token);
+        this.facade.setUserId(response.user_id);
         this.navigationService.navigateTo('home');
       },
       error: (error) => {

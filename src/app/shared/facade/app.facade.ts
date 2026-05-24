@@ -11,6 +11,7 @@ export class AppFacade {
   isLogin = this.store.isLogin;
   isHome = this.store.isHome;
   isChat = this.store.isChat;
+  myUserId = this.store.myUserId;
 
   navigateTo(page: string) {
     this.store.navigateTo(page as any);
@@ -18,6 +19,10 @@ export class AppFacade {
 
   setLoading(value: boolean) {
     this.store.setLoading(value);
+  }
+
+  setUserId(userId: number | null) {
+    this.store.setMyUserId(userId);
   }
 
   initializeApp() {
