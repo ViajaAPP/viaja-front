@@ -1,8 +1,9 @@
 import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { AppStore } from '../../shared/store/app.store';
-import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
+import { ChatMessageService } from '../../shared/services/chat-message/chat-message.service';
 import { ChatMessage } from '../../shared/enums/chat.model';
 import { NavigationService } from '../../shared/services/navigation';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
@@ -15,8 +16,8 @@ import { LoadingComponent } from '../../shared/components/loading/loading.compon
 })
 export class ChatMessageComponent implements OnInit, OnDestroy {
   private readonly store = inject(AppStore);
-  private readonly dados = inject(DadosClienteService);
-  private navigationService = inject(NavigationService);
+  private readonly chatMessageService = inject(ChatMessageService);
+  private readonly navigationService = inject(NavigationService);
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
 
@@ -24,26 +25,31 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   inputText = '';
   currentUserId: number | null = null;
   private chatId: number | null = null;
-
-  private ws: WebSocket | null = null;
+  private mensagemSubscription?: Subscription;
 
   ngOnInit(): void {
     const chatId = this.store.selectedChatId();
     this.chatId = chatId ?? null;
 
-    if (!chatId) {
-      console.warn('ChatMessageComponent: selectedChatId não está definido');
-      return;
-    }
+    if (!chatId) return;
 
-    this.dados.getChat(chatId).subscribe((data) => {
-      console.log('ChatMessageComponent chat data:', data);
+    this.mensagemSubscription = this.chatMessageService.onMensagemRecebida.subscribe((mensagem) => {
+      const atual = this.chatMessage();
+      if (!atual) return;
 
+      this.chatMessage.set({
+        ...atual,
+        messages_list: [...(atual.messages_list ?? []), mensagem],
+      } as ChatMessage);
+      this.scrollToBottom();
+    });
+
+    this.chatMessageService.buscarChat(chatId).subscribe((data) => {
       try {
         const url = data?.socket_connection_url ?? '';
         const params = new URL(url).searchParams;
-        const userIdStr = params.get('user_id');
-        this.currentUserId = userIdStr ? Number(userIdStr) : null;
+        const userIdParam = params.get('user_id');
+        this.currentUserId = userIdParam ? Number(userIdParam) : null;
       } catch {
         this.currentUserId = null;
       }
@@ -51,40 +57,31 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
       this.chatMessage.set(data);
       this.scrollToBottom();
 
-      if (data?.socket_connection_url) {
-        this.initWebSocket(data.socket_connection_url);
+      if (data?.socket_connection_url && this.currentUserId !== null) {
+        this.chatMessageService.conectarWebSocket(data.socket_connection_url, this.currentUserId);
       }
     });
   }
 
   enviarMensagem(): void {
-    const text = this.inputText.trim();
-    if (!text || !this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    const texto = this.inputText.trim();
+    if (!texto || this.chatId === null) return;
 
-    const payload = JSON.stringify({
-      chat_id: this.chatId,
-      text,
-    });
+    this.chatMessageService.enviarPeloWebSocket(this.chatId, texto);
 
-    this.ws.send(payload);
+    this.chatMessageService.enviarMensagem(this.chatId, texto).subscribe();
 
-    if (this.chatId !== null) {
-      this.dados.sendMessage(this.chatId, text).subscribe({
-        error: (err) => console.error('Erro ao salvar mensagem:', err),
-      });
-    }
-
-    const current = this.chatMessage();
-    if (current && this.currentUserId !== null) {
-      const novaMsg = {
+    const atual = this.chatMessage();
+    if (atual && this.currentUserId !== null) {
+      const novaMensagem = {
         user_id: this.currentUserId,
         message_id: Date.now(),
-        content: text,
+        content: texto,
         send_date: new Date().toISOString(),
       };
       this.chatMessage.set({
-        ...current,
-        messages_list: [...(current.messages_list ?? []), novaMsg],
+        ...atual,
+        messages_list: [...(atual.messages_list ?? []), novaMensagem],
       } as ChatMessage);
     }
 
@@ -92,71 +89,19 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     this.scrollToBottom();
   }
 
-  private initWebSocket(url: string): void {
-    if (this.ws) {
-      try { this.ws.close(); } catch { /* noop */ }
-      this.ws = null;
-    }
-
-    this.ws = new WebSocket(url);
-
-    this.ws.onopen = () => console.log('WebSocket conectado');
-
-    this.ws.onclose = (ev) => {
-      console.log('WebSocket fechado', ev.code, ev.reason);
-      this.ws = null;
-    };
-
-    this.ws.onerror = (err) => console.error('WebSocket erro:', err);
-
-    this.ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-        console.log('WS mensagem recebida:', msg);
-
-        if (msg?.type === 'message') {
-          const incomingUserId = Number(msg.user_id ?? msg.payload?.user_id);
-
-          if (incomingUserId === this.currentUserId) return;
-
-          const payload = {
-            user_id: incomingUserId,
-            message_id: Date.now(),
-            content: msg.text ?? msg.payload?.text ?? msg.content ?? '',
-            send_date: new Date().toISOString(),
-          };
-
-          const current = this.chatMessage();
-          if (current) {
-            this.chatMessage.set({
-              ...current,
-              messages_list: [...(current.messages_list ?? []), payload],
-            } as ChatMessage);
-            this.scrollToBottom();
-          }
-        }
-      } catch (e) {
-        console.error('Erro ao parsear mensagem WS:', e);
-      }
-    };
+  voltar(): void {
+    this.navigationService.navigateTo('chat');
   }
 
   private scrollToBottom(): void {
     setTimeout(() => {
-      const el = this.messagesContainer?.nativeElement;
-      if (el) el.scrollTop = el.scrollHeight;
+      const element = this.messagesContainer?.nativeElement;
+      if (element) element.scrollTop = element.scrollHeight;
     }, 50);
   }
 
-  voltar(){
-    console.log('<< VOLTAR PARA LISTA DE CHATS >>');
-    this.navigationService.navigateTo('chat');
-  }
-
   ngOnDestroy(): void {
-    if (this.ws) {
-      try { this.ws.close(1000, 'desconectando'); } catch { /* noop */ }
-      this.ws = null;
-    }
+    this.chatMessageService.desconectarWebSocket();
+    this.mensagemSubscription?.unsubscribe();
   }
 }

@@ -42,8 +42,6 @@
   }
 }
 
-// ─── Section ─────────────────────────────────────
-
 .home__section {
   padding: 22px 20px 0;
   margin-top: 36%;
@@ -59,8 +57,6 @@
   margin: 0 0 16px;
 }
 
-// ─── Lista ───────────────────────────────────────
-
 .home__activities {
   font-family: "Poppins", sans-serif;
   display: flex;
@@ -70,8 +66,6 @@
   margin: 0;
   padding: 0;
 }
-
-// ─── Card ────────────────────────────────────────
 
 .activity-card {
   border-radius: 20px;
@@ -93,8 +87,6 @@
   }
 }
 
-// ── Foto ─────────────────────────────────────────
-
 .activity-card__photo {
   position: absolute;
   inset: 0;
@@ -108,8 +100,6 @@
   display: block;
   transition: transform 0.4s;
 }
-
-// ── Tag + bookmark ────────────────────────────────
 
 .activity-card__top-row {
   position: absolute;
