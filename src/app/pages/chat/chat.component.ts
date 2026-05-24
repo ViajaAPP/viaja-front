@@ -19,11 +19,10 @@ export class ChatComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly dados = inject(DadosClienteService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly chatData = signal<ChatResponse | null>(null);
   private navigationService = inject(NavigationService);
  
-  homeData = signal<HomeResponse | null>(null);
- 
-  private readonly chatData = signal<ChatResponse | null>(null);
+  homeData = signal<HomeResponse | null>(null); 
   groups = computed<ActiveGroup[]>(() => this.chatData()?.activeGroups ?? []);
  
   ngOnInit(): void {
@@ -34,19 +33,19 @@ export class ChatComponent implements OnInit {
  
   buscarDadosHeader(): void {
     this.dados
-      .getHome()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data) => {
+      .getHome().subscribe((data) => {
         this.facade.setLoading(false);
         this.homeData.set(data);
       });
   }
  
   buscarGrupos(): void {
-    this.chatData.set(CHAT_MOCK);
+    this.dados.getChatPage().subscribe((data) => {
+      this.chatData.set(data);
+    });
   }
  
-  abrirChat(chatId: string): void {
+  abrirChat(chatId: number): void {
     console.log('<< ABRIR CHAT >>:', chatId);
     this.navigationService.navigateTo('chat-tour', Number(chatId));
   }

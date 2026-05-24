@@ -1,10 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { RequestService } from '../request/request.service';
 import { HomeResponse } from '../../enums/home.model';
+import { APP_CONFIG } from '../../config/app.config';
 import { HOME_MOCK } from '../../mock/home.mock';
 import { Observable, of, shareReplay } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { ChatMessage, ChatResponse } from '../../enums/chat.model';
+import { CHAT_MOCK, CHAT_MESSAGE_MOCK } from '../../mock/chat.mock';
 
 @Injectable({ providedIn: 'root' })
 export class DadosClienteService {
@@ -13,13 +15,22 @@ export class DadosClienteService {
   private chatRequest$?: Observable<ChatMessage>;
 
   getHome(): Observable<HomeResponse> {
+    if (APP_CONFIG.MOCK) {
+      if (!this.homeRequest$) {
+        console.log('<<DADOS HOME MOCK>>');
+        this.homeRequest$ = of(HOME_MOCK).pipe(
+          tap((response) => console.log('DadosClienteService getHome mock response:', response)),
+          shareReplay({ bufferSize: 1, refCount: false })
+        );
+      }
+
+      return this.homeRequest$;
+    }
+
     if (!this.homeRequest$) {
+      console.log('<<DADOS HOME REAL>>');
       this.homeRequest$ = this.request.post<HomeResponse>('/pages/home').pipe(
         tap((response) => console.log('DadosClienteService getHome response:', response)),
-        catchError((error) => {
-          console.error('Error fetching home data:', error);
-          return of(HOME_MOCK);
-        }),
         shareReplay({ bufferSize: 1, refCount: false })
       );
     }
@@ -28,12 +39,29 @@ export class DadosClienteService {
   }
 
   getChatPage(): Observable<ChatResponse> {
-    return this.request.post<ChatResponse>('/pages/chats');
+    if (APP_CONFIG.MOCK) {
+      console.log('<<DADOS CHAT PAGE MOCK>>');
+      return of(CHAT_MOCK).pipe(
+        tap((response) => console.log('DadosClienteService getChatPage mock response:', response))
+      );
+    }
+
+    return this.request.post<ChatResponse>('/pages/chats').pipe(
+      tap((response) => console.log('DadosClienteService getChatPage response:', response))
+    );
   }
 
   getChat(chatId: number): Observable<ChatMessage> {
     console.log(chatId);
-    return this.request.post<ChatMessage>('/pages/chats', chatId )
+
+    if (APP_CONFIG.MOCK) {
+      console.log('<<DADOS CHAT MESSAGE MOCK>>');
+      return of(CHAT_MESSAGE_MOCK).pipe(
+        tap((response) => console.log('DadosClienteService getChat mock response:', response))
+      );
+    }
+
+    return this.request.post<ChatMessage>('/pages/chats', chatId );
   }
 }
 

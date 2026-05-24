@@ -21,8 +21,9 @@ export class HeaderComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    console.log(this.dados);
-    console.log('Tags disponíveis:', this.tagsDisponiveis());
+    if(this.dados) {
+      console.log('dados header recebidos');
+    }
   }
 
   toggleFiltros(): void {

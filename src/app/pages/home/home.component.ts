@@ -36,7 +36,6 @@ export class HomeComponent implements OnInit {
     );
   });
 
-
   ngOnInit(): void {
     this.facade.setLoading(true);
     this.buscarDadosHome();
@@ -45,7 +44,6 @@ export class HomeComponent implements OnInit {
   buscarDadosHome(): void {
     this.dados
       .getHome().subscribe((data) => {
-        console.log('<< DADOS HOME >>:', data);
         this.facade.setLoading(false);
         this.dadosHome.set(data);
 

@@ -1,4 +1,4 @@
-import { ChatResponse } from '../enums/chat.model';
+import { ChatMessage, ChatResponse } from '../enums/chat.model';
 
 const TOUR_PHOTO = 'https://s2-g1.glbimg.com/yIzYsLe7tJStPzIFJ9cY4na9SfM=/0x0:1600x900/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2023/g/I/o4AQFdQYWE6NJdJWJXQA/foto-unisantos-final.jpeg';
 
@@ -50,6 +50,29 @@ export const CHAT_MOCK: ChatResponse = {
       tour_instance_id: 4,
       tour_photo: TOUR_PHOTO,
       tour_title: 'Tour Teste',
+    },
+  ],
+};
+
+export const CHAT_MESSAGE_MOCK: ChatMessage = {
+  chat_name: 'Tour Teste',
+  user_list: {
+    user_name: 'Sophia Verardo de Araújo',
+    user_id: 6,
+    role: 'TOURIST',
+  },
+  mensages: [
+    {
+      user_id: 6,
+      message_id: 1,
+      content: 'Olá! Este é um mock de mensagem.',
+      send_date: '2026-05-24T12:00:00Z',
+    },
+    {
+      user_id: 7,
+      message_id: 2,
+      content: 'Olá! Resposta de guia mock.',
+      send_date: '2026-05-24T12:01:00Z',
     },
   ],
 };
