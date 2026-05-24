@@ -51,8 +51,8 @@ export class DadosClienteService {
     );
   }
 
-  getChat(chatId: number): Observable<ChatMessage> {
-    console.log(chatId);
+  getChat(chat_id: number): Observable<ChatMessage> {
+    console.log(chat_id);
 
     if (APP_CONFIG.MOCK) {
       console.log('<<DADOS CHAT MESSAGE MOCK>>');
@@ -61,7 +61,7 @@ export class DadosClienteService {
       );
     }
 
-    return this.request.post<ChatMessage>('/pages/chats', chatId );
+    return this.request.post<ChatMessage>('/pages/chat', { chat_id } );
   }
 }
 

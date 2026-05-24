@@ -31,10 +31,21 @@ export interface ChatResponse {
   tour_list?: ActiveGroup[];
 }
 
+export interface ChatUser {
+  first_name?: string;
+  last_name?: string;
+  photo?: string;
+  user_id?: number;
+}
+
 export interface ChatMessage { 
-  chat_name: string
-	user_list: UserChatList;
-	mensages: MensagensList[];
+  chat_name: string;
+  // lista de mensagens retornada pela API
+  messages_list: MensagensList[];
+  // url completa para handshake do websocket
+  socket_connection_url?: string;
+  // lista de participantes
+  user_list: ChatUser[];
 }
 
 export interface MensagensList {

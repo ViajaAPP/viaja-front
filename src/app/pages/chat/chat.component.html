@@ -16,17 +16,17 @@
         <div class="group-card__image-wrapper">
           <img
             class="group-card__image"
-            [src]="group.imageUrl"
-            [alt]="group.name"
+            [src]="group.tour_photo"
+            [alt]="group.tour_title"
             loading="lazy"
           />
           <span class="group-card__members-badge">
-            {{ group.memberCount }} MEMBROS
+            {{ group.members?.length ?? 0 }} MEMBROS
           </span>
         </div>
 
         <div class="group-card__body">
-          <h3 class="group-card__name">{{ group.name }}</h3>
+          <h3 class="group-card__name">{{ group.tour_title }}</h3>
 
           <div class="group-card__event">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -34,29 +34,30 @@
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>{{ group.nextEvent }} <strong>{{ group.nextEventTime }}</strong></span>
+            <span>{{ group.tour_date }}</span>
           </div>
 
           <div class="group-card__footer">
             <div class="group-card__avatars">
-              @for (member of (group?.members ?? []).slice(0, 3); track member.id; let i = $index) {
+              @for (member of (group.members ?? []).slice(0, 3); track member.user_id; let i = $index) {
                 <img
                   class="group-card__avatar"
-                  [src]="member.fotoUrl"
-                  [alt]="member.name"
+                  [src]="member.photo"
+                  [alt]="member.first_name"
                   [style.z-index]="10 - i"
                 />
               }
-              @if ((group.memberCount ?? 0) > 3) {
-                <span class="group-card__avatar-extra">+{{ (group.memberCount ?? 0) - 3 }}</span>
+              @if ((group.members?.length ?? 0) > 3) {
+                <span class="group-card__avatar-extra">+{{ (group.members?.length ?? 0) - 3 }}</span>
               }
             </div>
 
             <button
               class="group-card__btn"
               type="button"
-              [attr.aria-label]="'Abrir chat ' + group.name"
-              (click)="abrirChat(group.chat_id)"
+              [attr.aria-label]="'Abrir chat ' + group.tour_title"
+              [disabled]="!group.chat_open"
+              (click)="abrirChat(group.chat_id, group.chat_open)"
             >
               Abrir Chat
             </button>

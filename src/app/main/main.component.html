@@ -42,4 +42,4 @@
     }
 </div>
 
-<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.loading()"/>
+<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.loading() && facade.currentPage() !== 'chat-tour'"/>

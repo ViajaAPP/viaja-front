@@ -56,12 +56,7 @@ export const CHAT_MOCK: ChatResponse = {
 
 export const CHAT_MESSAGE_MOCK: ChatMessage = {
   chat_name: 'Tour Teste',
-  user_list: {
-    user_name: 'Sophia Verardo de Araújo',
-    user_id: 6,
-    role: 'TOURIST',
-  },
-  mensages: [
+  messages_list: [
     {
       user_id: 6,
       message_id: 1,
@@ -73,6 +68,21 @@ export const CHAT_MESSAGE_MOCK: ChatMessage = {
       message_id: 2,
       content: 'Olá! Resposta de guia mock.',
       send_date: '2026-05-24T12:01:00Z',
+    },
+  ],
+  socket_connection_url: 'ws://localhost/ws?user_id=6&chats=1',
+  user_list: [
+    {
+      first_name: 'Sophia',
+      last_name: 'Verardo de Araújo',
+      photo: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685',
+      user_id: 6,
+    },
+    {
+      first_name: 'Sophia',
+      last_name: 'Verardo de Araújo',
+      photo: 'https://plus.unsplash.com/premium_photo-1669138512601-e3f00b684edc?q=80&w=685',
+      user_id: 7,
     },
   ],
 };
