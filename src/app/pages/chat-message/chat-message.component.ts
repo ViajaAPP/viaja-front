@@ -59,7 +59,6 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     const text = this.inputText.trim();
     if (!text || !this.ws || this.ws.readyState !== WebSocket.OPEN) return;
 
-    // Payload igual ao que o servidor espera: { chat_id, text }
     const payload = JSON.stringify({
       chat_id: this.chatId,
       text,
@@ -67,7 +66,12 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
 
     this.ws.send(payload);
 
-    // Adiciona imediatamente na lista local (preto = meu)
+    if (this.chatId !== null) {
+      this.dados.sendMessage(this.chatId, text).subscribe({
+        error: (err) => console.error('Erro ao salvar mensagem:', err),
+      });
+    }
+
     const current = this.chatMessage();
     if (current && this.currentUserId !== null) {
       const novaMsg = {

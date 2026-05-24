@@ -63,5 +63,12 @@ export class DadosClienteService {
 
     return this.request.post<ChatMessage>('/pages/chat', { chat_id } );
   }
+
+  sendMessage(chat_id: number, content: string): Observable<void> {
+    return this.request.post<void>(`/chat/${chat_id}/messages`, { content }).pipe(
+      tap(() => console.log('DadosClienteService sendMessage response: mensagem enviada'))
+    );
+  }
 }
+
 
