@@ -1,3 +1,3 @@
 export const APP_CONFIG = {
-  MOCK: false, // muda para false para faezr a request 
+  MOCK: true, // muda para false para faezr a request 
 };

@@ -199,7 +199,7 @@
 // ─── Bubbles ──────────────────────────────────────────────────────────────────
 .bubble {
   max-width: 72%;
-  padding: 11px 14px 8px;
+  padding: 11px 25px 8px;
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-bubble);
   display: flex;
@@ -220,7 +220,6 @@
     line-height: 1;
   }
 
-  // Sent by current user — dark
   &--mine {
     background: var(--bg-bubble-me);
     color: var(--text-me);
@@ -229,7 +228,6 @@
     .bubble-time { color: var(--text-time); }
   }
 
-  // Received — light grey
   &--other {
     background: var(--bg-bubble-other);
     color: var(--text-other);

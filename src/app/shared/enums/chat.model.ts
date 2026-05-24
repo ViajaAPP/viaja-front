@@ -40,11 +40,8 @@ export interface ChatUser {
 
 export interface ChatMessage { 
   chat_name: string;
-  // lista de mensagens retornada pela API
   messages_list: MensagensList[];
-  // url completa para handshake do websocket
   socket_connection_url?: string;
-  // lista de participantes
   user_list: ChatUser[];
 }
 

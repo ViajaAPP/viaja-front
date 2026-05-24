@@ -5,10 +5,11 @@ import { AppStore } from '../../shared/store/app.store';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { ChatMessage } from '../../shared/enums/chat.model';
 import { NavigationService } from '../../shared/services/navigation';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-chat-message',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, LoadingComponent],
   templateUrl: './chat-message.component.html',
   styleUrl: './chat-message.component.scss',
 })
@@ -38,7 +39,6 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     this.dados.getChat(chatId).subscribe((data) => {
       console.log('ChatMessageComponent chat data:', data);
 
-      // Extrai o user_id logado da URL do socket
       try {
         const url = data?.socket_connection_url ?? '';
         const params = new URL(url).searchParams;
@@ -117,7 +117,6 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
         if (msg?.type === 'message') {
           const incomingUserId = Number(msg.user_id ?? msg.payload?.user_id);
 
-          // Ignora eco das próprias mensagens
           if (incomingUserId === this.currentUserId) return;
 
           const payload = {
