@@ -1,4 +1,3 @@
-// ─── Tokens ───────────────────────────────────────────────────────────────────
 :host {
   --bg-page:       #f0ede8;
   --bg-bubble-me:  #1a1a1a;
@@ -19,7 +18,6 @@
   height: 100%;
 }
 
-// ─── Layout wrapper ───────────────────────────────────────────────────────────
 .chat-wrapper {
   display: flex;
   flex-direction: column;
@@ -31,7 +29,6 @@
   overflow: hidden;
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────────
 .chat-header {
   display: flex;
   align-items: center;
@@ -147,7 +144,6 @@
   }
 }
 
-// ─── Messages list ────────────────────────────────────────────────────────────
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -196,7 +192,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-// ─── Bubbles ──────────────────────────────────────────────────────────────────
 .bubble {
   max-width: 72%;
   padding: 11px 25px 8px;
@@ -237,7 +232,6 @@
   }
 }
 
-// ─── Input bar ────────────────────────────────────────────────────────────────
 .chat-input-bar {
   display: flex;
   align-items: center;
@@ -311,7 +305,6 @@
   &:active { transform: scale(0.95); }
 }
 
-// ─── Loading state ────────────────────────────────────────────────────────────
 .chat-loading {
   display: flex;
   flex-direction: column;

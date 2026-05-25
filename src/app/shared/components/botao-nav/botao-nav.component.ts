@@ -21,7 +21,6 @@ export class BotaoNavComponent {
   ];
 
   onSelect(id: string): void {
-    // update global page state when possible; only navigate to known AppPage values
     if (id === 'home' || id === 'chat' || id === 'login') {
       this.navigation.navigateTo(id as AppPage);
     }
