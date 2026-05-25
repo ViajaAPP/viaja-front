@@ -1,5 +1,5 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
-import { Observable, of, Subject, tap } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from '../request/request.service';
 import { ChatMessage, ChatResponse, MensagensList } from '../../enums/chat.model';
 import { APP_CONFIG } from '../../config/app.config';
@@ -44,32 +44,61 @@ export class ChatMessageService implements OnDestroy {
   conectarWebSocket(url: string, usuarioAtualId: number): void {
     this.desconectarWebSocket();
 
+    console.debug('[ChatMessageService] conectando websocket', { url, usuarioAtualId });
     this.webSocket = new WebSocket(url);
 
-    this.webSocket.onmessage = (event) => {
+    this.webSocket.onopen = () => {
+      console.debug('[ChatMessageService] websocket conectado', { url, usuarioAtualId });
+    };
+
+    this.webSocket.onerror = (event) => {
+      console.error('[ChatMessageService] websocket com erro', { url, usuarioAtualId, event });
+    };
+
+    this.webSocket.onmessage = async (event) => {
       try {
-        const dados = JSON.parse(event.data);
+        console.log('[ChatMessageService] websocket mensagem recebida', { url, usuarioAtualId, eventData: event.data });
+        const bruto = await this.normalizarMensagemSocket(event.data);
+        console.debug('[ChatMessageService] websocket mensagem bruta', bruto);
 
-        if (dados?.type !== 'message') return;
+        const dados = JSON.parse(bruto);
 
-        const remetenteId = Number(dados.user_id ?? dados.payload?.user_id);
-        if (remetenteId === usuarioAtualId) return;
+        const payload = dados?.payload ?? dados?.data ?? dados?.message ?? dados;
+        const remetenteId = Number(payload?.user_id ?? dados?.user_id);
+        const texto = payload?.text ?? payload?.content ?? dados?.text ?? dados?.content ?? '';
+
+        if (!texto) return;
+        if (!Number.isFinite(remetenteId)) return;
 
         const mensagem: MensagensList = {
           id: Date.now(),
           chat_id: dados.chat_id,
           user_id: remetenteId,
-          text: dados.text ?? dados.payload?.text ?? dados.content ?? '',
+          text: texto,
           created_at: new Date().toISOString(),
         };
 
+        console.debug('[ChatMessageService] websocket mensagem emitida', mensagem);
         this.mensagemRecebida$.next(mensagem);
-      } catch {}
+      } catch (error) {
+        console.error('[ChatMessageService] falha ao processar mensagem do websocket', { error, eventData: event.data });
+      }
     };
 
     this.webSocket.onclose = () => {
+      console.debug('[ChatMessageService] websocket desconectado', { url, usuarioAtualId });
       this.webSocket = null;
     };
+  }
+
+  private async normalizarMensagemSocket(data: string | ArrayBuffer | Blob): Promise<string> {
+    if (typeof data === 'string') return data;
+
+    if (data instanceof Blob) {
+      return await data.text();
+    }
+
+    return new TextDecoder().decode(data);
   }
 
   desconectarWebSocket(): void {

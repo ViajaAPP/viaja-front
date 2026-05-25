@@ -27,6 +27,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   private chatId: number | null = null;
   private mensagemSubscription?: Subscription;
 
+  private ordenarMensagensParaExibicao(mensagens: ChatMessage['messages_list'] | undefined): ChatMessage['messages_list'] {
+    return [...(mensagens ?? [])].reverse();
+  }
+
   ngOnInit(): void {
     const chatId = this.store.selectedChatId();
     this.chatId = chatId ?? null;
@@ -55,7 +59,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
         this.currentUserId = null;
       }
 
-      this.chatMessage.set(data);
+      this.chatMessage.set({
+        ...data,
+        messages_list: this.ordenarMensagensParaExibicao(data?.messages_list),
+      });
       this.scrollToBottom();
 
       if (data?.socket_connection_url && this.currentUserId !== null) {
