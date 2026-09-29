@@ -1,4 +1,6 @@
+import { environment } from '../../../environments/environment';
+
 export const API_CONFIG = {
-  BASE_URL: 'https://reediest-frenzily-lakiesha.ngrok-free.dev',
+  BASE_URL: environment.apiUrl,
   SOCKET_PATH: '/ws',
 };
