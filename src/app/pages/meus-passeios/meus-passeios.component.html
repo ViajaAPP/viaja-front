@@ -1,0 +1,72 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div class="meus-passeios__titulo">
+      <p class="pagina__rotulo">{{ facade.isGuide() ? 'SEU PAINEL' : 'MODERAÇÃO' }}</p>
+      <h1 class="pagina__titulo">
+        {{ facade.isGuide() ? 'Meus passeios' : 'Passeios da plataforma' }}
+      </h1>
+    </div>
+    @if (facade.isGuide()) {
+      <button class="btn-primary" type="button" (click)="novoPasseio()">Novo</button>
+    }
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  <div class="meus-passeios__grade">
+    @for (passeio of passeios(); track passeio.id) {
+      <article class="cartao meus-passeios__cartao">
+        <img
+          class="meus-passeios__foto"
+          [src]="passeio.photo"
+          [alt]="passeio.title"
+          loading="lazy"
+        />
+        <div class="meus-passeios__cabecalho">
+          <h2 class="meus-passeios__nome">{{ passeio.title }}</h2>
+          <span class="selo" [class.selo--ativo]="passeio.published">
+            {{ passeio.published ? 'Publicado' : 'Rascunho' }}
+          </span>
+        </div>
+        <p class="meus-passeios__datas">
+          {{
+            quantidadeDeDatas(passeio) === 1
+              ? '1 data marcada'
+              : quantidadeDeDatas(passeio) + ' datas marcadas'
+          }}
+        </p>
+
+        <div class="cartao__acoes">
+          <button class="btn-primary" type="button" (click)="alternarPublicacao(passeio)">
+            {{ passeio.published ? 'Tirar do ar' : 'Publicar' }}
+          </button>
+          @if (ehDono(passeio)) {
+            <button class="btn-secundario" type="button" (click)="gerenciar(passeio)">
+              Datas e pedidos
+            </button>
+            <button class="btn-secundario" type="button" (click)="editar(passeio)">Editar</button>
+          } @else {
+            <button class="btn-secundario" type="button" (click)="verComoViajante(passeio)">
+              Ver passeio
+            </button>
+          }
+        </div>
+      </article>
+    } @empty {
+      @if (!carregando()) {
+        <p class="pagina__vazio">
+          {{
+            facade.isGuide()
+              ? 'Você ainda não criou nenhum passeio. Toque em Novo para começar.'
+              : 'Nenhum passeio cadastrado ainda.'
+          }}
+        </p>
+      }
+    }
+  </div>
+</section>

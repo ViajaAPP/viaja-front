@@ -9,6 +9,9 @@ import { AppFacade } from '../shared/facade/app.facade';
 import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.component';
 import { ChatMessageComponent } from '../pages/chat-message/chat-message.component';
 import { RegistrarComponent } from '../pages/registrar/registrar.component';
+import { MeusPasseiosComponent } from '../pages/meus-passeios/meus-passeios.component';
+import { PasseioFormComponent } from '../pages/passeio-form/passeio-form.component';
+import { PasseioGestaoComponent } from '../pages/passeio-gestao/passeio-gestao.component';
 
 @Component({
   selector: 'app-main',
@@ -23,6 +26,9 @@ import { RegistrarComponent } from '../pages/registrar/registrar.component';
     HomeComponent,
     ChatComponent,
     RegistrarComponent,
+    MeusPasseiosComponent,
+    PasseioFormComponent,
+    PasseioGestaoComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

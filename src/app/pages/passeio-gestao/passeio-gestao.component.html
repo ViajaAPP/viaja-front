@@ -1,0 +1,172 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">DATAS E PEDIDOS</p>
+      <h1 class="pagina__titulo">{{ passeio()?.title }}</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  @if (passeio(); as dados) {
+    <div class="cartao gestao__resumo">
+      <span class="selo" [class.selo--ativo]="dados.published">
+        {{ dados.published ? 'Publicado' : 'Rascunho, só você vê' }}
+      </span>
+      <div class="cartao__acoes">
+        <button class="btn-primary" type="button" (click)="alternarPublicacao(dados)">
+          {{ dados.published ? 'Tirar do ar' : 'Publicar' }}
+        </button>
+        <button class="btn-secundario" type="button" (click)="editarPasseio()">
+          Editar informações
+        </button>
+      </div>
+    </div>
+
+    <h2 class="pagina__subtitulo">Marcar nova data</h2>
+    <form class="cartao formulario" (ngSubmit)="criarData()">
+      <div class="formulario__linha">
+        <div>
+          <label for="inicio">Dia e horário</label>
+          <input
+            id="inicio"
+            type="datetime-local"
+            name="inicio"
+            [(ngModel)]="novaData.inicio"
+            required
+          />
+        </div>
+        <div>
+          <label for="vagas">Vagas</label>
+          <input
+            id="vagas"
+            type="number"
+            min="1"
+            name="vagas"
+            [(ngModel)]="novaData.vagas"
+            required
+          />
+        </div>
+      </div>
+      <button class="btn-primary" type="submit" [disabled]="!novaData.inicio">
+        Adicionar data
+      </button>
+    </form>
+
+    <h2 class="pagina__subtitulo">Datas marcadas</h2>
+    @for (data of dados.instances; track data.id) {
+      <article class="cartao">
+        <div class="gestao__data-topo">
+          <div>
+            <p class="gestao__quando">{{ data.start_time | date: formatoData }}</p>
+            <p class="gestao__ocupacao">
+              {{ data.current_capacity ?? 0 }} de {{ data.max_capacity }} vagas ocupadas
+            </p>
+          </div>
+          <div class="gestao__selos">
+            <span class="selo" [class.selo--alerta]="data.status === 'CANCELED'">{{
+              rotulosDoStatus[data.status]
+            }}</span>
+            @if (estaAgendada(data)) {
+              <span class="selo" [class.selo--ativo]="data.registration === 'OPEN'">{{
+                rotulosDoRecebimento[data.registration]
+              }}</span>
+            }
+          </div>
+        </div>
+
+        @if (estaAgendada(data)) {
+          <div class="gestao__vagas">
+            <label [for]="'vagas-' + data.id">Vagas</label>
+            <input
+              [id]="'vagas-' + data.id"
+              type="number"
+              min="1"
+              [name]="'vagas-' + data.id"
+              [(ngModel)]="vagasEditadas[data.id]"
+            />
+            <button class="btn-secundario" type="button" (click)="salvarVagas(data)">Salvar</button>
+          </div>
+
+          <div class="cartao__acoes">
+            @if (data.registration === 'OPEN') {
+              <button class="btn-secundario" type="button" (click)="mudarRecebimentoDePedidos(data, 'CLOSED')">
+                Parar de receber pedidos
+              </button>
+            } @else {
+              <button class="btn-secundario" type="button" (click)="mudarRecebimentoDePedidos(data, 'OPEN')">
+                Voltar a receber pedidos
+              </button>
+            }
+            <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'DONE')">
+              Marcar como realizado
+            </button>
+            <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'CANCELED')">
+              Cancelar data
+            </button>
+          </div>
+        }
+
+        <div class="cartao__acoes">
+          <button class="btn-primary" type="button" (click)="alternarSolicitacoes(data)">
+            {{ dataAberta() === data.id ? 'Esconder pedidos' : 'Ver pedidos' }}
+          </button>
+          <button class="btn-secundario" type="button" (click)="abrirChat(data)">
+            Chat do grupo
+          </button>
+        </div>
+
+        @if (dataAberta() === data.id) {
+          <ul class="gestao__pedidos">
+            @for (solicitacao of solicitacoes(); track solicitacao.id) {
+              <li class="gestao__pedido">
+                <div>
+                  <p class="gestao__pessoa">
+                    {{ solicitacao.requester?.first_name }} {{ solicitacao.requester?.last_name }}
+                  </p>
+                  @if (solicitacao.message) {
+                    <p class="gestao__mensagem">{{ solicitacao.message }}</p>
+                  }
+                  <span
+                    class="selo"
+                    [class.selo--ativo]="solicitacao.status === 'ACCEPTED'"
+                    [class.selo--alerta]="solicitacao.status === 'DENIED'"
+                  >
+                    {{ rotulosDaSolicitacao[solicitacao.status] }}
+                  </span>
+                </div>
+                @if (solicitacao.status === 'PENDING') {
+                  <div class="gestao__resposta">
+                    <button
+                      class="btn-primary"
+                      type="button"
+                      (click)="responder(solicitacao, 'ACCEPTED')"
+                    >
+                      Aceitar
+                    </button>
+                    <button
+                      class="btn-secundario"
+                      type="button"
+                      (click)="responder(solicitacao, 'DENIED')"
+                    >
+                      Recusar
+                    </button>
+                  </div>
+                }
+              </li>
+            } @empty {
+              <li class="pagina__vazio">Ninguém pediu vaga nessa data ainda.</li>
+            }
+          </ul>
+        }
+      </article>
+    } @empty {
+      <p class="pagina__vazio">Nenhuma data marcada. Adicione a primeira aí em cima.</p>
+    }
+  }
+</section>

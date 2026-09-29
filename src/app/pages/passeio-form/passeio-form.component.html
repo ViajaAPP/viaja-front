@@ -1,0 +1,98 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">SEU PAINEL</p>
+      <h1 class="pagina__titulo">{{ tourId ? 'Editar passeio' : 'Novo passeio' }}</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  <form class="formulario" (ngSubmit)="salvar()">
+    <label for="titulo">Nome do passeio</label>
+    <input id="titulo" name="title" [(ngModel)]="passeio.title" required />
+
+    <label for="descricao">Como é o passeio</label>
+    <textarea
+      id="descricao"
+      name="description"
+      rows="4"
+      [(ngModel)]="passeio.description"
+      required
+    ></textarea>
+
+    <label for="foto">Link da foto de capa</label>
+    <input id="foto" type="url" name="photo" [(ngModel)]="passeio.photo" required />
+
+    <div class="formulario__linha">
+      <div>
+        <label for="preco">Preço por pessoa (R$)</label>
+        <input
+          id="preco"
+          type="number"
+          min="0"
+          step="0.01"
+          name="price"
+          [(ngModel)]="passeio.price"
+          required
+        />
+      </div>
+      <div>
+        <label for="duracao">Duração (minutos)</label>
+        <input
+          id="duracao"
+          type="number"
+          min="1"
+          name="duration"
+          [(ngModel)]="passeio.estimated_duration_minutes"
+          required
+        />
+      </div>
+    </div>
+
+    <label for="encontro">Ponto de encontro</label>
+    <input id="encontro" name="meeting_point" [(ngModel)]="passeio.meeting_point" required />
+
+    <h2 class="pagina__subtitulo">Endereço</h2>
+    <div class="formulario__linha">
+      <div>
+        <label for="cep">CEP</label>
+        <input id="cep" name="cep" inputmode="numeric" [(ngModel)]="passeio.cep" required />
+      </div>
+      <div>
+        <label for="uf">Estado</label>
+        <select id="uf" name="uf" [(ngModel)]="passeio.uf">
+          @for (uf of ufs; track uf) {
+            <option [value]="uf">{{ uf }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <label for="cidade">Cidade</label>
+    <input id="cidade" name="city" [(ngModel)]="passeio.city" required />
+
+    <label for="bairro">Bairro</label>
+    <input id="bairro" name="neighborhood" [(ngModel)]="passeio.neighborhood" required />
+
+    <div class="formulario__linha">
+      <div>
+        <label for="rua">Rua</label>
+        <input id="rua" name="street" [(ngModel)]="passeio.street" required />
+      </div>
+      <div>
+        <label for="numero">Número</label>
+        <input id="numero" name="number" [(ngModel)]="passeio.number" required />
+      </div>
+    </div>
+
+    <button class="btn-primary mt-1" type="submit" [disabled]="salvando()">
+      {{ salvando() ? 'Salvando...' : tourId ? 'Salvar alterações' : 'Criar e marcar datas' }}
+    </button>
+  </form>
+</section>

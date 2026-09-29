@@ -45,6 +45,27 @@
             <app-loading/>
           }
         }
+        @case ('meus-passeios') {
+          @defer (on immediate){
+            <app-meus-passeios/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+        @case ('passeio-form') {
+          @defer (on immediate){
+            <app-passeio-form/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+        @case ('passeio-gestao') {
+          @defer (on immediate){
+            <app-passeio-gestao/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
       }
     }
 </div>
