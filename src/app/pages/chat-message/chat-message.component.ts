@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { AppStore } from '../../shared/store/app.store';
@@ -7,6 +8,8 @@ import { ChatMessageService } from '../../shared/services/chat-message/chat-mess
 import { ChatMessage } from '../../shared/enums/chat.model';
 import { NavigationService } from '../../shared/services/navigation';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
+
+registerLocaleData(localePt, 'pt-BR');
 
 @Component({
   selector: 'app-chat-message',
