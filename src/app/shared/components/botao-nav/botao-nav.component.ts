@@ -17,11 +17,11 @@ export class BotaoNavComponent {
     { id: 'home', icon: 'bi bi-house-door-fill', label: 'Início' },
     { id: 'chat', icon: 'bi-chat-dots-fill', label: 'Mensagens' },
     { id: 'favorite', icon: 'bi bi-heart', label: 'Favoritos' },
-    { id: 'profile', icon: 'bi-person-fill', label: 'Perfil' },
+    { id: 'perfil', icon: 'bi-person-fill', label: 'Perfil' },
   ];
 
   onSelect(id: string): void {
-    if (id === 'home' || id === 'chat' || id === 'login') {
+    if (id === 'home' || id === 'chat' || id === 'perfil') {
       this.navigation.navigateTo(id as AppPage);
     }
   }

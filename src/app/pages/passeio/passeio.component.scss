@@ -1,0 +1,48 @@
+.passeio__foto {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.passeio__guia {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 10px 0 14px;
+}
+
+.passeio__descricao {
+  font-size: 14px;
+  margin: 0 0 12px;
+  white-space: pre-line;
+}
+
+.passeio__infos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.passeio__data {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.passeio__quando {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.passeio__vagas {
+  font-size: 12px;
+  margin: 2px 0 0;
+}

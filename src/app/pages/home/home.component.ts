@@ -4,6 +4,7 @@ import { AppFacade } from '../../shared/facade';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { HomeResponse, Category } from '../../shared/enums/home.model';
+import { NavigationService } from '../../shared/services/navigation';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +16,7 @@ import { HomeResponse, Category } from '../../shared/enums/home.model';
 export class HomeComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly dados = inject(DadosClienteService);
+  private readonly navigationService = inject(NavigationService);
   readonly starIndexes = [0, 1, 2, 3, 4];
   
   dadosHome = signal<HomeResponse | null>(null);
@@ -59,6 +61,10 @@ export class HomeComponent implements OnInit {
 
   selectCategory(selectedId: string): void {
     this.selectedCategoryId.set(selectedId);
+  }
+
+  abrirPasseio(tourId: string): void {
+    this.navigationService.navigateToTour('passeio', Number(tourId));
   }
 
   isStarFilled(index: number, rating: number): boolean {

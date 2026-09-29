@@ -1,0 +1,39 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">SUAS VIAGENS</p>
+      <h1 class="pagina__titulo">Minhas reservas</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  @for (solicitacao of solicitacoes(); track solicitacao.id) {
+    <button class="cartao reserva" type="button" (click)="abrirPasseio(solicitacao)">
+      <div>
+        <p class="reserva__nome">{{ solicitacao.tour_instance?.tour?.title }}</p>
+        <p class="reserva__quando">
+          {{ solicitacao.tour_instance?.start_time | date: formatoData }}
+        </p>
+      </div>
+      <span
+        class="selo"
+        [class.selo--ativo]="solicitacao.status === 'ACCEPTED'"
+        [class.selo--alerta]="solicitacao.status === 'DENIED'"
+      >
+        {{ rotulosDaSolicitacao[solicitacao.status] }}
+      </span>
+    </button>
+  } @empty {
+    @if (!carregando()) {
+      <p class="pagina__vazio">
+        Você ainda não pediu vaga em nenhum passeio. Que tal escolher um na tela inicial?
+      </p>
+    }
+  }
+</section>

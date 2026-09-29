@@ -45,6 +45,20 @@
             <app-loading/>
           }
         }
+        @case ('perfil') {
+          @defer (on immediate){
+            <app-perfil/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+        @case ('passeio') {
+          @defer (on immediate){
+            <app-passeio/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
         @case ('meus-passeios') {
           @defer (on immediate){
             <app-meus-passeios/>
@@ -62,6 +76,13 @@
         @case ('passeio-gestao') {
           @defer (on immediate){
             <app-passeio-gestao/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
+        @case ('minhas-solicitacoes') {
+          @defer (on immediate){
+            <app-minhas-solicitacoes/>
           }@placeholder{
             <app-loading/>
           }

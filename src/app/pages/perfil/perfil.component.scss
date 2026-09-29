@@ -1,0 +1,41 @@
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.perfil__foto {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &--vazia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f1ec;
+    font-size: 28px;
+  }
+}
+
+.perfil__nome {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.perfil__email {
+  font-size: 13px;
+  margin: 2px 0 8px;
+  word-break: break-all;
+}
+
+.perfil__acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+}

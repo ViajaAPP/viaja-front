@@ -24,7 +24,7 @@
 
     <ul class="home__activities" role="list">
       @for (activity of popularActivities(); track activity.id) {
-        <li class="activity-card" role="listitem">
+        <li class="activity-card" role="listitem" (click)="abrirPasseio(activity.id)">
 
           <div class="activity-card__photo">
             <img
