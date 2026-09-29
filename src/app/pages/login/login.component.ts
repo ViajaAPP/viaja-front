@@ -28,18 +28,15 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
 
   login(){
-    console.log('Attempting login with credentials:', this.credentials);
     this.isLoggingIn = true;
     this.apiService.login(this.credentials).subscribe({
       next: (response) => {
         this.isLoggingIn = false;
-        console.log('Login successful:', response);
         this.authService.setToken(response.token);
-        this.facade.setUserId(response.user_id);
+        this.facade.startSession(response.user_id, response.role);
         this.navigationService.navigateTo('home');
       },
       error: (error) => {
-        console.log('Login error:', error);
         this.isLoggingIn = false;
         this.errorMessage = error.error?.message || 'An error occurred during login.';
         setTimeout(() => {
@@ -57,5 +54,9 @@ export class LoginComponent implements OnInit {
 
   navigateToWelcome(){
     this.navigationService.navigateTo('welcome');
+  }
+
+  navigateToRegistrar(){
+    this.navigationService.navigateTo('registrar');
   }
 }

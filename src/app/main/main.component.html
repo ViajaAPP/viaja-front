@@ -38,8 +38,15 @@
             <app-loading/>
           }
         }
+        @case ('registrar') {
+          @defer (on immediate){
+            <app-registrar/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
       }
     }
 </div>
 
-<app-botao-nav *ngIf="!facade.isLogin() && !facade.isWelcome() && !facade.loading() && facade.currentPage() !== 'chat-tour'"/>
+<app-botao-nav *ngIf="facade.showBottomNav() && !facade.loading()"/>

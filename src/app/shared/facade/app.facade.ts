@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { AppStore } from '../store/app.store';
+import { UserRole } from '../enums/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AppFacade {
@@ -12,6 +13,12 @@ export class AppFacade {
   isHome = this.store.isHome;
   isChat = this.store.isChat;
   myUserId = this.store.myUserId;
+  myRole = this.store.myRole;
+  selectedTourId = this.store.selectedTourId;
+  isGuide = this.store.isGuide;
+  isTourist = this.store.isTourist;
+  canManageTours = this.store.canManageTours;
+  showBottomNav = this.store.showBottomNav;
 
   navigateTo(page: string) {
     this.store.navigateTo(page as any);
@@ -21,8 +28,12 @@ export class AppFacade {
     this.store.setLoading(value);
   }
 
-  setUserId(userId: number | null) {
-    this.store.setMyUserId(userId);
+  startSession(userId: number, role: UserRole) {
+    this.store.startSession(userId, role);
+  }
+
+  endSession() {
+    this.store.endSession();
   }
 
   initializeApp() {

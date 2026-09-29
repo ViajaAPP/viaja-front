@@ -1,1 +1,63 @@
-<p>registrar.component works!</p>
+<section class="pagina registrar">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">CRIAR CONTA</p>
+      <h1 class="pagina__titulo">Vamos começar</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  <form class="formulario" (ngSubmit)="cadastrar()">
+    <label for="tipo">Você é</label>
+    <select id="tipo" name="role" [(ngModel)]="cadastro.role">
+      @for (tipo of tiposDeConta; track tipo.role) {
+        <option [value]="tipo.role">{{ tipo.label }}</option>
+      }
+    </select>
+
+    <div class="formulario__linha">
+      <div>
+        <label for="nome">Nome</label>
+        <input id="nome" name="first_name" [(ngModel)]="cadastro.first_name" required />
+      </div>
+      <div>
+        <label for="sobrenome">Sobrenome</label>
+        <input id="sobrenome" name="last_name" [(ngModel)]="cadastro.last_name" required />
+      </div>
+    </div>
+
+    <label for="usuario">Nome de usuário</label>
+    <input id="usuario" name="username" [(ngModel)]="cadastro.username" required />
+
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email" [(ngModel)]="cadastro.email" required />
+
+    <label for="senha">Senha</label>
+    <input id="senha" type="password" name="password" [(ngModel)]="cadastro.password" required />
+
+    <label for="telefone">Telefone</label>
+    <input id="telefone" type="tel" name="phone" [(ngModel)]="cadastro.phone" required />
+
+    <label for="foto">Link da sua foto (opcional)</label>
+    <input id="foto" type="url" name="photo" [(ngModel)]="cadastro.photo" />
+
+    @if (pedeCnpj()) {
+      <label for="cnpj">CNPJ da sua empresa de turismo</label>
+      <input id="cnpj" name="cnpj" [(ngModel)]="cadastro.cnpj" required />
+    }
+
+    <button class="btn-primary mt-1" type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Criando sua conta...' : 'Criar conta' }}
+    </button>
+  </form>
+
+  <p class="registrar__login">
+    Já tem uma conta? <button type="button" (click)="irParaLogin()">Entrar</button>
+  </p>
+</section>

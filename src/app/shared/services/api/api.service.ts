@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RequestService } from '../request/request.service';
 import { API_CONFIG } from '../../config/api.config';
+import { LoginResponse, UserRole } from '../../enums/user.model';
 
 export interface LoginRequest {
   email: string;
@@ -11,9 +12,12 @@ export interface LoginRequest {
 export interface RegisterRequest {
   cnpj: string;
   email: string;
+  first_name: string;
+  last_name: string;
   password: string;
   phone: string;
-  role: string;
+  photo: string;
+  role: UserRole;
   username: string;
 }
 
@@ -22,54 +26,24 @@ export interface MessageRequest {
   content: string;
 }
 
-export interface TourRequest {
-  cep: string;
-  city: string;
-  description: string;
-  estimated_duration_minutes: number;
-  meeting_point: string;
-  neighborhood: string;
-  number: string;
-  price: number;
-  title: string;
-  uf: string;
-}
-
-export interface TourInstanceRequest {
-  max_capacity: number;
-  start_time: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   constructor(private request: RequestService) {}
 
-  login(payload: LoginRequest): Observable<any> {
-    return this.request.post('/auth/login', payload);
+  login(payload: LoginRequest): Observable<LoginResponse> {
+    return this.request.post<LoginResponse>('/auth/login', payload);
   }
 
   register(payload: RegisterRequest): Observable<any> {
     return this.request.post('/auth/register', payload);
   }
 
-  startChat(tourInstanceId: string): Observable<any> {
-    return this.request.post(`/chat/instances/${tourInstanceId}`);
+  startChat(tourInstanceId: number): Observable<{ chat_id: number }> {
+    return this.request.post<{ chat_id: number }>(`/chat/instances/${tourInstanceId}`);
   }
 
   sendMessage(payload: MessageRequest): Observable<any> {
     return this.request.post('/messages/send', payload);
-  }
-
-  createTour(payload: TourRequest): Observable<any> {
-    return this.request.post('/tour', payload);
-  }
-
-  createTourInstance(tourId: string, payload: TourInstanceRequest): Observable<any> {
-    return this.request.post(`/tour/${tourId}/instance`, payload);
-  }
-
-  getTourInstance(tourId: string, instanceId: string): Observable<any> {
-    return this.request.get(`/tour/${tourId}/instance/${instanceId}`);
   }
 
   getWebSocketUrl(): string {

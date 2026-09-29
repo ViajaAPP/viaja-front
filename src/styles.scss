@@ -271,3 +271,158 @@ input {
   font-family: 'Poppins', sans-serif;
 }
 
+.btn-primary:disabled,
+.btn-secundario:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.btn-secundario {
+  background-color: #fff;
+  color: #545454;
+  border: 1.5px solid #e0e0d8;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.pagina {
+  min-height: 100vh;
+  background: linear-gradient(159deg, #FFF8EA 20%, #FFFFFF 70%);
+  padding: 24px 20px 110px;
+  color: #545454;
+}
+
+.pagina__topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pagina__voltar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  background: #fff;
+  color: #545454;
+  cursor: pointer;
+}
+
+.pagina__rotulo {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.pagina__titulo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.pagina__subtitulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 24px 0 12px;
+}
+
+.pagina__vazio {
+  text-align: center;
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+.cartao {
+  background: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.cartao__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+
+  label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    margin: 4px 0 12px;
+    padding: 10px;
+    border: 1.5px solid #e0e0d8;
+    border-radius: 12px;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+  }
+}
+
+.formulario__linha {
+  display: flex;
+  gap: 10px;
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.alerta-erro,
+.alerta-sucesso {
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.alerta-erro {
+  background: #fdecec;
+  color: #a12622;
+}
+
+.alerta-sucesso {
+  background: #D9F18C;
+  color: #3d5c00;
+}
+
+.selo {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 22px;
+  background: #f1f1ec;
+  color: #545454;
+
+  &--ativo {
+    background: #D9F18C;
+    color: #3d5c00;
+  }
+
+  &--alerta {
+    background: #fdecec;
+    color: #a12622;
+  }
+}

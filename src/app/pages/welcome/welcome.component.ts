@@ -23,7 +23,7 @@ export class WelcomeComponent implements OnInit {
     this.navigationService.navigateTo('login');
   }
 
-  navigateToHome(){
-    this.navigationService.navigateTo('home');
+  navigateToRegistrar(){
+    this.navigationService.navigateTo('registrar');
   }
 }

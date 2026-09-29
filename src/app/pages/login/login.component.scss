@@ -61,6 +61,12 @@
     width: 100vw;
   }
 
+  &__link{
+    font-weight: 600;
+    color: #D9F18C;
+    cursor: pointer;
+  }
+
   form{
     display: flex;
     flex-direction: column;

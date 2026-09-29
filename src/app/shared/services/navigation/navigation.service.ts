@@ -8,4 +8,8 @@ export class NavigationService {
   navigateTo(page: AppPage, selectedChatId?: number) {
     this.store.navigateTo(page, selectedChatId);
   }
+
+  navigateToTour(page: AppPage, tourId: number | null) {
+    this.store.navigateToTour(page, tourId);
+  }
 }
