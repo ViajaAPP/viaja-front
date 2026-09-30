@@ -1,7 +1,16 @@
+@use 'responsivo' as *;
+
 :host {
   display: block;
   margin-top: 9%;
   position: absolute;
+
+  @include a-partir-do-tablet {
+    position: static;
+    margin-top: 0;
+    padding-top: 40px;
+    @include conteudo-centralizado;
+  }
 }
 
 .app-header {
@@ -9,6 +18,11 @@
   align-items: flex-start;
   justify-content: space-evenly;
   width: 100vw;
+
+  @include a-partir-do-tablet {
+    justify-content: space-between;
+    width: 100%;
+  }
 }
 
 .header{
@@ -75,6 +89,10 @@
   align-items: center;
   margin: 10px 15px;
   position: relative;
+
+  @include a-partir-do-tablet {
+    margin: 16px 0 0;
+  }
 
   .buscar {
     flex: 1;

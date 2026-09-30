@@ -1,3 +1,5 @@
+@use 'responsivo' as *;
+
 :host {
   display: block;
   min-height: 100vh;
@@ -7,8 +9,18 @@
 .chat-page{
     padding-top: 40%;
 
+    @include a-partir-do-tablet {
+      padding-top: 8px;
+      padding-bottom: 120px;
+      @include conteudo-centralizado;
+    }
+
     &__chat-direto{
       padding: 20px;
+
+      @include a-partir-do-tablet {
+        padding: 20px 0;
+      }
       
       h2{
         font-size: 12px;
@@ -34,6 +46,10 @@
   align-items: flex-end;
   justify-content: space-between;
   padding: 24px 20px 14px;
+
+  @include a-partir-do-tablet {
+    padding: 24px 0 14px;
+  }
 }
 
 .chat-page__section-label {
@@ -71,6 +87,12 @@
   overflow-x: auto;
   padding: 0 20px 20px;
   scrollbar-width: none;
+
+  @include a-partir-do-tablet {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding: 0 0 20px;
+  }
 
   &::-webkit-scrollbar { display: none; }
 }
