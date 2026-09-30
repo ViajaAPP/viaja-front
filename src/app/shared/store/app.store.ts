@@ -12,6 +12,8 @@ export type AppPage =
   | 'esqueci-senha'
   | 'redefinir-senha'
   | 'home'
+  | 'buscar'
+  | 'resultados'
   | 'chat'
   | 'chat-tour'
   | 'perfil'
@@ -23,7 +25,7 @@ export type AppPage =
   | 'favoritos'
   | 'perfil-editar';
 
-const PAGES_WITHOUT_BOTTOM_NAV: AppPage[] = ['welcome', 'login', 'registrar', 'esqueci-senha', 'redefinir-senha', 'chat-tour'];
+const PAGES_WITHOUT_BOTTOM_NAV: AppPage[] = ['welcome', 'login', 'registrar', 'esqueci-senha', 'redefinir-senha', 'chat-tour', 'buscar'];
 
 interface AppState {
   currentPage: AppPage;

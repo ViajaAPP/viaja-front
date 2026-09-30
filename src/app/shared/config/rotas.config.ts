@@ -8,6 +8,8 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'esqueci-senha': return '/esqueci-senha';
     case 'redefinir-senha': return '/redefinir-senha';
     case 'home': return '/inicio';
+    case 'buscar': return '/buscar';
+    case 'resultados': return '/buscar/resultados';
     case 'chat': return '/mensagens';
     case 'chat-tour': return id ? `/mensagens/${id}` : '/mensagens';
     case 'perfil': return '/perfil';

@@ -1,0 +1,153 @@
+<section class="buscar-tela">
+  <header class="buscar-tela__topo">
+    <button class="buscar-tela__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <form class="buscar-tela__campo" role="search" (submit)="$event.preventDefault(); buscarTexto()">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input
+        #campo
+        type="search"
+        enterkeyhint="search"
+        autocomplete="off"
+        aria-label="Para onde vamos?"
+        placeholder="Para onde vamos?"
+        [value]="texto()"
+        (input)="digitar($any($event.target).value)"
+      />
+      @if (texto()) {
+        <button class="buscar-tela__limpar" type="button" aria-label="Limpar busca" (click)="limpar()">
+          <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+        </button>
+      }
+    </form>
+  </header>
+
+  @if (!texto().trim()) {
+    <ul class="linhas">
+      <li>
+        <button class="linha" type="button" [disabled]="localizando()" (click)="pertoDeMim()">
+          <span class="linha__icone linha__icone--destaque"><i class="bi bi-crosshair" aria-hidden="true"></i></span>
+          <span class="linha__textos">
+            <span class="linha__titulo">{{ localizando() ? 'Procurando você...' : 'Perto de mim' }}</span>
+            <span class="linha__detalhe">Passeios a até 30 km de onde você está</span>
+          </span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="atalhos">
+      <button class="atalho" type="button" (click)="atalho('gratuito')">
+        <i class="bi bi-gift" aria-hidden="true"></i> Gratuitos
+      </button>
+      <button class="atalho" type="button" (click)="atalho('fim-de-semana')">
+        <i class="bi bi-calendar-week" aria-hidden="true"></i> Este fim de semana
+      </button>
+    </div>
+
+    @if (recentes().length) {
+      <div class="secao__topo">
+        <h2 class="secao__titulo">Buscas recentes</h2>
+        <button class="secao__acao" type="button" (click)="esquecerRecentes()">Limpar</button>
+      </div>
+      <ul class="linhas">
+        @for (busca of recentes(); track busca.rotulo + busca.detalhe) {
+          <li>
+            <button class="linha" type="button" (click)="repetir(busca)">
+              <span class="linha__icone"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+              <span class="linha__textos">
+                <span class="linha__titulo">{{ busca.rotulo }}</span>
+                <span class="linha__detalhe">{{ busca.detalhe }}</span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (destinos().length) {
+      <h2 class="secao__titulo">Destinos com passeios</h2>
+      <ul class="linhas">
+        @for (cidade of destinos(); track cidade.nome + cidade.uf) {
+          <li>
+            <button class="linha" type="button" (click)="escolherCidade(cidade)">
+              <span class="linha__icone"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
+              <span class="linha__textos">
+                <span class="linha__titulo">{{ cidade.nome }}</span>
+                <span class="linha__detalhe">{{ cidade.uf }} · {{ cidade.passeios }} {{ cidade.passeios === 1 ? 'passeio' : 'passeios' }}</span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    @if (buscando() && semResultados()) {
+      <p class="buscar-tela__aviso" role="status">Procurando...</p>
+    }
+
+    @if (sugestoes().cidades.length) {
+      <h2 class="secao__titulo">Cidades</h2>
+      <ul class="linhas">
+        @for (cidade of sugestoes().cidades; track cidade.nome + cidade.uf) {
+          <li>
+            <button class="linha" type="button" (click)="escolherCidade(cidade)">
+              <span class="linha__icone"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></span>
+              <span class="linha__textos">
+                <span class="linha__titulo">{{ cidade.nome }}</span>
+                <span class="linha__detalhe">
+                  {{ cidade.uf }}
+                  @if (cidade.passeios) {
+                    · {{ cidade.passeios }} {{ cidade.passeios === 1 ? 'passeio' : 'passeios' }}
+                  }
+                </span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (sugestoes().passeios.length) {
+      <h2 class="secao__titulo">Passeios</h2>
+      <ul class="linhas">
+        @for (passeio of sugestoes().passeios; track passeio.id) {
+          <li>
+            <button class="linha" type="button" (click)="escolherPasseio(passeio)">
+              @if (passeio.foto) {
+                <img class="linha__foto" [src]="passeio.foto" alt="" loading="lazy" />
+              } @else {
+                <span class="linha__icone"><i class="bi bi-compass" aria-hidden="true"></i></span>
+              }
+              <span class="linha__textos">
+                <span class="linha__titulo">{{ passeio.nome }}</span>
+                <span class="linha__detalhe">{{ passeio.cidade }} - {{ passeio.uf }}</span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (sugestoes().lugares.length) {
+      <h2 class="secao__titulo">Lugares</h2>
+      <ul class="linhas">
+        @for (lugar of sugestoes().lugares; track lugar.lat + ',' + lugar.lon) {
+          <li>
+            <button class="linha" type="button" (click)="escolherLugar(lugar)">
+              <span class="linha__icone"><i class="bi bi-pin-map" aria-hidden="true"></i></span>
+              <span class="linha__textos">
+                <span class="linha__titulo">{{ lugar.nome }}</span>
+                <span class="linha__detalhe">{{ descricaoDoLugar(lugar) }}</span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (semResultados()) {
+      <p class="buscar-tela__aviso">Não achamos nada com "{{ texto() }}". Tente o nome de uma cidade ou de um lugar.</p>
+    }
+  }
+</section>

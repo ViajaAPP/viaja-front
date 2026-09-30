@@ -41,6 +41,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
   },
   {
+    path: 'buscar',
+    data: { page: 'buscar' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/buscar/buscar.component').then((m) => m.BuscarComponent),
+  },
+  {
+    path: 'buscar/resultados',
+    data: { page: 'resultados' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/resultados/resultados.component').then((m) => m.ResultadosComponent),
+  },
+  {
     path: 'mensagens',
     data: { page: 'chat' },
     canActivate: [paginaGuard],

@@ -1,0 +1,175 @@
+<section class="resultados">
+  <header class="resultados__topo">
+    <button class="resultados__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <button class="resultados__busca" type="button" (click)="editarBusca()">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <span class="resultados__busca-textos">
+        <span class="resultados__rotulo">{{ rotulo() }}</span>
+        <span class="resultados__detalhe">{{ detalhe() }}</span>
+      </span>
+    </button>
+  </header>
+
+  <div class="chips" role="toolbar" aria-label="Filtros rápidos">
+    <button class="chip chip--forte" type="button" (click)="abrirFolha()">
+      <i class="bi bi-sliders" aria-hidden="true"></i> Filtros
+      @if (quantidadeDeFiltros()) {
+        <span class="chip__contador">{{ quantidadeDeFiltros() }}</span>
+      }
+    </button>
+    <button class="chip" type="button" [class.chip--ativo]="filtros().gratuito" [attr.aria-pressed]="!!filtros().gratuito" (click)="alternarGratuito()">Gratuito</button>
+    <button class="chip" type="button" [class.chip--ativo]="filtros().quando === 'fim-de-semana'" [attr.aria-pressed]="filtros().quando === 'fim-de-semana'" (click)="alternarFimDeSemana()">Fim de semana</button>
+    <button class="chip" type="button" [class.chip--ativo]="!!filtros().nota_min" [attr.aria-pressed]="!!filtros().nota_min" (click)="alternarBemAvaliados()">
+      <span class="chip__estrela" aria-hidden="true">★</span> 4 ou mais
+    </button>
+    <button class="chip" type="button" (click)="abrirFolha()">{{ rotuloDaOrdem() }} <i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+  </div>
+
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="buscar()" />
+  } @else if (carregando()) {
+    <ul class="lista" aria-busy="true" aria-label="Carregando passeios">
+      @for (i of [1, 2, 3]; track i) {
+        <li class="item item--esqueleto"><span class="item__foto"></span><span class="item__linhas"><span></span><span></span></span></li>
+      }
+    </ul>
+  } @else {
+    <p class="resultados__contagem" role="status">
+      @if (passeios().length) {
+        {{ passeios().length }} {{ passeios().length === 1 ? 'passeio' : 'passeios' }}
+        @if (temLocal()) { em até {{ filtros().raio ?? 30 }} km }
+      } @else {
+        Nenhum passeio encontrado
+      }
+    </p>
+
+    <ul class="lista">
+      @for (passeio of passeios(); track passeio.id) {
+        <li class="item" tabindex="0" role="link" [attr.aria-label]="'Abrir ' + passeio.title" (click)="abrirPasseio(passeio)" (keydown.enter)="abrirPasseio(passeio)">
+          <div class="item__foto">
+            @if (passeio.imageUrl) {
+              <img [src]="passeio.imageUrl" alt="" loading="lazy" />
+            }
+            <app-botao-favorito class="item__favorito" [tourId]="passeio.id" [titulo]="passeio.title" [favorito]="passeio.favorite" />
+          </div>
+          <div class="item__corpo">
+            <p class="item__titulo">{{ passeio.title }}</p>
+            <p class="item__onde">
+              {{ passeio.city }} - {{ passeio.uf }}
+              @if (passeio.distance_km != null) { · {{ passeio.distance_km }} km }
+            </p>
+            <p class="item__nota">
+              @if (passeio.reviewCount) {
+                <span class="item__estrela" aria-hidden="true">★</span> {{ passeio.rating }} ({{ passeio.reviewCount }})
+              } @else {
+                Sem avaliações ainda
+              }
+            </p>
+            <p class="item__rodape">
+              <strong>{{ formatarPreco(passeio.price) }}</strong>
+              @if (passeio.nextDate) {
+                <span>Próxima: {{ passeio.nextDate | date: 'dd/MM' }}</span>
+              } @else {
+                <span>Sem data marcada</span>
+              }
+            </p>
+          </div>
+        </li>
+      }
+    </ul>
+
+    @if (!passeios().length) {
+      <div class="vazio">
+        <p>
+          @if (quantidadeDeFiltros()) {
+            Com esses filtros não tem nada por aqui ainda.
+          } @else if (temLocal()) {
+            Ainda não tem passeios nessa região.
+          } @else {
+            Ainda não tem passeios com esse nome.
+          }
+        </p>
+        <div class="vazio__acoes">
+          @if (quantidadeDeFiltros()) {
+            <button class="btn-primary" type="button" (click)="limparTudo()">Limpar filtros</button>
+          }
+          @if (temLocal() && (filtros().raio ?? 30) < 200) {
+            <button class="btn-secundario" type="button" (click)="aumentarDistancia()">Buscar mais longe</button>
+          }
+          <button class="btn-secundario" type="button" (click)="editarBusca()">Buscar outro lugar</button>
+        </div>
+      </div>
+    }
+  }
+</section>
+
+@if (folhaAberta()) {
+  <div class="folha-fundo" (click)="fecharFolha()"></div>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="folha-titulo">
+    <div class="folha__alca" aria-hidden="true"></div>
+    <div class="folha__topo">
+      <h2 id="folha-titulo">Filtros</h2>
+      <button class="folha__fechar" type="button" aria-label="Fechar filtros" (click)="fecharFolha()">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="folha__corpo">
+      <fieldset>
+        <legend>Ordenar por</legend>
+        <div class="opcoes">
+          @for (ordem of ordens; track ordem.valor) {
+            @if (!ordem.precisaDeLocal || temLocal()) {
+              <button class="opcao" type="button" [class.opcao--ativa]="(rascunho().ordem ?? 'relevancia') === ordem.valor" [attr.aria-pressed]="(rascunho().ordem ?? 'relevancia') === ordem.valor" (click)="mudarRascunho({ ordem: ordem.valor })">{{ ordem.rotulo }}</button>
+            }
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Preço por pessoa</legend>
+        <div class="opcoes">
+          @for (preco of precos; track preco.rotulo) {
+            <button class="opcao" type="button" [class.opcao--ativa]="precoEscolhido(preco)" [attr.aria-pressed]="precoEscolhido(preco)" (click)="mudarRascunho({ gratuito: preco.gratuito, preco_max: preco.max })">{{ preco.rotulo }}</button>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Quando</legend>
+        <div class="opcoes">
+          @for (quando of quandos; track quando.rotulo) {
+            <button class="opcao" type="button" [class.opcao--ativa]="rascunho().quando === quando.valor" [attr.aria-pressed]="rascunho().quando === quando.valor" (click)="mudarRascunho({ quando: quando.valor })">{{ quando.rotulo }}</button>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Avaliação</legend>
+        <div class="opcoes">
+          @for (nota of notas; track nota.rotulo) {
+            <button class="opcao" type="button" [class.opcao--ativa]="rascunho().nota_min === nota.valor" [attr.aria-pressed]="rascunho().nota_min === nota.valor" (click)="mudarRascunho({ nota_min: nota.valor })">{{ nota.rotulo }}</button>
+          }
+        </div>
+      </fieldset>
+
+      @if (temLocal()) {
+        <fieldset>
+          <legend>Distância</legend>
+          <div class="opcoes">
+            @for (raio of raios; track raio) {
+              <button class="opcao" type="button" [class.opcao--ativa]="(rascunho().raio ?? 30) === raio" [attr.aria-pressed]="(rascunho().raio ?? 30) === raio" (click)="mudarRascunho({ raio })">Até {{ raio }} km</button>
+            }
+          </div>
+        </fieldset>
+      }
+    </div>
+
+    <div class="folha__acoes">
+      <button class="btn-secundario" type="button" (click)="limparRascunho()">Limpar</button>
+      <button class="btn-primary" type="button" (click)="aplicarRascunho()">Ver passeios</button>
+    </div>
+  </div>
+}
