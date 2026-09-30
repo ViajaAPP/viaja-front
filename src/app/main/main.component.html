@@ -89,6 +89,13 @@
             <app-loading/>
           }
         }
+        @case ('favoritos') {
+          @defer (on immediate){
+            <app-favoritos/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
       }
     }
 </div>

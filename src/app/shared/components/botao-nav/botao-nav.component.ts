@@ -16,12 +16,12 @@ export class BotaoNavComponent {
   readonly navItems: { id: AppPage | string; icon: string; label: string }[] = [
     { id: 'home', icon: 'bi bi-house-door-fill', label: 'Início' },
     { id: 'chat', icon: 'bi-chat-dots-fill', label: 'Mensagens' },
-    { id: 'favorite', icon: 'bi bi-heart', label: 'Favoritos' },
+    { id: 'favoritos', icon: 'bi bi-heart', label: 'Favoritos' },
     { id: 'perfil', icon: 'bi-person-fill', label: 'Perfil' },
   ];
 
   onSelect(id: string): void {
-    if (id === 'home' || id === 'chat' || id === 'perfil') {
+    if (id === 'home' || id === 'chat' || id === 'perfil' || id === 'favoritos') {
       this.navigation.navigateTo(id as AppPage);
     }
   }

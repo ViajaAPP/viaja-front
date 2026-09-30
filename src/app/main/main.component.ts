@@ -16,6 +16,7 @@ import { MeusPasseiosComponent } from '../pages/meus-passeios/meus-passeios.comp
 import { PasseioFormComponent } from '../pages/passeio-form/passeio-form.component';
 import { PasseioGestaoComponent } from '../pages/passeio-gestao/passeio-gestao.component';
 import { MinhasSolicitacoesComponent } from '../pages/minhas-solicitacoes/minhas-solicitacoes.component';
+import { FavoritosComponent } from '../pages/favoritos/favoritos.component';
 
 @Component({
   selector: 'app-main',
@@ -37,6 +38,7 @@ import { MinhasSolicitacoesComponent } from '../pages/minhas-solicitacoes/minhas
     PasseioFormComponent,
     PasseioGestaoComponent,
     MinhasSolicitacoesComponent,
+    FavoritosComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

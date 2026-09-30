@@ -1,0 +1,44 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">GUARDADOS</p>
+      <h1 class="pagina__titulo">Favoritos</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  <ul class="favoritos" role="list">
+    @for (passeio of passeios(); track passeio.id) {
+      <li class="favorito" (click)="abrirPasseio(passeio.id)">
+        <div class="favorito__foto">
+          <img [src]="passeio.imageUrl" [alt]="passeio.title" loading="lazy" />
+          <app-botao-favorito
+            class="favorito__coracao"
+            [tourId]="passeio.id"
+            [titulo]="passeio.title"
+            [favorito]="true"
+            (alterado)="aoAlterar(passeio.id, $event)"
+          />
+        </div>
+        <div class="favorito__corpo">
+          <p class="favorito__titulo">{{ passeio.title }}</p>
+          @if (passeio.guide) {
+            <p class="favorito__guia">Com {{ passeio.guide }}</p>
+          }
+        </div>
+      </li>
+    } @empty {
+      @if (!carregando() && !erro()) {
+        <li class="pagina__vazio">
+          Você ainda não favoritou nenhum passeio. Toque no coração de um passeio para guardar ele aqui.
+        </li>
+      }
+    }
+  </ul>
+</section>

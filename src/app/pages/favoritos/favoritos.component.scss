@@ -1,0 +1,66 @@
+@use 'responsivo' as *;
+
+.favoritos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @include a-partir-do-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include a-partir-do-pc {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .pagina__vazio {
+    grid-column: 1 / -1;
+  }
+}
+
+.favorito {
+  background: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  cursor: pointer;
+
+  &__foto {
+    position: relative;
+    height: 180px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  &__coracao {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  &__corpo {
+    padding: 12px 16px 16px;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  &__guia {
+    margin: 4px 0 0;
+    font-size: 13px;
+  }
+}
