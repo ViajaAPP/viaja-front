@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DatePipe, registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -29,6 +30,8 @@ import {
 
 const VAGAS_PADRAO = 10;
 
+registerLocaleData(localePt, 'pt-BR');
+
 @Component({
   selector: 'app-passeio-gestao',
   imports: [DatePipe, FormsModule, ValidarFormularioDirective, EscolherDataHoraComponent],
@@ -51,6 +54,9 @@ export class PasseioGestaoComponent implements OnInit {
   passeio = signal<TourDetail | null>(null);
   solicitacoes = signal<TourRequestItem[]>([]);
   dataAberta = signal<number | null>(null);
+  opcoesAbertas = signal<number | null>(null);
+  proximas = computed(() => (this.passeio()?.instances ?? []).filter((d) => d.status === 'SCHEDULED' && !this.jaComecou(d, 6)));
+  anteriores = computed(() => (this.passeio()?.instances ?? []).filter((d) => d.status !== 'SCHEDULED' || this.jaComecou(d, 6)).reverse());
   erro = signal('');
   ocupado = signal(false);
 
@@ -175,6 +181,27 @@ export class PasseioGestaoComponent implements OnInit {
       next: ({ chat_id }) => this.navigationService.navigateTo('chat-tour', chat_id),
       error: (error: HttpErrorResponse) => this.mostrarErro(error),
     });
+  }
+
+  abreviacao(inicio: string, parte: 'semana' | 'mes'): string {
+    const opcao: Intl.DateTimeFormatOptions = parte === 'semana' ? { weekday: 'short' } : { month: 'short' };
+    return new Date(inicio).toLocaleDateString('pt-BR', opcao).replace('.', '');
+  }
+
+  alternarOpcoes(data: TourInstance): void {
+    this.opcoesAbertas.set(this.opcoesAbertas() === data.id ? null : data.id);
+  }
+
+  jaComecou(data: TourInstance, horasDeFolga = 0): boolean {
+    return new Date(data.start_time).getTime() + horasDeFolga * 3600000 < Date.now();
+  }
+
+  ocupacao(data: TourInstance): number {
+    return data.max_capacity ? Math.min(Math.round(((data.current_capacity ?? 0) / data.max_capacity) * 100), 100) : 0;
+  }
+
+  faltamParaSair(data: TourInstance): number {
+    return Math.max((this.passeio()?.min_participants ?? 1) - (data.current_capacity ?? 0), 0);
   }
 
   estaAgendada(data: TourInstance): boolean {

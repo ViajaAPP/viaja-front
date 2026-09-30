@@ -52,118 +52,135 @@
       </div>
 
       <div class="gestao__datas">
-        <h2 class="pagina__subtitulo">Datas marcadas</h2>
-        @for (data of dados.instances; track data.id) {
-          <article class="cartao">
-            <div class="gestao__data-topo">
-              <div>
-                <p class="gestao__quando">{{ data.start_time | date: formatoData }}</p>
-                <p class="gestao__ocupacao">
-                  {{ data.current_capacity ?? 0 }} de {{ data.max_capacity }} vagas ocupadas
-                </p>
-              </div>
-              <div class="gestao__selos">
-                <span class="selo" [class.selo--alerta]="data.status === 'CANCELLED'">{{
-                  rotulosDoStatus[data.status]
-                }}</span>
-                @if (estaAgendada(data)) {
-                  <span class="selo" [class.selo--ativo]="data.registration === 'OPEN'">{{
-                    rotulosDoRecebimento[data.registration]
-                  }}</span>
-                }
-              </div>
-            </div>
-
-            @if (estaAgendada(data)) {
-              <div class="gestao__vagas">
-                <label [for]="'vagas-' + data.id">Vagas</label>
-                <input
-                  [id]="'vagas-' + data.id"
-                  type="number"
-                  min="1"
-                  [name]="'vagas-' + data.id"
-                  [min]="data.current_capacity || 1"
-                  [(ngModel)]="vagasEditadas[data.id]"
-                />
-                <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="salvarVagas(data)">Salvar</button>
-              </div>
-
-              <div class="cartao__acoes">
-                @if (data.registration === 'OPEN') {
-                  <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarRecebimentoDePedidos(data, 'CLOSED')">
-                    Parar de receber pedidos
-                  </button>
-                } @else {
-                  <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarRecebimentoDePedidos(data, 'OPEN')">
-                    Voltar a receber pedidos
-                  </button>
-                }
-                <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarStatus(data, 'DONE')">
-                  Marcar como realizado
-                </button>
-                <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarStatus(data, 'CANCELLED')">
-                  Cancelar data
-                </button>
-              </div>
-            }
-
-            <div class="cartao__acoes">
-              <button class="btn-primary" type="button" [disabled]="ocupado()" (click)="alternarSolicitacoes(data)">
-                {{ dataAberta() === data.id ? 'Esconder pedidos' : 'Ver pedidos' }}
-              </button>
-              <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="abrirChat(data)">
-                Chat do grupo
-              </button>
-            </div>
-
-            @if (dataAberta() === data.id) {
-              <ul class="gestao__pedidos">
-                @for (solicitacao of solicitacoes(); track solicitacao.id) {
-                  <li class="gestao__pedido">
-                    <div>
-                      <p class="gestao__pessoa">
-                        {{ solicitacao.requester?.first_name }} {{ solicitacao.requester?.last_name }}
-                      </p>
-                      @if (solicitacao.message) {
-                        <p class="gestao__mensagem">{{ solicitacao.message }}</p>
-                      }
-                      <span
-                        class="selo"
-                        [class.selo--ativo]="solicitacao.status === 'ACCEPTED'"
-                        [class.selo--alerta]="solicitacao.status === 'DENIED'"
-                      >
-                        {{ rotulosDaSolicitacao[solicitacao.status] }}
-                      </span>
-                    </div>
-                    @if (solicitacao.status === 'PENDING') {
-                      <div class="gestao__resposta">
-                        <button
-                          class="btn-primary"
-                          type="button"
-                          [disabled]="ocupado()"
-                          (click)="responder(solicitacao, 'ACCEPTED')"
-                        >
-                          Aceitar
-                        </button>
-                        <button
-                          class="btn-secundario"
-                          type="button"
-                          [disabled]="ocupado()"
-                          (click)="responder(solicitacao, 'DENIED')"
-                        >
-                          Recusar
-                        </button>
-                      </div>
+        <h2 class="pagina__subtitulo">Próximas datas</h2>
+        <ul class="datas">
+          @for (data of proximas(); track data.id) {
+            <li class="datinha">
+              <div class="datinha__topo">
+                <div class="datinha__calendario" aria-hidden="true">
+                  <span class="datinha__semana">{{ abreviacao(data.start_time, 'semana') }}</span>
+                  <span class="datinha__dia">{{ data.start_time | date: 'd' }}</span>
+                  <span class="datinha__mes">{{ abreviacao(data.start_time, 'mes') }}</span>
+                </div>
+                <div class="datinha__info">
+                  <p class="datinha__hora">{{ data.start_time | date: "EEEE 'às' HH:mm" : '' : 'pt-BR' }}</p>
+                  <p class="datinha__vagas">{{ data.current_capacity ?? 0 }} de {{ data.max_capacity }} vagas confirmadas</p>
+                  <div class="datinha__barra" aria-hidden="true"><span [style.width.%]="ocupacao(data)"></span></div>
+                  <div class="datinha__selos">
+                    @if (data.registration === 'OPEN') {
+                      <span class="selo selo--ativo">Recebendo pedidos</span>
+                    } @else {
+                      <span class="selo">{{ rotulosDoRecebimento[data.registration] }}</span>
                     }
-                  </li>
-                } @empty {
-                  <li class="pagina__vazio">Ninguém pediu vaga nessa data ainda.</li>
-                }
-              </ul>
-            }
-          </article>
-        } @empty {
-          <p class="pagina__vazio">Nenhuma data marcada ainda. Use o formulário para adicionar a primeira.</p>
+                    @if (faltamParaSair(data)) {
+                      <span class="selo selo--alerta">Faltam {{ faltamParaSair(data) }} para sair</span>
+                    }
+                  </div>
+                </div>
+                <button class="datinha__mais" type="button" [attr.aria-expanded]="opcoesAbertas() === data.id" [attr.aria-label]="'Mais opções da data ' + (data.start_time | date: 'd/MM')" (click)="alternarOpcoes(data)">
+                  <i class="bi bi-three-dots" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              @if (opcoesAbertas() === data.id) {
+                <div class="datinha__opcoes">
+                  <div class="datinha__linha">
+                    <span>Vagas</span>
+                    <div class="contador">
+                      <button class="contador__botao" type="button" aria-label="Menos uma vaga" [disabled]="vagasEditadas[data.id] <= (data.current_capacity || 1)" (click)="vagasEditadas[data.id] = vagasEditadas[data.id] - 1">
+                        <i class="bi bi-dash-lg" aria-hidden="true"></i>
+                      </button>
+                      <input [id]="'vagas-' + data.id" type="number" inputmode="numeric" [name]="'vagas-' + data.id" [min]="data.current_capacity || 1" [(ngModel)]="vagasEditadas[data.id]" [attr.aria-label]="'Vagas da data'" />
+                      <button class="contador__botao" type="button" aria-label="Mais uma vaga" (click)="vagasEditadas[data.id] = vagasEditadas[data.id] + 1">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    @if (vagasEditadas[data.id] !== data.max_capacity) {
+                      <button class="btn-primary datinha__salvar" type="button" [disabled]="ocupado()" (click)="salvarVagas(data)">Salvar</button>
+                    }
+                  </div>
+
+                  <label class="interruptor datinha__interruptor" [for]="'pedidos-' + data.id">
+                    <span class="interruptor__textos">
+                      <span class="interruptor__titulo">Recebendo pedidos</span>
+                      <span class="interruptor__detalhe">Desligue quando não quiser mais gente nessa data.</span>
+                    </span>
+                    <input [id]="'pedidos-' + data.id" type="checkbox" role="switch" [checked]="data.registration === 'OPEN'" [disabled]="ocupado() || data.registration === 'FULL'" (change)="mudarRecebimentoDePedidos(data, $any($event.target).checked ? 'OPEN' : 'CLOSED')" />
+                    <span class="interruptor__trilho" aria-hidden="true"></span>
+                  </label>
+
+                  <div class="datinha__perigo">
+                    @if (jaComecou(data)) {
+                      <button class="datinha__texto" type="button" [disabled]="ocupado()" (click)="mudarStatus(data, 'DONE')">
+                        <i class="bi bi-check2-circle" aria-hidden="true"></i> Marcar como realizado
+                      </button>
+                    }
+                    <button class="datinha__texto datinha__texto--perigo" type="button" [disabled]="ocupado()" (click)="mudarStatus(data, 'CANCELLED')">
+                      <i class="bi bi-x-circle" aria-hidden="true"></i> Cancelar essa data
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <div class="datinha__acoes">
+                <button class="datinha__botao datinha__botao--forte" type="button" [attr.aria-expanded]="dataAberta() === data.id" (click)="alternarSolicitacoes(data)">
+                  <i class="bi bi-people" aria-hidden="true"></i> Pedidos
+                  <i class="bi" [class.bi-chevron-up]="dataAberta() === data.id" [class.bi-chevron-down]="dataAberta() !== data.id" aria-hidden="true"></i>
+                </button>
+                <button class="datinha__botao" type="button" [disabled]="ocupado()" (click)="abrirChat(data)">
+                  <i class="bi bi-chat-dots" aria-hidden="true"></i> Chat do grupo
+                </button>
+              </div>
+
+              @if (dataAberta() === data.id) {
+                <ul class="datinha__pedidos">
+                  @for (solicitacao of solicitacoes(); track solicitacao.id) {
+                    <li class="pessoa">
+                      @if (solicitacao.requester?.photo) {
+                        <img class="pessoa__foto" [src]="solicitacao.requester?.photo" alt="" />
+                      } @else {
+                        <span class="pessoa__foto pessoa__foto--inicial" aria-hidden="true">{{ (solicitacao.requester?.first_name || '?').charAt(0) }}</span>
+                      }
+                      <div class="pessoa__textos">
+                        <p class="pessoa__nome">{{ solicitacao.requester?.first_name }} {{ solicitacao.requester?.last_name }}</p>
+                        @if (solicitacao.message) {
+                          <p class="pessoa__mensagem">"{{ solicitacao.message }}"</p>
+                        }
+                      </div>
+                      @if (solicitacao.status === 'PENDING') {
+                        <div class="pessoa__acoes">
+                          <button class="pessoa__recusar" type="button" [disabled]="ocupado()" [attr.aria-label]="'Recusar ' + solicitacao.requester?.first_name" (click)="responder(solicitacao, 'DENIED')">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                          </button>
+                          <button class="pessoa__aceitar" type="button" [disabled]="ocupado()" (click)="responder(solicitacao, 'ACCEPTED')">Aceitar</button>
+                        </div>
+                      } @else {
+                        <span class="selo" [class.selo--ativo]="solicitacao.status === 'ACCEPTED'" [class.selo--alerta]="solicitacao.status !== 'ACCEPTED'">{{ rotulosDaSolicitacao[solicitacao.status] }}</span>
+                      }
+                    </li>
+                  } @empty {
+                    <li class="datinha__vazio">Ninguém pediu vaga nessa data ainda.</li>
+                  }
+                </ul>
+              }
+            </li>
+          } @empty {
+            <li class="pagina__vazio">Nenhuma data pela frente. Marque a próxima saída no formulário.</li>
+          }
+        </ul>
+
+        @if (anteriores().length) {
+          <details class="anteriores">
+            <summary>Datas que já passaram ou foram canceladas ({{ anteriores().length }})</summary>
+            <ul class="anteriores__lista">
+              @for (data of anteriores(); track data.id) {
+                <li>
+                  <span>{{ data.start_time | date: "d 'de' MMM, HH:mm" : '' : 'pt-BR' }}</span>
+                  <span class="selo" [class.selo--alerta]="data.status === 'CANCELLED'">{{ rotulosDoStatus[data.status] }}</span>
+                </li>
+              }
+            </ul>
+          </details>
         }
       </div>
     </div>
