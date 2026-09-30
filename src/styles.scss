@@ -298,21 +298,41 @@ input {
 }
 
 .btn-aceitar {
+  border: 1.5px solid #bfe5cc;
+  background: #e6f6ec;
+  color: #17693c;
+}
+
+.btn-confirmar {
   border: none;
-  background: #16a34a;
+  background: #2f8f5b;
   color: #fff;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #287d4f;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
 }
 
 .btn-perigo {
   border: none;
-  background: #dc2626;
+  background: #cf4444;
   color: #fff;
 }
 
 .btn-recusar {
-  border: 1.5px solid #fca5a5;
+  border: 1.5px solid #f1c6c6;
   background: #fff;
-  color: #dc2626;
+  color: #c24141;
 }
 
 .btn-secundario {
@@ -336,6 +356,10 @@ input {
     @include conteudo-centralizado;
     padding-top: 40px;
     padding-bottom: 120px;
+  }
+
+  @include a-partir-do-pc {
+    padding-bottom: 56px;
   }
 }
 
