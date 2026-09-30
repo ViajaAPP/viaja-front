@@ -1,5 +1,5 @@
 <nav class="bottom-nav" aria-label="Navegação principal">
-  @for (item of navItems; track item.id) {
+  @for (item of navItems(); track item.id) {
     <button
       class="bottom-nav__btn"
       [class.bottom-nav__btn--active]="item.id === abaAtiva()"
@@ -8,6 +8,9 @@
       (click)="onSelect(item.id)"
     >
       <i class="{{ item.icon }}" aria-hidden="true"></i>
+      @if (item.id === 'painel' && avisos.pedidosPendentes()) {
+        <span class="bottom-nav__contador" [attr.aria-label]="avisos.pedidosPendentes() + ' pedidos esperando'">{{ avisos.pedidosPendentes() > 9 ? '9+' : avisos.pedidosPendentes() }}</span>
+      }
       <span class="bottom-nav__rotulo">{{ item.label }}</span>
     </button>
   }

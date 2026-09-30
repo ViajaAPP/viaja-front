@@ -25,15 +25,8 @@
     }
 
     <div class="perfil__acoes">
-      @if (facade.canManageTours()) {
-        <button class="btn-primary" type="button" (click)="abrirMeusPasseios()">
-          {{ facade.isGuide() ? 'Meus passeios' : 'Passeios da plataforma' }}
-        </button>
-      }
-      @if (facade.isTourist()) {
-        <button class="btn-primary" type="button" (click)="abrirMinhasSolicitacoes()">
-          Minhas reservas
-        </button>
+      @if (facade.myRole() === 'ADMIN') {
+        <button class="btn-primary" type="button" (click)="abrirMeusPasseios()">Passeios da plataforma</button>
       }
       <button class="btn-secundario" type="button" (click)="sair()">Sair da conta</button>
     </div>

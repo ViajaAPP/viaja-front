@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Observable, filter, tap } from 'rxjs';
 import { RequestService } from '../request/request.service';
 import { AuthService } from '../auth/auth.service';
+import { AppStore } from '../../store/app.store';
 
 export interface Aviso {
   id: number;
@@ -21,10 +22,12 @@ export class AvisosService {
   private readonly request = inject(RequestService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly store = inject(AppStore);
   private iniciado = false;
   private ultimaConsulta = 0;
 
   readonly naoLidas = signal(0);
+  readonly pedidosPendentes = signal(0);
 
   iniciar(): void {
     if (this.iniciado) return;
@@ -45,6 +48,14 @@ export class AvisosService {
       next: ({ nao_lidas }) => this.naoLidas.set(nao_lidas),
       error: () => {},
     });
+    if (this.store.myRole() === 'GUIDE') {
+      this.request.get<{ pendentes: number }>('/painel/contagem').subscribe({
+        next: ({ pendentes }) => this.pedidosPendentes.set(pendentes),
+        error: () => {},
+      });
+    } else {
+      this.pedidosPendentes.set(0);
+    }
   }
 
   listar(): Observable<{ itens: Aviso[]; nao_lidas: number }> {

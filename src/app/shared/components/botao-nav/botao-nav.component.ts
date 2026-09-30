@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { AppFacade } from '../../facade/app.facade';
+import { AvisosService } from '../../services/avisos/avisos.service';
 import { NavigationService } from '../../services/navigation/navigation.service';
 import { AppPage } from '../../store/app.store';
 
@@ -12,13 +13,17 @@ import { AppPage } from '../../store/app.store';
 export class BotaoNavComponent {
   facade = inject(AppFacade);
   private navigation = inject(NavigationService);
+  readonly avisos = inject(AvisosService);
 
-  readonly navItems: { id: AppPage | string; icon: string; label: string }[] = [
+  readonly navItems = computed<{ id: AppPage; icon: string; label: string }[]>(() => [
     { id: 'home', icon: 'bi bi-house-door-fill', label: 'Início' },
-    { id: 'chat', icon: 'bi-chat-dots-fill', label: 'Mensagens' },
+    this.facade.isGuide()
+      ? { id: 'painel', icon: 'bi bi-grid-1x2-fill', label: 'Painel' }
+      : { id: 'viagens', icon: 'bi bi-suitcase2-fill', label: 'Viagens' },
+    { id: 'chat', icon: 'bi bi-chat-dots-fill', label: 'Mensagens' },
     { id: 'favoritos', icon: 'bi bi-heart', label: 'Favoritos' },
-    { id: 'perfil', icon: 'bi-person-fill', label: 'Perfil' },
-  ];
+    { id: 'perfil', icon: 'bi bi-person-fill', label: 'Perfil' },
+  ]);
 
   private readonly abaDaPagina: Partial<Record<AppPage, AppPage>> = {
     passeio: 'home',
@@ -27,10 +32,10 @@ export class BotaoNavComponent {
     resultados: 'home',
     'chat-tour': 'chat',
     'perfil-editar': 'perfil',
-    'meus-passeios': 'perfil',
-    'passeio-form': 'perfil',
-    'passeio-gestao': 'perfil',
-    'minhas-solicitacoes': 'perfil',
+    'meus-passeios': 'painel',
+    'passeio-form': 'painel',
+    'passeio-gestao': 'painel',
+    'minhas-solicitacoes': 'viagens',
   };
 
   readonly abaAtiva = computed(() => {
@@ -38,9 +43,7 @@ export class BotaoNavComponent {
     return this.abaDaPagina[pagina] ?? pagina;
   });
 
-  onSelect(id: string): void {
-    if (id === 'home' || id === 'chat' || id === 'perfil' || id === 'favoritos') {
-      this.navigation.navigateTo(id as AppPage);
-    }
+  onSelect(id: AppPage): void {
+    this.navigation.navigateTo(id);
   }
 }
