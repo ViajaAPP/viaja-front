@@ -40,11 +40,14 @@ export class HomeComponent implements OnInit {
     if (selectedId === 'all') return all;
     if (selectedId === 'nearby') return this.passeiosPerto() ?? [];
 
-    const selectedLabel = this.categories().find(cat => cat.id === selectedId)?.label ?? '';
+    const medida = selectedId === 'most-liked'
+      ? (activity: Activity) => activity.likes ?? 0
+      : selectedId === 'most-searched'
+        ? (activity: Activity) => activity.searches ?? 0
+        : null;
+    if (!medida) return all;
 
-    return all.filter(activity =>
-      activity.tag?.toLowerCase().includes(selectedLabel.toLowerCase())
-    );
+    return all.filter((activity) => medida(activity) > 0).sort((a, b) => medida(b) - medida(a));
   });
 
   ngOnInit(): void {
@@ -109,7 +112,15 @@ export class HomeComponent implements OnInit {
     this.navigationService.navigateToTour('passeio', Number(tourId));
   }
 
+  textoDaListaVazia(): string {
+    switch (this.selectedCategoryId()) {
+      case 'most-liked': return 'Ninguém curtiu passeios ainda. Toque no coração dos que você gostar.';
+      case 'most-searched': return 'Ninguém pediu vaga em passeios ainda.';
+      default: return 'Ainda não tem passeios publicados por aqui.';
+    }
+  }
+
   isStarFilled(index: number, rating: number): boolean {
-    return index < rating;
+    return index < Math.round(rating);
   }
 }

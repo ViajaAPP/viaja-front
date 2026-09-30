@@ -90,15 +90,20 @@
                 </span>
               }
               <div class="activity-card__guide-info">
-                <div class="activity-card__stars" [attr.aria-label]="activity.rating + ' de 5 estrelas'">
-                  @for (i of starIndexes; track i) {
-                    <span
-                      class="activity-card__star"
-                      [class.activity-card__star--on]="isStarFilled(i, activity.rating)"
-                      aria-hidden="true"
-                    >★</span>
-                  }
-                </div>
+                @if (activity.rating && activity.reviewCount) {
+                  <div class="activity-card__stars" [attr.aria-label]="'Nota ' + activity.rating + ' de 5, ' + activity.reviewCount + (activity.reviewCount === 1 ? ' avaliação' : ' avaliações')">
+                    @for (i of starIndexes; track i) {
+                      <span
+                        class="activity-card__star"
+                        [class.activity-card__star--on]="isStarFilled(i, activity.rating)"
+                        aria-hidden="true"
+                      >★</span>
+                    }
+                    <span class="activity-card__nota" aria-hidden="true">{{ activity.rating }} ({{ activity.reviewCount }})</span>
+                  </div>
+                } @else {
+                  <span class="activity-card__sem-nota">Sem avaliações ainda</span>
+                }
                 <span class="activity-card__guide-name">{{ activity.guide }}</span>
               </div>
             </div>
@@ -119,6 +124,10 @@
             </div>
           </div>
         </li>
+      } @empty {
+        @if (!mostrandoPerto()) {
+          <li class="home__aviso" role="status">{{ textoDaListaVazia() }}</li>
+        }
       }
     </ul>
   </section>

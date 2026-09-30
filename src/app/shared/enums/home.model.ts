@@ -15,8 +15,11 @@ export interface Activity {
   guideFoto: string;
   guide: string;
   imageUrl: string;
-  rating: number;
+  rating: number | null;
   reviewCount: number;
+  likes?: number;
+  searches?: number;
+  travelers?: number;
   tag?: string;
   tagType?: 'recommended' | 'popular' | 'new' | 'nearby';
   distance_km?: number;
