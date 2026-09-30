@@ -1,8 +1,9 @@
-import {signalStore, withState, withMethods, withComputed, patchState} from '@ngrx/signals';
+import {signalStore, withState, withMethods, withComputed, withHooks, patchState} from '@ngrx/signals';
 import { computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserRole } from '../enums/user.model';
 import { caminhoDaPagina } from '../config/rotas.config';
+import { AuthService } from '../services/auth/auth.service';
 
 export type AppPage =
   | 'welcome'
@@ -90,5 +91,11 @@ export const AppStore = signalStore(
     isTourist: computed(() => store.myRole() === 'TOURIST'),
     canManageTours: computed(() => store.myRole() === 'GUIDE' || store.myRole() === 'ADMIN'),
     showBottomNav: computed(() => !PAGES_WITHOUT_BOTTOM_NAV.includes(store.currentPage())),
-  }))
+  })),
+  withHooks({
+    onInit(store) {
+      const sessao = inject(AuthService).lerSessao();
+      if (sessao) patchState(store, { myUserId: sessao.userId, myRole: sessao.role });
+    },
+  })
 );

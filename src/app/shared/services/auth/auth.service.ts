@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { UserRole } from '../../enums/user.model';
+
+export interface SessaoSalva {
+  userId: number;
+  role: UserRole;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +30,22 @@ export class AuthService {
 
   private getStoredToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  lerSessao(): SessaoSalva | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const dados = JSON.parse(atob(base64));
+      if (dados.user_id && dados.role && dados.exp * 1000 > Date.now()) {
+        return { userId: dados.user_id, role: dados.role };
+      }
+    } catch {}
+
+    this.clearToken();
+    return null;
   }
 
   isAuthenticated(): boolean {
