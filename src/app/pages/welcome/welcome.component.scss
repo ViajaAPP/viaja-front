@@ -1,3 +1,5 @@
+@use 'responsivo' as *;
+
 .welcome-container{
   background: url(../../../assets/fundo-login.jpg);
   background-size: cover;
@@ -38,6 +40,10 @@
     justify-self: center;
 
     margin-top:30%;
+
+    @include a-partir-do-tablet {
+      margin-top: 12vh;
+    }
   }
 
   &__baixo{
@@ -69,6 +75,10 @@
       font-family: "Huninn", sans-serif;
       flex-wrap: wrap;
 
+      @include a-partir-do-tablet {
+        flex-direction: column;
+      }
+
       display: flex;
       justify-content: center;
       align-items: center;
@@ -86,6 +96,11 @@
 
         width: 100%;
         height: 48px;
+
+        @include a-partir-do-tablet {
+          margin: 72px 0 0;
+          max-width: 400px;
+        }
       }
 
       p{

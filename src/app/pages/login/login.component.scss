@@ -1,3 +1,5 @@
+@use 'responsivo' as *;
+
 .login-container{
   background: url(../../../assets/fundo-login.jpg);
   background-size: cover;
@@ -38,6 +40,10 @@
     justify-self: center;
 
     margin-top:30%;
+
+    @include a-partir-do-tablet {
+      margin-top: 12vh;
+    }
   }
 
   &__titulo{
