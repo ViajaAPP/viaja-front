@@ -10,11 +10,20 @@ import {
   CidadeSugestao,
   FiltrosDaBusca,
   LugarSugestao,
+  PasseioEncontrado,
   PasseioSugestao,
   Sugestoes,
 } from '../../shared/services/busca/busca.service';
 import { LocalizacaoService } from '../../shared/services/localizacao/localizacao.service';
 import { FeedbackService } from '../../shared/services/feedback/feedback.service';
+import { PRICE_FORMAT } from '../../shared/config/tour.config';
+
+interface Carrossel {
+  titulo: string;
+  detalhe: string;
+  filtros: FiltrosDaBusca;
+  passeios: PasseioEncontrado[];
+}
 
 const VAZIO: Sugestoes = { cidades: [], passeios: [], lugares: [] };
 
@@ -39,6 +48,7 @@ export class BuscarComponent implements OnInit, AfterViewInit {
   recentes = signal<BuscaRecente[]>(this.buscaService.recentes());
   destinos = signal<CidadeSugestao[]>([]);
   localizando = signal(false);
+  carrosseis = signal<Carrossel[]>([]);
 
   constructor() {
     const perto = this.localizacao.ultimaPosicao();
@@ -61,6 +71,7 @@ export class BuscarComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.facade.setLoading(false);
     this.buscaService.destinos().subscribe({ next: (destinos) => this.destinos.set(destinos), error: () => {} });
+    this.carregarCarrosseis();
     if (this.texto()) this.digitado.next(this.texto());
   }
 
@@ -149,8 +160,39 @@ export class BuscarComponent implements OnInit, AfterViewInit {
       .join(' · ');
   }
 
+  formatarPreco(preco: number): string {
+    return preco > 0 ? PRICE_FORMAT.format(preco) : 'Gratuito';
+  }
+
+  verTodos(carrossel: Carrossel): void {
+    const { limite, ...filtros } = carrossel.filtros;
+    this.abrirResultados({ rotulo: carrossel.titulo, detalhe: carrossel.detalhe, filtros }, false);
+  }
+
   voltar(): void {
     this.navigationService.voltar('home');
+  }
+
+  private carregarCarrosseis(): void {
+    const posicao = this.localizacao.ultimaPosicao();
+    const pedidos: Omit<Carrossel, 'passeios'>[] = [
+      ...(posicao ? [{ titulo: 'Perto de você', detalhe: 'Até 30 km', filtros: { ...posicao, raio: 30, ordem: 'perto' as const, limite: 10 } }] : []),
+      { titulo: 'Mais curtidos', detalhe: 'Todo o Brasil', filtros: { ordem: 'curtidos', limite: 10 } },
+      { titulo: 'Mais bem avaliados', detalhe: 'Todo o Brasil', filtros: { ordem: 'nota', nota_min: 4, limite: 10 } },
+    ];
+    for (const pedido of pedidos) {
+      this.buscaService.passeios(pedido.filtros).subscribe({
+        next: (passeios) => {
+          const uteis = pedido.filtros.ordem === 'curtidos' ? passeios.filter((p) => p.likes > 0) : passeios;
+          if (!uteis.length) return;
+          this.carrosseis.update((atuais) =>
+            [...atuais.filter((c) => c.titulo !== pedido.titulo), { ...pedido, passeios: uteis }]
+              .sort((a, b) => pedidos.findIndex((p) => p.titulo === a.titulo) - pedidos.findIndex((p) => p.titulo === b.titulo)),
+          );
+        },
+        error: () => {},
+      });
+    }
   }
 
   private abrirResultados(busca: BuscaRecente, lembrar = true): void {

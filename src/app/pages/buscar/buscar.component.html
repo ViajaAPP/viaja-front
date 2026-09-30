@@ -45,6 +45,34 @@
       </button>
     </div>
 
+    @for (carrossel of carrosseis(); track carrossel.titulo) {
+      <div class="secao__topo">
+        <h2 class="secao__titulo">{{ carrossel.titulo }}</h2>
+        <button class="secao__acao" type="button" (click)="verTodos(carrossel)">Ver todos</button>
+      </div>
+      <ul class="carrossel">
+        @for (passeio of carrossel.passeios; track passeio.id) {
+          <li>
+            <button class="mini" type="button" (click)="escolherPasseio({ tipo: 'passeio', id: passeio.id, nome: passeio.title, cidade: passeio.city, uf: passeio.uf, foto: passeio.imageUrl })">
+              <span class="mini__foto">
+                @if (passeio.imageUrl) {
+                  <img [src]="passeio.imageUrl" alt="" loading="lazy" />
+                }
+              </span>
+              <span class="mini__titulo">{{ passeio.title }}</span>
+              <span class="mini__detalhe">
+                @if (passeio.reviewCount) {
+                  <span class="mini__estrela" aria-hidden="true">★</span> {{ passeio.rating }} ·
+                }
+                {{ passeio.distance_km != null ? passeio.distance_km + ' km' : passeio.city }}
+              </span>
+              <span class="mini__preco">{{ formatarPreco(passeio.price) }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
     @if (recentes().length) {
       <div class="secao__topo">
         <h2 class="secao__titulo">Buscas recentes</h2>
