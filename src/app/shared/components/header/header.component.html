@@ -1,10 +1,10 @@
 <header class="app-header">
   <div class="header__user">
-    <img
-      class="header__avatar"
-      [src]="dados?.user?.fotoUser"
-      [alt]="dados?.user?.name"
-    />
+    @if (dados?.user?.fotoUser) {
+      <img class="header__avatar" [src]="dados?.user?.fotoUser" [alt]="dados?.user?.name" />
+    } @else {
+      <span class="header__avatar header__avatar--inicial" aria-hidden="true">{{ (dados?.user?.name || '?').charAt(0) }}</span>
+    }
     <div class="header__text">
       <p class="header__greeting">{{ dados?.greeting }} <span class="header__name">{{ dados?.user?.name }}</span></p>
       <h1 class="header__titulo">{{ dados?.titulo }}</h1>
@@ -14,35 +14,20 @@
   <div class="header__actions">
     <button class="header__icon-btn" type="button" aria-label="Avisos"></button>
   </div>
-
 </header>
-<div class="buscar-filtros">
-  <div class="buscar">
-    <div class="buscar__icone"></div>
-    <p>procure pela sua próxima aventura</p>
+
+@if (mostrarBusca) {
+  <div class="buscar-filtros">
+    <button class="buscar" type="button" (click)="abrirBusca()">
+      <i class="bi bi-search buscar__lupa" aria-hidden="true"></i>
+      <span class="buscar__textos">
+        <span class="buscar__titulo">Para onde vamos?</span>
+        <span class="buscar__dica">Cidades, passeios e lugares</span>
+      </span>
+    </button>
+
+    <button class="filtro-btn" type="button" aria-label="Filtrar passeios" (click)="abrirFiltros()">
+      <i class="bi bi-sliders" aria-hidden="true"></i>
+    </button>
   </div>
-
-  <button class="filtro-btn" (click)="toggleFiltros()" aria-label="Filtros">
-    <div class="filtro-btn__icone">
-        <div class="filtro-btn__icone__mo"></div>
-    </div>
-  </button>
-
-  @if (mostrarFiltros()) {
-    <div class="filtros-dropdown">
-      <div class="filtros-dropdown__header">
-        <h3>Filtrar por:</h3>
-        <button (click)="toggleFiltros()" class="filtros-dropdown__close">✕</button>
-      </div>
-
-      <div class="filtros-dropdown__options">
-        @for (tag of tagsDisponiveis(); track tag) {
-          <label class="filtro-option">
-            <input type="radio" name="filtro" [value]="tag" (change)="aplicarFiltro(tag)" />
-            <span>{{ tag }}</span>
-          </label>
-        }
-      </div>
-    </div>
-  }
-</div>
+}

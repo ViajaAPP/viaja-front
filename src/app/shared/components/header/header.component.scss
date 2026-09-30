@@ -94,142 +94,77 @@
 }
 
 .filtro-btn {
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background-color: #D9D9D9;
-    border: none;
-    border-radius: 100px;
-
-    cursor: pointer;
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-size: 12px;
-    color: #3E3E3E;
-    transition: all 0.3s ease;
-
-  &:hover {
-    background: #C5C5C5;
-  }
-
-  &__icone {
-    font-size: 16px;
-    font-weight: bold;
-
-    &__mo{
-        background: url('../../../../assets/filtro.svg');
-        width: 36px;
-        height: 27px;
-    }
-  }
-}
-
-.filtros-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #B4B4B4;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  min-width: 220px;
-  margin-top: 8px;
-  z-index: 100;
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-
-    h3 {
-      font-family: "Poppins", sans-serif;
-      font-weight: 600;
-      font-size: 14px;
-      color: #3E3E3E;
-      margin: 0;
-    }
-  }
-
-  &__close {
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: #A4A4A4;
-    cursor: pointer;
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      color: #3E3E3E;
-    }
-  }
-
-  &__options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-}
-
-.filtro-option {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 20px;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 6px;
-  transition: background 0.2s ease;
+  transition: transform 0.15s ease;
 
-  &:hover {
-    background: #F5F5F5;
-  }
-
-  input[type="radio"] {
-    cursor: pointer;
-    accent-color: #FF6B35;
-  }
-
-  span {
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    font-size: 12px;
-    color: #3E3E3E;
+  &:active {
+    transform: scale(0.96);
   }
 }
 
-.buscar{
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+.buscar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  height: 52px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 10%);
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s ease;
 
-    background: #FDFDFD;
-    border: 1px solid #B4B4B4;
-    border-radius: 50px;
-    min-width: 0;
-    height: 44px;
+  &:active {
+    transform: scale(0.99);
+  }
+}
 
-    &__icone{
-        background: url('../../../../assets/lupa.svg');
-        background-size: cover;
-        width: 12px;
-        height: 12px;
-        margin: 0px 10px 0px 15px;
-    }
+.buscar__lupa {
+  font-size: 18px;
+  color: #1f1f1f;
+}
 
-    p{
-        color: #A4A4A4;
-        font-size: 12px;
-        font-family: "Poppins", sans-serif;
-        font-weight: 400;
-    }
+.buscar__textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.buscar__titulo {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.buscar__dica {
+  font-size: 12px;
+  color: #6b6b6b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header__avatar--inicial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #d9f18c;
+  color: #3d5c00;
+  font-weight: 700;
+  text-transform: uppercase;
 }

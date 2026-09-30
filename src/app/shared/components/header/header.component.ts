@@ -1,32 +1,23 @@
-import { Component, Input, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
+  private readonly router = inject(Router);
+
   @Input() dados: any;
+  @Input() mostrarBusca = true;
 
-  mostrarFiltros = signal(false);
-  filtroSelecionado = signal('');
-
-  tagsDisponiveis = computed(() => {
-    if (!this.dados?.popularActivities) return [] as string[];
-    const tags = new Set(this.dados.popularActivities.map((a: any) => a.tag as string));
-    return Array.from(tags) as string[];
-  });
-
-  toggleFiltros(): void {
-    this.mostrarFiltros.update(val => !val);
+  abrirBusca(): void {
+    this.router.navigateByUrl('/buscar');
   }
 
-  aplicarFiltro(filtro: string): void {
-    this.filtroSelecionado.set(filtro);
-    this.mostrarFiltros.set(false);
+  abrirFiltros(): void {
+    this.router.navigate(['/buscar/resultados'], { queryParams: { filtros: 1 } });
   }
 }
-
