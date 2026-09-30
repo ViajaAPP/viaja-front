@@ -242,7 +242,7 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
       this.erro.set('Escolha uma foto de capa para o passeio.');
       return;
     }
-    this.passeio.cep = this.passeio.cep.replace(/\D/g, '');
+    this.passeio.cep = (this.passeio.cep ?? '').replace(/\D/g, '');
     this.salvando.set(true);
     this.erro.set('');
     if (this.tourId) {
