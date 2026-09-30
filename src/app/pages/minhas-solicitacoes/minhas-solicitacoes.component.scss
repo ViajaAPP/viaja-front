@@ -1,3 +1,21 @@
+@use 'responsivo' as *;
+
+.reservas {
+  @include a-partir-do-tablet {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 14px;
+
+    .cartao {
+      margin-bottom: 0;
+    }
+
+    .pagina__vazio {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
 .reserva {
   width: 100%;
   display: flex;

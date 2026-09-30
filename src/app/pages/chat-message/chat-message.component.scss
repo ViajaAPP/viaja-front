@@ -1,3 +1,5 @@
+@use 'responsivo' as *;
+
 :host {
   --bg-page:       #f0ede8;
   --bg-bubble-me:  #1a1a1a;
@@ -24,6 +26,11 @@
   height: 100dvh;
   max-width: 430px;
   margin: 0 auto;
+
+  @include a-partir-do-tablet {
+    max-width: 760px;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.06);
+  }
   background: var(--bg-page);
   font-family: var(--font-body);
   overflow: hidden;

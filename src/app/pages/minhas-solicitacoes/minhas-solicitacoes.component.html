@@ -13,27 +13,29 @@
     <div class="alerta-erro" role="alert">{{ erro() }}</div>
   }
 
-  @for (solicitacao of solicitacoes(); track solicitacao.id) {
-    <button class="cartao reserva" type="button" (click)="abrirPasseio(solicitacao)">
-      <div>
-        <p class="reserva__nome">{{ solicitacao.tour_instance?.tour?.title }}</p>
-        <p class="reserva__quando">
-          {{ solicitacao.tour_instance?.start_time | date: formatoData }}
+  <div class="reservas">
+    @for (solicitacao of solicitacoes(); track solicitacao.id) {
+      <button class="cartao reserva" type="button" (click)="abrirPasseio(solicitacao)">
+        <div>
+          <p class="reserva__nome">{{ solicitacao.tour_instance?.tour?.title }}</p>
+          <p class="reserva__quando">
+            {{ solicitacao.tour_instance?.start_time | date: formatoData }}
+          </p>
+        </div>
+        <span
+          class="selo"
+          [class.selo--ativo]="solicitacao.status === 'ACCEPTED'"
+          [class.selo--alerta]="solicitacao.status === 'DENIED'"
+        >
+          {{ rotulosDaSolicitacao[solicitacao.status] }}
+        </span>
+      </button>
+    } @empty {
+      @if (!carregando()) {
+        <p class="pagina__vazio">
+          Você ainda não pediu vaga em nenhum passeio. Que tal escolher um na tela inicial?
         </p>
-      </div>
-      <span
-        class="selo"
-        [class.selo--ativo]="solicitacao.status === 'ACCEPTED'"
-        [class.selo--alerta]="solicitacao.status === 'DENIED'"
-      >
-        {{ rotulosDaSolicitacao[solicitacao.status] }}
-      </span>
-    </button>
-  } @empty {
-    @if (!carregando()) {
-      <p class="pagina__vazio">
-        Você ainda não pediu vaga em nenhum passeio. Que tal escolher um na tela inicial?
-      </p>
+      }
     }
-  }
+  </div>
 </section>
