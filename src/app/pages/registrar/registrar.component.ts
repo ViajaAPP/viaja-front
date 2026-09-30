@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 import { ApiService, RegisterRequest } from '../../shared/services/api/api.service';
 import { AuthService } from '../../shared/services/auth/auth.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
@@ -13,7 +14,7 @@ import { ROLE_LABELS } from '../../shared/config/tour.config';
 
 @Component({
   selector: 'app-registrar',
-  imports: [FormsModule, CampoFotoComponent],
+  imports: [FormsModule, CampoFotoComponent, ValidarFormularioDirective],
   templateUrl: './registrar.component.html',
   styleUrl: './registrar.component.scss',
 })

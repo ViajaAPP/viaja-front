@@ -13,7 +13,7 @@
     <div class="alerta-erro" role="alert">{{ erro() }}</div>
   }
 
-  <form class="formulario" (ngSubmit)="cadastrar()">
+  <form class="formulario" #form="ngForm" appValidarFormulario (ngSubmit)="form.valid && cadastrar()">
     <app-campo-foto [foto]="previa()" (escolhida)="escolherFoto($event)" (removida)="removerFoto()" />
 
     <label for="tipo">Você é</label>
@@ -26,19 +26,23 @@
     <div class="formulario__linha">
       <div>
         <label for="nome">Nome <span class="obrigatorio">*</span></label>
-        <input id="nome" name="first_name" [(ngModel)]="cadastro.first_name" required />
+        <input id="nome" name="first_name" autocomplete="given-name" [(ngModel)]="cadastro.first_name" required />
+        <small class="campo-erro">Coloque seu nome.</small>
       </div>
       <div>
         <label for="sobrenome">Sobrenome <span class="obrigatorio">*</span></label>
-        <input id="sobrenome" name="last_name" [(ngModel)]="cadastro.last_name" required />
+        <input id="sobrenome" name="last_name" autocomplete="family-name" [(ngModel)]="cadastro.last_name" required />
+        <small class="campo-erro">Coloque seu sobrenome.</small>
       </div>
     </div>
 
     <label for="usuario">Nome de usuário <span class="obrigatorio">*</span></label>
-    <input id="usuario" name="username" [(ngModel)]="cadastro.username" required />
+    <input id="usuario" name="username" autocomplete="username" autocapitalize="none" [(ngModel)]="cadastro.username" required />
+    <small class="campo-erro">Escolha um nome de usuário.</small>
 
     <label for="email">Email <span class="obrigatorio">*</span></label>
-    <input id="email" type="email" name="email" [(ngModel)]="cadastro.email" required />
+    <input id="email" type="email" name="email" autocomplete="email" [(ngModel)]="cadastro.email" required email />
+    <small class="campo-erro">Coloque um email válido, como nome&#64;email.com.</small>
 
     <label for="senha">Senha <span class="obrigatorio">*</span></label>
     <div class="campo-senha">
@@ -46,6 +50,8 @@
         id="senha"
         [type]="senhaVisivel() ? 'text' : 'password'"
         name="password"
+        autocomplete="new-password"
+        minlength="8"
         [(ngModel)]="cadastro.password"
         required
       />
@@ -58,13 +64,16 @@
         <i class="bi" [class.bi-eye]="!senhaVisivel()" [class.bi-eye-slash]="senhaVisivel()" aria-hidden="true"></i>
       </button>
     </div>
+    <small class="campo-erro">A senha precisa ter pelo menos 8 caracteres.</small>
 
     <label for="telefone">Telefone <span class="obrigatorio">*</span></label>
-    <input id="telefone" type="tel" name="phone" [(ngModel)]="cadastro.phone" required />
+    <input id="telefone" type="tel" name="phone" autocomplete="tel" [(ngModel)]="cadastro.phone" required />
+    <small class="campo-erro">Coloque um telefone para contato.</small>
 
     @if (pedeCnpj()) {
       <label for="cnpj">CNPJ da sua empresa de turismo <span class="obrigatorio">*</span></label>
-      <input id="cnpj" name="cnpj" [(ngModel)]="cadastro.cnpj" required />
+      <input id="cnpj" name="cnpj" inputmode="numeric" [(ngModel)]="cadastro.cnpj" required />
+      <small class="campo-erro">Coloque o CNPJ da empresa.</small>
     }
 
     <button class="btn-primary mt-1" type="submit" [disabled]="enviando()">

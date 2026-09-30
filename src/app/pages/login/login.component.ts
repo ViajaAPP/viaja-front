@@ -7,10 +7,11 @@ import { NavigationService } from '../../shared/services/navigation/navigation.s
 import { ApiService } from '../../shared/services/api/api.service';
 import { AuthService } from '../../shared/services/auth/auth.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
+import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ValidarFormularioDirective],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   standalone: true,

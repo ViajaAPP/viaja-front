@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { CidadesService } from '../../shared/services/cidades/cidades.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
@@ -14,7 +15,7 @@ import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-fot
 
 @Component({
   selector: 'app-passeio-form',
-  imports: [FormsModule, CampoFotoComponent],
+  imports: [FormsModule, CampoFotoComponent, ValidarFormularioDirective],
   templateUrl: './passeio-form.component.html',
 })
 export class PasseioFormComponent implements OnInit {
@@ -125,6 +126,7 @@ export class PasseioFormComponent implements OnInit {
       this.erro.set('Escolha uma foto de capa para o passeio.');
       return;
     }
+    this.passeio.cep = this.passeio.cep.replace(/\D/g, '');
     this.salvando.set(true);
     this.erro.set('');
     if (this.tourId) {

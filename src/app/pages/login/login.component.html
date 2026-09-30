@@ -16,7 +16,7 @@
         <div class="alerta-erro" role="alert">{{ errorMessage() }}</div>
       }
 
-      <form class="formulario login__form" (ngSubmit)="login()">
+      <form class="formulario login__form" #form="ngForm" appValidarFormulario (ngSubmit)="form.valid && login()">
         <label for="email">Email</label>
         <input
           id="email"
@@ -25,7 +25,9 @@
           autocomplete="email"
           [(ngModel)]="credentials.email"
           required
+          email
         />
+        <small class="campo-erro">Coloque um email válido, como nome&#64;email.com.</small>
 
         <label for="senha">Senha</label>
         <div class="campo-senha">
@@ -46,6 +48,7 @@
             <i class="bi" [class.bi-eye]="!senhaVisivel()" [class.bi-eye-slash]="senhaVisivel()" aria-hidden="true"></i>
           </button>
         </div>
+        <small class="campo-erro">Coloque sua senha.</small>
 
         <button class="btn-primary login__entrar" type="submit" [disabled]="isLoggingIn()">
           {{ isLoggingIn() ? 'Entrando...' : 'Entrar' }}

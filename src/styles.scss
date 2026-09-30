@@ -387,6 +387,26 @@ input {
   }
 }
 
+.campo-erro {
+  display: none;
+  margin: -8px 0 12px;
+  font-size: 12px;
+  color: #a12622;
+}
+
+form.ng-submitted {
+  input.ng-invalid,
+  select.ng-invalid,
+  textarea.ng-invalid {
+    border-color: #a12622;
+  }
+
+  .ng-invalid + .campo-erro,
+  .campo-senha:has(.ng-invalid) + .campo-erro {
+    display: block;
+  }
+}
+
 .formulario__linha {
   display: flex;
   gap: 10px;

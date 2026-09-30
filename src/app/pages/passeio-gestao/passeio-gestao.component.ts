@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { ApiService } from '../../shared/services/api/api.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
@@ -28,7 +29,7 @@ const VAGAS_PADRAO = 10;
 
 @Component({
   selector: 'app-passeio-gestao',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, ValidarFormularioDirective],
   templateUrl: './passeio-gestao.component.html',
   styleUrl: './passeio-gestao.component.scss',
 })
@@ -75,8 +76,18 @@ export class PasseioGestaoComponent implements OnInit {
     this.executar(this.tourService.publicarPasseio(passeio.id, !passeio.published));
   }
 
+  agora(): string {
+    const agora = new Date();
+    agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+    return agora.toISOString().slice(0, 16);
+  }
+
   criarData(): void {
     if (!this.tourId || !this.novaData.inicio) return;
+    if (new Date(this.novaData.inicio) <= new Date()) {
+      this.erro.set('Escolha um dia e horário que ainda não passaram.');
+      return;
+    }
     const payload = {
       start_time: new Date(this.novaData.inicio).toISOString(),
       max_capacity: this.novaData.vagas,

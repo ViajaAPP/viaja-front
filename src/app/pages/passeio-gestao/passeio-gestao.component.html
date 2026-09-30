@@ -31,20 +31,22 @@
         </div>
 
         <h2 class="pagina__subtitulo">Marcar nova data</h2>
-        <form class="cartao formulario" (ngSubmit)="criarData()">
+        <form class="cartao formulario" #formData="ngForm" appValidarFormulario (ngSubmit)="formData.valid && criarData()">
           <div class="formulario__linha">
             <div>
-              <label for="inicio">Dia e horário</label>
+              <label for="inicio">Dia e horário <span class="obrigatorio">*</span></label>
               <input
                 id="inicio"
                 type="datetime-local"
                 name="inicio"
+                [min]="agora()"
                 [(ngModel)]="novaData.inicio"
                 required
               />
+              <small class="campo-erro">Escolha o dia e o horário.</small>
             </div>
             <div>
-              <label for="vagas">Vagas</label>
+              <label for="vagas">Vagas <span class="obrigatorio">*</span></label>
               <input
                 id="vagas"
                 type="number"
@@ -53,9 +55,10 @@
                 [(ngModel)]="novaData.vagas"
                 required
               />
+              <small class="campo-erro">Pelo menos 1 vaga.</small>
             </div>
           </div>
-          <button class="btn-primary" type="submit" [disabled]="!novaData.inicio">
+          <button class="btn-primary" type="submit">
             Adicionar data
           </button>
         </form>

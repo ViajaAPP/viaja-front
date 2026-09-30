@@ -13,7 +13,7 @@
     <div class="alerta-erro" role="alert">{{ erro() }}</div>
   }
 
-  <form class="formulario" (ngSubmit)="salvar()">
+  <form class="formulario" #form="ngForm" appValidarFormulario (ngSubmit)="form.valid && salvar()">
     <label>Foto de capa <span class="obrigatorio">*</span></label>
     <app-campo-foto
       formato="capa"
@@ -23,10 +23,11 @@
       (removida)="removerCapa()"
     />
 
-    <label for="titulo">Nome do passeio</label>
+    <label for="titulo">Nome do passeio <span class="obrigatorio">*</span></label>
     <input id="titulo" name="title" [(ngModel)]="passeio.title" required />
+    <small class="campo-erro">Dê um nome para o passeio.</small>
 
-    <label for="descricao">Como é o passeio</label>
+    <label for="descricao">Como é o passeio <span class="obrigatorio">*</span></label>
     <textarea
       id="descricao"
       name="description"
@@ -34,11 +35,12 @@
       [(ngModel)]="passeio.description"
       required
     ></textarea>
+    <small class="campo-erro">Conte como é o passeio.</small>
 
 
     <div class="formulario__linha">
       <div>
-        <label for="preco">Preço por pessoa (R$)</label>
+        <label for="preco">Preço por pessoa (R$) <span class="obrigatorio">*</span></label>
         <input
           id="preco"
           type="number"
@@ -48,9 +50,10 @@
           [(ngModel)]="passeio.price"
           required
         />
+        <small class="campo-erro">Coloque o preço. Use 0 para gratuito.</small>
       </div>
       <div>
-        <label for="duracao">Duração (minutos)</label>
+        <label for="duracao">Duração (minutos) <span class="obrigatorio">*</span></label>
         <input
           id="duracao"
           type="number"
@@ -59,20 +62,23 @@
           [(ngModel)]="passeio.estimated_duration_minutes"
           required
         />
+        <small class="campo-erro">Coloque quantos minutos dura.</small>
       </div>
     </div>
 
-    <label for="encontro">Ponto de encontro</label>
+    <label for="encontro">Ponto de encontro <span class="obrigatorio">*</span></label>
     <input id="encontro" name="meeting_point" [(ngModel)]="passeio.meeting_point" required />
+    <small class="campo-erro">Diga onde o grupo se encontra.</small>
 
     <h2 class="pagina__subtitulo">Endereço</h2>
     <div class="formulario__linha">
       <div>
-        <label for="cep">CEP</label>
-        <input id="cep" name="cep" inputmode="numeric" [(ngModel)]="passeio.cep" required />
+        <label for="cep">CEP <span class="obrigatorio">*</span></label>
+        <input id="cep" name="cep" inputmode="numeric" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" [(ngModel)]="passeio.cep" required />
+        <small class="campo-erro">Use os 8 números do CEP.</small>
       </div>
       <div>
-        <label for="uf">Estado</label>
+        <label for="uf">Estado <span class="obrigatorio">*</span></label>
         <select id="uf" name="uf" [(ngModel)]="passeio.uf" (ngModelChange)="trocarUf()">
           @for (uf of ufs; track uf) {
             <option [value]="uf">{{ uf }}</option>
@@ -81,7 +87,7 @@
       </div>
     </div>
 
-    <label for="cidade">Cidade</label>
+    <label for="cidade">Cidade <span class="obrigatorio">*</span></label>
     <input
       id="cidade"
       name="city"
@@ -91,23 +97,27 @@
       (ngModelChange)="buscarCidades($event)"
       required
     />
+    <small class="campo-erro">Escolha a cidade.</small>
     <datalist id="cidades-sugeridas">
       @for (cidade of cidadesSugeridas(); track cidade) {
         <option [value]="cidade"></option>
       }
     </datalist>
 
-    <label for="bairro">Bairro</label>
+    <label for="bairro">Bairro <span class="obrigatorio">*</span></label>
     <input id="bairro" name="neighborhood" [(ngModel)]="passeio.neighborhood" required />
+    <small class="campo-erro">Coloque o bairro.</small>
 
     <div class="formulario__linha">
       <div>
-        <label for="rua">Rua</label>
+        <label for="rua">Rua <span class="obrigatorio">*</span></label>
         <input id="rua" name="street" [(ngModel)]="passeio.street" required />
+        <small class="campo-erro">Coloque a rua.</small>
       </div>
       <div>
-        <label for="numero">Número</label>
+        <label for="numero">Número <span class="obrigatorio">*</span></label>
         <input id="numero" name="number" [(ngModel)]="passeio.number" required />
+        <small class="campo-erro">Coloque o número. Use S/N se não tiver.</small>
       </div>
     </div>
 
