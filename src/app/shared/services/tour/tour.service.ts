@@ -7,6 +7,7 @@ import {
   TourDetail,
   TourInstancePayload,
   TourPayload,
+  TourPhoto,
   TourRequestItem,
 } from '../../enums/tour.model';
 import { Activity } from '../../enums/home.model';
@@ -70,5 +71,20 @@ export class TourService {
 
   listarMinhasSolicitacoes(): Observable<TourRequestItem[]> {
     return this.request.get<TourRequestItem[]>('/request/');
+  }
+
+  enviarFotoDaGaleria(tourId: number, foto: File, credito = ''): Observable<TourPhoto> {
+    const formulario = new FormData();
+    formulario.append('photo', foto);
+    if (credito) formulario.append('credit', credito);
+    return this.request.post<TourPhoto>(`/tour/${tourId}/photos`, formulario);
+  }
+
+  removerFotoDaGaleria(tourId: number, fotoId: number): Observable<void> {
+    return this.request.delete<void>(`/tour/${tourId}/photos/${fotoId}`);
+  }
+
+  avaliar(tourId: number, rating: number, comment: string): Observable<{ message: string }> {
+    return this.request.post<{ message: string }>(`/tour/${tourId}/reviews`, { rating, comment });
   }
 }

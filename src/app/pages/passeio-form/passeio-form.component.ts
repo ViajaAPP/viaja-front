@@ -11,13 +11,16 @@ import { ValidarFormularioDirective } from '../../shared/directives/validar-form
 import { TourService } from '../../shared/services/tour/tour.service';
 import { CidadesService } from '../../shared/services/cidades/cidades.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
-import { TourDetail, TourPayload } from '../../shared/enums/tour.model';
+import { TourDetail, TourPayload, TourPhoto } from '../../shared/enums/tour.model';
 import { UFS } from '../../shared/config/tour.config';
 import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-foto.component';
+import { BuscaLocalComponent } from '../../shared/components/busca-local/busca-local.component';
+import { MapaComponent } from '../../shared/components/mapa/mapa.component';
+import { LocaisService, LocalEncontrado } from '../../shared/services/locais/locais.service';
 
 @Component({
   selector: 'app-passeio-form',
-  imports: [FormsModule, CampoFotoComponent, ValidarFormularioDirective],
+  imports: [FormsModule, CampoFotoComponent, ValidarFormularioDirective, BuscaLocalComponent, MapaComponent],
   templateUrl: './passeio-form.component.html',
 })
 export class PasseioFormComponent implements OnInit, ComAlteracoes {
@@ -26,6 +29,7 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
   private readonly feedback = inject(FeedbackService);
   private readonly tourService = inject(TourService);
   private readonly cidadesService = inject(CidadesService);
+  private readonly locaisService = inject(LocaisService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cidadeDigitada = new Subject<string>();
 
@@ -45,7 +49,14 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
     neighborhood: '',
     street: '',
     number: '',
+    lat: null,
+    lon: null,
+    photo_credit: null,
   };
+
+  fotos = signal<TourPhoto[]>([]);
+  enviandoFoto = signal(false);
+  readonly limiteDeFotos = 10;
 
   salvando = signal(false);
   enviandoCapa = signal(false);
@@ -80,7 +91,8 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
   }
 
   preencher(passeio: TourDetail): void {
-    const { cep, uf, city, neighborhood, street, number } = passeio.address ?? this.passeio;
+    const { cep, uf, city, neighborhood, street, number, lat, lon } = passeio.address ?? this.passeio;
+    this.fotos.set(passeio.photos ?? []);
     this.passeio = {
       title: passeio.title,
       description: passeio.description,
@@ -94,6 +106,9 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
       neighborhood,
       street,
       number,
+      lat: lat ?? null,
+      lon: lon ?? null,
+      photo_credit: passeio.photo_credit ?? null,
     };
     this.original = JSON.stringify(this.passeio);
   }
@@ -120,6 +135,69 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
 
   removerCapa(): void {
     this.passeio.photo = '';
+  }
+
+  usarLocal(local: LocalEncontrado): void {
+    this.passeio = {
+      ...this.passeio,
+      cep: local.cep || this.passeio.cep,
+      uf: local.uf || this.passeio.uf,
+      city: local.cidade || this.passeio.city,
+      neighborhood: local.bairro || this.passeio.neighborhood,
+      street: local.rua || this.passeio.street,
+      number: local.numero || this.passeio.number || 'S/N',
+      lat: local.lat,
+      lon: local.lon,
+    };
+    if (!this.passeio.meeting_point && local.nome) this.passeio.meeting_point = local.nome;
+  }
+
+  moverPino(ponto: { lat: number; lon: number }): void {
+    this.passeio = { ...this.passeio, lat: ponto.lat, lon: ponto.lon };
+    this.locaisService.enderecoDoPonto(ponto.lat, ponto.lon).subscribe({
+      next: (local) => {
+        if (local) this.usarLocal({ ...local, lat: ponto.lat, lon: ponto.lon });
+      },
+      error: () => {},
+    });
+  }
+
+  adicionarFoto(evento: Event): void {
+    const campo = evento.target as HTMLInputElement;
+    const arquivo = campo.files?.[0];
+    campo.value = '';
+    if (!arquivo || !this.tourId) return;
+    this.enviandoFoto.set(true);
+    this.tourService.enviarFotoDaGaleria(this.tourId, arquivo).subscribe({
+      next: (foto) => {
+        this.enviandoFoto.set(false);
+        this.fotos.update((fotos) => [...fotos, foto]);
+        this.feedback.sucesso('Foto adicionada.');
+      },
+      error: (error: HttpErrorResponse) => {
+        this.enviandoFoto.set(false);
+        this.feedback.erro(mensagemDeErro(error, 'Não conseguimos enviar a foto. Tente de novo.'));
+      },
+    });
+  }
+
+  async removerFoto(foto: TourPhoto): Promise<void> {
+    if (!this.tourId) return;
+    const confirmou = await this.feedback.confirmar({
+      titulo: 'Tirar essa foto do passeio?',
+      texto: 'Ela sai da galeria na hora.',
+      confirmar: 'Tirar foto',
+      perigo: true,
+    });
+    if (!confirmou) return;
+    this.tourService.removerFotoDaGaleria(this.tourId, foto.id).subscribe({
+      next: () => {
+        this.fotos.update((fotos) => fotos.filter((f) => f.id !== foto.id));
+        this.feedback.sucesso('Foto removida.');
+      },
+      error: (error: HttpErrorResponse) =>
+        this.feedback.erro(mensagemDeErro(error, 'Não conseguimos remover a foto. Tente de novo.')),
+    });
   }
 
   private limparPreviaDaCapa(): void {

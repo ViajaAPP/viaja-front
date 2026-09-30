@@ -23,6 +23,30 @@
       (removida)="removerCapa()"
     />
 
+    @if (tourId) {
+      <h2 class="pagina__subtitulo">Mais fotos</h2>
+      <p class="formulario__dica">Mostre o passeio de vários jeitos. Até {{ limiteDeFotos }} fotos, além da capa.</p>
+      <div class="galeria-edicao">
+        @for (foto of fotos(); track foto.id) {
+          <figure class="galeria-edicao__item">
+            <img [src]="foto.url" alt="" loading="lazy" />
+            <button class="galeria-edicao__remover" type="button" [attr.aria-label]="'Tirar a foto ' + ($index + 1)" (click)="removerFoto(foto)">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </figure>
+        }
+        @if (fotos().length < limiteDeFotos) {
+          <label class="galeria-edicao__adicionar" [class.galeria-edicao__adicionar--enviando]="enviandoFoto()">
+            <input type="file" accept="image/jpeg,image/png,image/webp" (change)="adicionarFoto($event)" [disabled]="enviandoFoto()" />
+            <i class="bi" [class.bi-plus-lg]="!enviandoFoto()" [class.bi-hourglass-split]="enviandoFoto()" aria-hidden="true"></i>
+            <span>{{ enviandoFoto() ? 'Enviando...' : 'Adicionar' }}</span>
+          </label>
+        }
+      </div>
+    } @else {
+      <p class="formulario__dica">Depois de criar o passeio, você pode colocar mais fotos na edição.</p>
+    }
+
     <label for="titulo">Nome do passeio <span class="obrigatorio">*</span></label>
     <input id="titulo" name="title" [(ngModel)]="passeio.title" required />
     <small class="campo-erro">Dê um nome para o passeio.</small>
@@ -70,7 +94,15 @@
     <input id="encontro" name="meeting_point" [(ngModel)]="passeio.meeting_point" required />
     <small class="campo-erro">Diga onde o grupo se encontra.</small>
 
-    <h2 class="pagina__subtitulo">Endereço</h2>
+    <h2 class="pagina__subtitulo">Onde é</h2>
+    <app-busca-local (escolhido)="usarLocal($event)" />
+    <app-mapa
+      [lat]="passeio.lat"
+      [lon]="passeio.lon"
+      [editavel]="true"
+      rotulo="Mapa para marcar onde é o passeio"
+      (moveu)="moverPino($event)"
+    />
     <div class="formulario__linha">
       <div>
         <label for="cep">CEP <span class="obrigatorio">*</span></label>

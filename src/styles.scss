@@ -386,6 +386,74 @@ input {
   }
 }
 
+.formulario__dica {
+  margin: -4px 0 12px;
+  font-size: 13px;
+  color: #6b6b6b;
+}
+
+.galeria-edicao {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.galeria-edicao__item {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e9eadf;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.galeria-edicao__remover {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  cursor: pointer;
+}
+
+.galeria-edicao__adicionar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  aspect-ratio: 16 / 9;
+  border: 1.5px dashed #b4b4b4;
+  border-radius: 12px;
+  color: #545454;
+  font-size: 13px;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  &--enviando {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
 .campo-erro {
   display: none;
   margin: -8px 0 12px;

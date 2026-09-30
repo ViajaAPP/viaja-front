@@ -1,0 +1,38 @@
+<div class="busca-local">
+  <label for="busca-local">Onde é <span class="obrigatorio">*</span></label>
+  <div class="busca-local__campo">
+    <i class="bi bi-search" aria-hidden="true"></i>
+    <input
+      id="busca-local"
+      type="search"
+      autocomplete="off"
+      placeholder="Digite o nome do lugar ou o endereço"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-controls="busca-local-lista"
+      [attr.aria-expanded]="aberto() && resultados().length > 0"
+      [value]="texto()"
+      (input)="digitar($any($event.target).value)"
+      (keydown.escape)="aberto.set(false)"
+    />
+    @if (buscando()) {
+      <span class="busca-local__carregando" role="status">Buscando...</span>
+    }
+  </div>
+
+  @if (aberto() && resultados().length) {
+    <ul class="busca-local__lista" id="busca-local-lista" role="listbox">
+      @for (local of resultados(); track local.lat + ',' + local.lon) {
+        <li role="option">
+          <button type="button" (click)="escolher(local)">
+            <strong>{{ local.nome || local.rua }}</strong>
+            <span>{{ descricao(local) }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+  @if (semResultado()) {
+    <p class="busca-local__vazio">Não achamos esse lugar. Tente outro nome ou marque direto no mapa.</p>
+  }
+</div>

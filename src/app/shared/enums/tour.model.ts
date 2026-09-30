@@ -9,6 +9,8 @@ export interface Address {
   neighborhood: string;
   street: string;
   number: string;
+  lat?: number | null;
+  lon?: number | null;
 }
 
 export interface TourPayload extends Address {
@@ -18,6 +20,28 @@ export interface TourPayload extends Address {
   estimated_duration_minutes: number;
   meeting_point: string;
   photo: string;
+  photo_credit?: string | null;
+}
+
+export interface TourPhoto {
+  id: number;
+  url: string;
+  credit: string | null;
+  position: number;
+}
+
+export interface TourReview {
+  id: number;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  author: string;
+  author_photo: string | null;
+}
+
+export interface RatingSummary {
+  average: number | null;
+  count: number;
 }
 
 export interface PublicUser {
@@ -55,6 +79,7 @@ export interface Tour {
   estimated_duration_minutes: number;
   meeting_point: string;
   photo: string;
+  photo_credit?: string | null;
   address_id: number;
   published: boolean;
   tour_instance?: TourInstance[];
@@ -67,6 +92,10 @@ export interface TourDetail extends Tour {
   is_owner: boolean;
   can_moderate: boolean;
   favorite: boolean;
+  photos: TourPhoto[];
+  reviews: TourReview[];
+  rating: RatingSummary;
+  review_instance_id: number | null;
 }
 
 export interface TourRequestItem {
