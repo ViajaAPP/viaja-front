@@ -73,7 +73,7 @@
                       <span class="selo">{{ rotulosDoRecebimento[data.registration] }}</span>
                     }
                     @if (faltamParaSair(data)) {
-                      <span class="selo selo--alerta">Faltam {{ faltamParaSair(data) }} para sair</span>
+                      <span class="selo selo--alerta">{{ faltamParaSair(data) === 1 ? 'Falta' : 'Faltam' }} {{ faltamParaSair(data) }} para sair</span>
                     }
                   </div>
                 </div>

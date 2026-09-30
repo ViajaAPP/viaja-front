@@ -69,6 +69,10 @@ export class PainelService {
     return this.request.get('/painel/pedidos');
   }
 
+  arquivados(): Observable<{ pedidos: PedidoDoPainel[]; datas: (DataDaAgenda & { confirmed: number })[] }> {
+    return this.request.get('/painel/arquivados');
+  }
+
   agenda(): Observable<DataDaAgenda[]> {
     return this.request.get<DataDaAgenda[]>('/painel/agenda');
   }

@@ -18,6 +18,7 @@
     </button>
     <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'agenda'" [attr.aria-selected]="aba() === 'agenda'" (click)="trocarAba('agenda')">Agenda</button>
     <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'passeios'" [attr.aria-selected]="aba() === 'passeios'" (click)="trocarAba('passeios')">Anúncios</button>
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'arquivados'" [attr.aria-selected]="aba() === 'arquivados'" (click)="trocarAba('arquivados')">Arquivados</button>
   </div>
 
   @if (erro()) {
@@ -68,65 +69,105 @@
           }
         </ul>
 
-        @if (respondidos().length) {
-          <h2 class="pagina__subtitulo">Respondidos nos últimos dias</h2>
-          <ul class="linhas">
-            @for (pedido of respondidos(); track pedido.id) {
-              <li class="linha">
-                <span class="linha__textos">
-                  <span class="linha__titulo">{{ pedido.requester.first_name }} · {{ pedido.tour_title }}</span>
-                  <span class="linha__detalhe">{{ pedido.start_time | date: "d/MM 'às' HH:mm" }}</span>
-                </span>
-                <span class="selo" [class.selo--ativo]="pedido.status === 'ACCEPTED'" [class.selo--alerta]="pedido.status !== 'ACCEPTED'">{{ rotulos[pedido.status] }}</span>
-              </li>
-            }
-          </ul>
-        }
       }
 
       @case ('agenda') {
         @for (dia of dias(); track dia.rotulo) {
-          <h2 class="agenda__dia">{{ dia.rotulo }}</h2>
-          <ul class="cartoes">
+          <div class="dia">
+            <h2 class="dia__titulo">{{ dia.rotulo }}</h2>
+            <span class="dia__contagem">{{ dia.datas.length }} {{ dia.datas.length === 1 ? 'saída' : 'saídas' }}</span>
+          </div>
+          <ol class="linha-do-tempo">
             @for (data of dia.datas; track data.id) {
-              <li class="data">
-                <div class="data__topo">
-                  <span class="data__hora">{{ data.start_time | date: 'HH:mm' }}</span>
-                  <div class="data__passeio">
-                    <p class="data__titulo">{{ data.tour_title }}</p>
-                    <p class="data__vagas">{{ data.confirmed }} de {{ data.max_capacity }} vagas confirmadas</p>
+              <li class="momento">
+                <div class="momento__hora">
+                  <span>{{ data.start_time | date: 'HH:mm' }}</span>
+                </div>
+                <div class="momento__cartao">
+                  <div class="momento__topo">
+                    <div class="momento__foto">
+                      @if (data.tour_photo) {
+                        <img [src]="data.tour_photo" alt="" loading="lazy" />
+                      }
+                    </div>
+                    <div class="momento__info">
+                      <p class="momento__titulo">{{ data.tour_title }}</p>
+                      <p class="momento__vagas"><strong>{{ data.confirmed }}</strong> de {{ data.max_capacity }} confirmadas</p>
+                      <div class="momento__barra" aria-hidden="true"><span [style.width.%]="ocupacao(data)"></span></div>
+                    </div>
                   </div>
-                </div>
-                <div class="barra" role="progressbar" [attr.aria-valuenow]="data.confirmed" [attr.aria-valuemax]="data.max_capacity" aria-label="Vagas confirmadas">
-                  <span [style.width.%]="ocupacao(data)"></span>
-                </div>
-                <div class="data__selos">
-                  @if (faltamParaSair(data)) {
-                    <span class="selo selo--alerta">Faltam {{ faltamParaSair(data) }} para sair</span>
-                  } @else {
-                    <span class="selo selo--ativo">Confirmado para sair</span>
-                  }
-                  @if (data.pending) {
-                    <button class="selo selo--botao" type="button" (click)="trocarAba('pedidos')">{{ data.pending }} {{ data.pending === 1 ? 'pedido esperando' : 'pedidos esperando' }}</button>
-                  }
-                  @if (data.registration !== 'OPEN') {
-                    <span class="selo">Pedidos fechados</span>
-                  }
-                </div>
-                <div class="data__acoes">
-                  <button class="btn-secundario" type="button" (click)="abrirChat(data)"><i class="bi bi-chat-dots" aria-hidden="true"></i> Chat do grupo</button>
-                  <button class="btn-secundario" type="button" (click)="gerenciar(data.tour_id)">Gerenciar</button>
+                  <div class="momento__rodape">
+                    <div class="momento__selos">
+                      @if (faltamParaSair(data)) {
+                        <span class="selo selo--alerta">{{ faltamParaSair(data) === 1 ? 'Falta' : 'Faltam' }} {{ faltamParaSair(data) }} para sair</span>
+                      } @else {
+                        <span class="selo selo--ativo">Vai sair</span>
+                      }
+                      @if (data.pending) {
+                        <button class="selo selo--botao" type="button" (click)="trocarAba('pedidos')">{{ data.pending }} {{ data.pending === 1 ? 'pedido' : 'pedidos' }}</button>
+                      }
+                      @if (data.registration !== 'OPEN') {
+                        <span class="selo">Fechado</span>
+                      }
+                    </div>
+                    <div class="momento__acoes">
+                      <button class="momento__icone" type="button" [attr.aria-label]="'Chat do grupo de ' + data.tour_title" (click)="abrirChat(data)"><i class="bi bi-chat-dots" aria-hidden="true"></i></button>
+                      <button class="momento__icone" type="button" [attr.aria-label]="'Gerenciar ' + data.tour_title" (click)="gerenciar(data.tour_id)"><i class="bi bi-sliders" aria-hidden="true"></i></button>
+                    </div>
+                  </div>
                 </div>
               </li>
             }
-          </ul>
+          </ol>
         } @empty {
           <div class="vazio">
             <i class="bi bi-calendar2-week" aria-hidden="true"></i>
-            <p>Nenhuma data marcada. Abra um passeio e marque as próximas saídas.</p>
+            <p>Nenhuma data marcada. Abra um anúncio e marque as próximas saídas.</p>
             <button class="btn-primary" type="button" (click)="trocarAba('passeios')">Ver meus anúncios</button>
           </div>
         }
+      }
+
+      @case ('arquivados') {
+        <h2 class="pagina__subtitulo">Datas que passaram ou foram canceladas</h2>
+        <ul class="arquivo">
+          @for (data of datasArquivadas(); track data.id) {
+            <li class="arquivo__item">
+              <span class="arquivo__data" aria-hidden="true">
+                <small>{{ abreviacao(data.start_time, 'semana') }}</small>
+                <strong>{{ data.start_time | date: 'd' }}</strong>
+                <small>{{ abreviacao(data.start_time, 'mes') }}</small>
+              </span>
+              <span class="arquivo__textos">
+                <span class="arquivo__titulo">{{ data.tour_title }}</span>
+                <span class="arquivo__detalhe">{{ data.start_time | date: 'HH:mm' }} · {{ data.confirmed }} {{ data.confirmed === 1 ? 'pessoa foi' : 'pessoas foram' }}</span>
+              </span>
+              <span class="selo" [class.selo--alerta]="data.status === 'CANCELLED'">{{ data.status === 'CANCELLED' ? 'Cancelada' : 'Aconteceu' }}</span>
+            </li>
+          } @empty {
+            <li class="vazio"><p>Nenhuma data antiga por aqui ainda.</p></li>
+          }
+        </ul>
+
+        <h2 class="pagina__subtitulo">Pedidos que não foram aceitos</h2>
+        <ul class="arquivo">
+          @for (pedido of pedidosArquivados(); track pedido.id) {
+            <li class="arquivo__item">
+              @if (pedido.requester.photo) {
+                <img class="arquivo__pessoa" [src]="pedido.requester.photo" alt="" />
+              } @else {
+                <span class="arquivo__pessoa arquivo__pessoa--inicial" aria-hidden="true">{{ (pedido.requester.first_name || '?').charAt(0) }}</span>
+              }
+              <span class="arquivo__textos">
+                <span class="arquivo__titulo">{{ pedido.requester.first_name }} · {{ pedido.tour_title }}</span>
+                <span class="arquivo__detalhe">{{ pedido.start_time | date: "d/MM 'às' HH:mm" }}</span>
+              </span>
+              <span class="selo selo--alerta">{{ motivoDoArquivo(pedido) }}</span>
+            </li>
+          } @empty {
+            <li class="vazio"><p>Nenhum pedido recusado ou expirado.</p></li>
+          }
+        </ul>
       }
 
       @case ('passeios') {

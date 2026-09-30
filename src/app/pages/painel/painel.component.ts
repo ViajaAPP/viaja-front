@@ -19,7 +19,7 @@ import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/f
 
 registerLocaleData(localePt, 'pt-BR');
 
-type Aba = 'pedidos' | 'agenda' | 'passeios';
+type Aba = 'pedidos' | 'agenda' | 'passeios' | 'arquivados';
 
 interface DiaDaAgenda {
   rotulo: string;
@@ -52,6 +52,8 @@ export class PainelComponent {
   respondidos = signal<PedidoDoPainel[]>([]);
   dias = signal<DiaDaAgenda[]>([]);
   passeios = signal<Tour[]>([]);
+  pedidosArquivados = signal<PedidoDoPainel[]>([]);
+  datasArquivadas = signal<DataDaAgenda[]>([]);
   respondendo = signal<number | null>(null);
   nomeDoGuia = signal('');
 
@@ -60,7 +62,7 @@ export class PainelComponent {
     this.rota.queryParamMap.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe((params) => {
       this.facade.setLoading(false);
       const aba = params.get('aba');
-      this.aba.set(aba === 'agenda' || aba === 'passeios' ? aba : 'pedidos');
+      this.aba.set(aba === 'agenda' || aba === 'passeios' || aba === 'arquivados' ? aba : 'pedidos');
       this.carregar();
     });
   }
@@ -88,6 +90,16 @@ export class PainelComponent {
       this.painelService.agenda().subscribe({
         next: (agenda) => {
           this.dias.set(this.agruparPorDia(agenda));
+          this.carregando.set(false);
+        },
+        error: falhou,
+      });
+    }
+    if (this.aba() === 'arquivados') {
+      this.painelService.arquivados().subscribe({
+        next: ({ pedidos, datas }) => {
+          this.pedidosArquivados.set(pedidos);
+          this.datasArquivadas.set(datas);
           this.carregando.set(false);
         },
         error: falhou,
@@ -140,6 +152,12 @@ export class PainelComponent {
     });
   }
 
+  motivoDoArquivo(pedido: PedidoDoPainel): string {
+    if (pedido.status === 'EXPIRED') return 'Expirou sem resposta';
+    if (pedido.status === 'CANCELLED') return 'Cancelado pela pessoa';
+    return 'Recusado';
+  }
+
   faltamParaSair(data: DataDaAgenda): number {
     return Math.max(data.min_participants - data.confirmed, 0);
   }
@@ -178,6 +196,11 @@ export class PainelComponent {
   proximasDatas(passeio: Tour): number {
     const agora = Date.now();
     return (passeio.tour_instance ?? []).filter((d) => d.status === 'SCHEDULED' && new Date(d.start_time).getTime() > agora).length;
+  }
+
+  abreviacao(inicio: string, parte: 'semana' | 'mes'): string {
+    const opcao: Intl.DateTimeFormatOptions = parte === 'semana' ? { weekday: 'short' } : { month: 'short' };
+    return new Date(inicio).toLocaleDateString('pt-BR', opcao).replace('.', '');
   }
 
   private agruparPorDia(agenda: DataDaAgenda[]): DiaDaAgenda[] {
