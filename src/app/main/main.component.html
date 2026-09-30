@@ -1,110 +1,17 @@
 <div class="main-pages">
-  @if (facade.semConexao()) {
-      <app-sem-conexao/>
-  } @else if (facade.loading()) {
-      <app-loading/>
-  } @else {
-      @switch(facade.currentPage()){
-        @case ('welcome') {
-          @defer (on immediate){
-            <app-welcome/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('login') {
-          @defer (on immediate){
-            <app-login/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('home') {
-          @defer (on immediate){
-            <app-home/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('chat') {
-          @defer (on immediate){
-            <app-chat/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('chat-tour') {
-          @defer (on immediate){
-            <app-chat-message/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('registrar') {
-          @defer (on immediate){
-            <app-registrar/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('perfil') {
-          @defer (on immediate){
-            <app-perfil/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('passeio') {
-          @defer (on immediate){
-            <app-passeio/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('meus-passeios') {
-          @defer (on immediate){
-            <app-meus-passeios/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('passeio-form') {
-          @defer (on immediate){
-            <app-passeio-form/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('passeio-gestao') {
-          @defer (on immediate){
-            <app-passeio-gestao/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('minhas-solicitacoes') {
-          @defer (on immediate){
-            <app-minhas-solicitacoes/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('perfil-editar') {
-          @defer (on immediate){
-            <app-perfil-editar/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-        @case ('favoritos') {
-          @defer (on immediate){
-            <app-favoritos/>
-          }@placeholder{
-            <app-loading/>
-          }
-        }
-      }
-    }
+  @if (!facade.semConexao()) {
+    <router-outlet/>
+  }
 </div>
+
+@if (facade.semConexao()) {
+  <div class="main-camada">
+    <app-sem-conexao/>
+  </div>
+} @else if (facade.loading()) {
+  <div class="main-camada">
+    <app-loading/>
+  </div>
+}
 
 <app-botao-nav *ngIf="facade.showBottomNav() && !facade.loading() && !facade.semConexao()"/>

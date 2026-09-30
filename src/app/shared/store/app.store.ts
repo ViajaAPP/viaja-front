@@ -1,7 +1,8 @@
 import {signalStore, withState, withMethods, withComputed, patchState} from '@ngrx/signals';
-import { computed } from '@angular/core';
+import { computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserRole } from '../enums/user.model';
-import { resolveAllowedPage } from '../config/permissions.config';
+import { caminhoDaPagina } from '../config/rotas.config';
 
 export type AppPage =
   | 'welcome'
@@ -44,12 +45,15 @@ const initialState: AppState = {
 export const AppStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store) => ({
+  withMethods((store, router = inject(Router)) => ({
     navigateTo(page: AppPage, selectedChatId?: number) {
-      patchState(store, { currentPage: resolveAllowedPage(page, store.myRole()), selectedChatId });
+      router.navigateByUrl(caminhoDaPagina(page, selectedChatId));
     },
     navigateToTour(page: AppPage, tourId: number | null) {
-      patchState(store, { currentPage: resolveAllowedPage(page, store.myRole()), selectedTourId: tourId });
+      router.navigateByUrl(caminhoDaPagina(page, tourId));
+    },
+    abrirPagina(page: AppPage, selectedTourId: number | null, selectedChatId: number | null) {
+      patchState(store, { currentPage: page, selectedTourId, selectedChatId });
     },
     setSelectedChatId(chatId?: number) {
       patchState(store, { selectedChatId: chatId });
@@ -73,6 +77,7 @@ export const AppStore = signalStore(
     },
     endSession() {
       patchState(store, { ...initialState, loading: false });
+      router.navigateByUrl('/');
     }
   })),
   withComputed((store) => ({
