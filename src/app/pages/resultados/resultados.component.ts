@@ -160,7 +160,7 @@ export class ResultadosComponent {
   }
 
   editarBusca(): void {
-    const q = this.filtros().q ?? (this.temLocal() ? this.rotulo() : '');
+    const q = this.filtros().q;
     this.router.navigate(['/buscar'], { queryParams: q ? { q } : {} });
   }
 

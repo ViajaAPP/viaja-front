@@ -49,6 +49,7 @@ export interface FiltrosDaBusca {
   quando?: 'hoje' | 'fim-de-semana' | '7-dias';
   nota_min?: number;
   ordem?: 'relevancia' | 'perto' | 'nota' | 'curtidos' | 'preco';
+  limite?: number;
 }
 
 export interface PasseioEncontrado {
