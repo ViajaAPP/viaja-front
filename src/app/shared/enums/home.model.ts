@@ -18,7 +18,10 @@ export interface Activity {
   rating: number;
   reviewCount: number;
   tag?: string;
-  tagType?: 'recommended' | 'popular' | 'new';
+  tagType?: 'recommended' | 'popular' | 'new' | 'nearby';
+  distance_km?: number;
+  city?: string;
+  uf?: string;
 }
 
 export interface HomeResponse {

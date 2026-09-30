@@ -9,6 +9,7 @@ import {
   TourPayload,
   TourRequestItem,
 } from '../../enums/tour.model';
+import { Activity } from '../../enums/home.model';
 
 @Injectable({ providedIn: 'root' })
 export class TourService {
@@ -16,6 +17,10 @@ export class TourService {
 
   listarPasseiosGerenciados(): Observable<Tour[]> {
     return this.request.get<Tour[]>('/tour/mine');
+  }
+
+  listarPasseiosPerto(lat: number, lon: number): Observable<Activity[]> {
+    return this.request.get<Activity[]>(`/tour/perto?lat=${lat}&lon=${lon}`);
   }
 
   buscarPasseio(tourId: number): Observable<TourDetail> {

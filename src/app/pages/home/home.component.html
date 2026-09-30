@@ -20,7 +20,35 @@
     </div>
   </nav>
 
-    <h2 class="home__section-title" id="section-title">Passeios populares</h2>
+    <h2 class="home__section-title" id="section-title">
+      {{ mostrandoPerto() ? 'Passeios perto de você' : 'Passeios populares' }}
+    </h2>
+
+    @if (mostrandoPerto()) {
+      @switch (situacaoPerto()) {
+        @case ('buscando') {
+          <p class="home__aviso" role="status">Procurando passeios perto de você...</p>
+        }
+        @case ('sem-permissao') {
+          <p class="home__aviso" role="status">
+            Para mostrar o que está perto, o navegador precisa da sua localização. Libere nas
+            configurações do site e toque em "mais perto" de novo.
+          </p>
+        }
+        @case ('erro') {
+          <p class="home__aviso" role="status">
+            Não conseguimos achar sua localização agora. Tente de novo daqui a pouco.
+          </p>
+        }
+        @case ('pronto') {
+          @if (popularActivities().length === 0) {
+            <p class="home__aviso" role="status">
+              Ainda não tem passeio perto de você. Dá uma olhada nos populares enquanto isso.
+            </p>
+          }
+        }
+      }
+    }
 
     <ul class="home__activities" role="list">
       @for (activity of popularActivities(); track activity.id) {
