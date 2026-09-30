@@ -96,6 +96,7 @@ export interface TourDetail extends Tour {
   reviews: TourReview[];
   rating: RatingSummary;
   review_instance_id: number | null;
+  guide_response: { hours: number; label: string; samples: number } | null;
 }
 
 export interface TourRequestItem {

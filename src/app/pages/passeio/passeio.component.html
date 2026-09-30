@@ -54,7 +54,12 @@
         </div>
 
         @if (dados.guide) {
-          <p class="passeio__guia">Com {{ dados.guide.first_name }} {{ dados.guide.last_name }}</p>
+          <div class="passeio__guia-bloco">
+            <p class="passeio__guia">Com {{ dados.guide.first_name }} {{ dados.guide.last_name }}</p>
+            @if (dados.guide_response; as resposta) {
+              <p class="passeio__resposta"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> Costuma responder {{ resposta.label }}</p>
+            }
+          </div>
         }
 
         <div class="cartao">
