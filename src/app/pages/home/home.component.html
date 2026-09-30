@@ -111,7 +111,7 @@
                 <div>
                   <h3 class="activity-card__title">{{ activity.title }}</h3>
                   <div class="activity-card__selos">
-                    <span class="activity-card__selo"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ activity.city }}@if (activity.distance_km != null) { · {{ activity.distance_km }} km }</span>
+                    <span class="activity-card__selo"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ activity.city }} - {{ activity.uf }}@if (activity.distance_km != null) { · {{ activity.distance_km }} km }</span>
                     @if (activity.nextDate) {
                       <span class="activity-card__selo"><i class="bi bi-calendar-event" aria-hidden="true"></i> {{ proximaData(activity.nextDate) }}</span>
                       @if (activity.spotsLeft === 0) {
