@@ -1,0 +1,26 @@
+@if (feedback.confirmacao(); as pedido) {
+  <div class="confirmacao" (click)="cancelar()">
+    <div
+      class="confirmacao__caixa"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="confirmacao-titulo"
+      aria-describedby="confirmacao-texto"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 class="confirmacao__titulo" id="confirmacao-titulo">{{ pedido.titulo }}</h2>
+      <p class="confirmacao__texto" id="confirmacao-texto">{{ pedido.texto }}</p>
+      <div class="confirmacao__acoes">
+        <button #cancelarBotao class="btn-secundario" type="button" (click)="feedback.responder(false)">Voltar</button>
+        <button
+          class="btn-primary"
+          [class.confirmacao__perigo]="pedido.perigo"
+          type="button"
+          (click)="feedback.responder(true)"
+        >
+          {{ pedido.confirmar }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

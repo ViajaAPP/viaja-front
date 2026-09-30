@@ -5,6 +5,8 @@ import { LoadingComponent } from '../shared/components/loading/loading.component
 import { SemConexaoComponent } from '../shared/components/sem-conexao/sem-conexao.component';
 import { AppFacade } from '../shared/facade/app.facade';
 import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.component';
+import { ConfirmacaoComponent } from '../shared/components/confirmacao/confirmacao.component';
+import { AvisoComponent } from '../shared/components/aviso/aviso.component';
 
 @Component({
   selector: 'app-main',
@@ -15,6 +17,8 @@ import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.comp
     BotaoNavComponent,
     LoadingComponent,
     SemConexaoComponent,
+    ConfirmacaoComponent,
+    AvisoComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

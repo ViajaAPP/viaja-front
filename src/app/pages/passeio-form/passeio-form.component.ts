@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { FeedbackService } from '../../shared/services/feedback/feedback.service';
 import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { CidadesService } from '../../shared/services/cidades/cidades.service';
@@ -21,6 +22,7 @@ import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-fot
 export class PasseioFormComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly navigationService = inject(NavigationService);
+  private readonly feedback = inject(FeedbackService);
   private readonly tourService = inject(TourService);
   private readonly cidadesService = inject(CidadesService);
   private readonly destroyRef = inject(DestroyRef);
@@ -131,13 +133,19 @@ export class PasseioFormComponent implements OnInit {
     this.erro.set('');
     if (this.tourId) {
       this.tourService.editarPasseio(this.tourId, this.passeio).subscribe({
-        next: () => this.navigationService.navigateTo('meus-passeios'),
+        next: () => {
+          this.feedback.sucesso('Passeio atualizado.');
+          this.navigationService.navigateTo('meus-passeios');
+        },
         error: (error: HttpErrorResponse) => this.falhou(error),
       });
       return;
     }
     this.tourService.criarPasseio(this.passeio).subscribe({
-      next: ({ tour_id }) => this.navigationService.navigateToTour('passeio-gestao', tour_id),
+      next: ({ tour_id }) => {
+        this.feedback.sucesso('Passeio criado. Agora marque as datas.');
+        this.navigationService.navigateToTour('passeio-gestao', tour_id);
+      },
       error: (error: HttpErrorResponse) => this.falhou(error),
     });
   }

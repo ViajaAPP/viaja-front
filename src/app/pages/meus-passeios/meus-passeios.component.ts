@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { FeedbackService } from '../../shared/services/feedback/feedback.service';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { Tour } from '../../shared/enums/tour.model';
@@ -16,10 +17,12 @@ export class MeusPasseiosComponent implements OnInit {
   readonly facade = inject(AppFacade);
   private readonly navigationService = inject(NavigationService);
   private readonly tourService = inject(TourService);
+  private readonly feedback = inject(FeedbackService);
 
   passeios = signal<Tour[]>([]);
   carregando = signal(true);
   erro = signal('');
+  mudando = signal<number | null>(null);
 
   ngOnInit(): void {
     this.buscarPasseios();
@@ -46,12 +49,27 @@ export class MeusPasseiosComponent implements OnInit {
     return passeio.tour_instance?.length ?? 0;
   }
 
-  alternarPublicacao(passeio: Tour): void {
-    this.erro.set('');
+  async alternarPublicacao(passeio: Tour): Promise<void> {
+    if (this.mudando()) return;
+    if (passeio.published) {
+      const confirmou = await this.feedback.confirmar({
+        titulo: 'Tirar o passeio do ar?',
+        texto: 'Ele some da busca e ninguém consegue pedir vaga até ser publicado de novo.',
+        confirmar: 'Tirar do ar',
+      });
+      if (!confirmou) return;
+    }
+    this.mudando.set(passeio.id);
     this.tourService.publicarPasseio(passeio.id, !passeio.published).subscribe({
-      next: () => this.buscarPasseios(),
-      error: (error: HttpErrorResponse) =>
-        this.erro.set(mensagemDeErro(error, 'Não conseguimos mudar a publicação.')),
+      next: () => {
+        this.mudando.set(null);
+        this.feedback.sucesso(passeio.published ? 'Passeio fora do ar.' : 'Passeio publicado.');
+        this.buscarPasseios();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.mudando.set(null);
+        this.feedback.erro(mensagemDeErro(error, 'Não conseguimos mudar a publicação.'));
+      },
     });
   }
 

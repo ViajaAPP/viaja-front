@@ -21,10 +21,10 @@
             {{ dados.published ? 'Publicado' : 'Rascunho, só você vê' }}
           </span>
           <div class="cartao__acoes">
-            <button class="btn-primary" type="button" (click)="alternarPublicacao(dados)">
+            <button class="btn-primary" type="button" [disabled]="ocupado()" (click)="alternarPublicacao(dados)">
               {{ dados.published ? 'Tirar do ar' : 'Publicar' }}
             </button>
-            <button class="btn-secundario" type="button" (click)="editarPasseio()">
+            <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="editarPasseio()">
               Editar informações
             </button>
           </div>
@@ -58,7 +58,7 @@
               <small class="campo-erro">Pelo menos 1 vaga.</small>
             </div>
           </div>
-          <button class="btn-primary" type="submit">
+          <button class="btn-primary" type="submit" [disabled]="ocupado()">
             Adicionar data
           </button>
         </form>
@@ -95,35 +95,36 @@
                   type="number"
                   min="1"
                   [name]="'vagas-' + data.id"
+                  [min]="data.current_capacity || 1"
                   [(ngModel)]="vagasEditadas[data.id]"
                 />
-                <button class="btn-secundario" type="button" (click)="salvarVagas(data)">Salvar</button>
+                <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="salvarVagas(data)">Salvar</button>
               </div>
 
               <div class="cartao__acoes">
                 @if (data.registration === 'OPEN') {
-                  <button class="btn-secundario" type="button" (click)="mudarRecebimentoDePedidos(data, 'CLOSED')">
+                  <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarRecebimentoDePedidos(data, 'CLOSED')">
                     Parar de receber pedidos
                   </button>
                 } @else {
-                  <button class="btn-secundario" type="button" (click)="mudarRecebimentoDePedidos(data, 'OPEN')">
+                  <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarRecebimentoDePedidos(data, 'OPEN')">
                     Voltar a receber pedidos
                   </button>
                 }
-                <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'DONE')">
+                <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarStatus(data, 'DONE')">
                   Marcar como realizado
                 </button>
-                <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'CANCELLED')">
+                <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="mudarStatus(data, 'CANCELLED')">
                   Cancelar data
                 </button>
               </div>
             }
 
             <div class="cartao__acoes">
-              <button class="btn-primary" type="button" (click)="alternarSolicitacoes(data)">
+              <button class="btn-primary" type="button" [disabled]="ocupado()" (click)="alternarSolicitacoes(data)">
                 {{ dataAberta() === data.id ? 'Esconder pedidos' : 'Ver pedidos' }}
               </button>
-              <button class="btn-secundario" type="button" (click)="abrirChat(data)">
+              <button class="btn-secundario" type="button" [disabled]="ocupado()" (click)="abrirChat(data)">
                 Chat do grupo
               </button>
             </div>
@@ -152,6 +153,7 @@
                         <button
                           class="btn-primary"
                           type="button"
+                          [disabled]="ocupado()"
                           (click)="responder(solicitacao, 'ACCEPTED')"
                         >
                           Aceitar
@@ -159,6 +161,7 @@
                         <button
                           class="btn-secundario"
                           type="button"
+                          [disabled]="ocupado()"
                           (click)="responder(solicitacao, 'DENIED')"
                         >
                           Recusar

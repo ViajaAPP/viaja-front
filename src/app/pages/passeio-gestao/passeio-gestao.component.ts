@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { FeedbackService } from '../../shared/services/feedback/feedback.service';
 import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { ApiService } from '../../shared/services/api/api.service';
@@ -38,6 +39,7 @@ export class PasseioGestaoComponent implements OnInit {
   private readonly navigationService = inject(NavigationService);
   private readonly tourService = inject(TourService);
   private readonly apiService = inject(ApiService);
+  private readonly feedback = inject(FeedbackService);
 
   readonly tourId = this.facade.selectedTourId();
   readonly formatoData = DATE_TIME_FORMAT;
@@ -49,6 +51,7 @@ export class PasseioGestaoComponent implements OnInit {
   solicitacoes = signal<TourRequestItem[]>([]);
   dataAberta = signal<number | null>(null);
   erro = signal('');
+  ocupado = signal(false);
 
   novaData = { inicio: '', vagas: VAGAS_PADRAO };
   vagasEditadas: Record<number, number> = {};
@@ -72,8 +75,19 @@ export class PasseioGestaoComponent implements OnInit {
     if (dataAberta) this.buscarSolicitacoes(dataAberta);
   }
 
-  alternarPublicacao(passeio: TourDetail): void {
-    this.executar(this.tourService.publicarPasseio(passeio.id, !passeio.published));
+  async alternarPublicacao(passeio: TourDetail): Promise<void> {
+    if (passeio.published) {
+      const confirmou = await this.feedback.confirmar({
+        titulo: 'Tirar o passeio do ar?',
+        texto: 'Ele some da busca e ninguém consegue pedir vaga até você publicar de novo.',
+        confirmar: 'Tirar do ar',
+      });
+      if (!confirmou) return;
+    }
+    this.executar(
+      this.tourService.publicarPasseio(passeio.id, !passeio.published),
+      passeio.published ? 'Passeio fora do ar.' : 'Passeio publicado.',
+    );
   }
 
   agora(): string {
@@ -92,21 +106,43 @@ export class PasseioGestaoComponent implements OnInit {
       start_time: new Date(this.novaData.inicio).toISOString(),
       max_capacity: this.novaData.vagas,
     };
-    this.executar(this.tourService.criarData(this.tourId, payload), () => {
+    this.executar(this.tourService.criarData(this.tourId, payload), 'Data adicionada.', () => {
       this.novaData = { inicio: '', vagas: VAGAS_PADRAO };
     });
   }
 
   salvarVagas(data: TourInstance): void {
-    this.editarData(data, { max_capacity: this.vagasEditadas[data.id] });
+    const vagas = Number(this.vagasEditadas[data.id]);
+    const ocupadas = data.current_capacity ?? 0;
+    if (!vagas || vagas < Math.max(ocupadas, 1)) {
+      this.feedback.erro(ocupadas
+        ? `Já tem ${ocupadas} ${ocupadas === 1 ? 'pessoa confirmada' : 'pessoas confirmadas'}. As vagas não podem ficar abaixo disso.`
+        : 'Coloque pelo menos 1 vaga.');
+      return;
+    }
+    this.editarData(data, { max_capacity: vagas }, 'Vagas salvas.');
   }
 
   mudarRecebimentoDePedidos(data: TourInstance, registration: RegistrationStatus): void {
-    this.editarData(data, { registration });
+    this.editarData(data, { registration }, registration === 'OPEN' ? 'Pedidos abertos de novo.' : 'Pedidos fechados para essa data.');
   }
 
-  mudarStatus(data: TourInstance, status: TourStatus): void {
-    this.editarData(data, { status });
+  async mudarStatus(data: TourInstance, status: TourStatus): Promise<void> {
+    const cancelar = status === 'CANCELLED';
+    const confirmou = await this.feedback.confirmar(cancelar
+      ? {
+          titulo: 'Cancelar essa data?',
+          texto: 'Quem já tem vaga vai ver que a data foi cancelada. Isso não dá para desfazer.',
+          confirmar: 'Cancelar data',
+          perigo: true,
+        }
+      : {
+          titulo: 'O passeio já aconteceu?',
+          texto: 'A data sai da lista de próximas e não recebe mais pedidos. Isso não dá para desfazer.',
+          confirmar: 'Já aconteceu',
+        });
+    if (!confirmou) return;
+    this.editarData(data, { status }, cancelar ? 'Data cancelada.' : 'Data marcada como realizada.');
   }
 
   alternarSolicitacoes(data: TourInstance): void {
@@ -118,8 +154,21 @@ export class PasseioGestaoComponent implements OnInit {
     this.buscarSolicitacoes(data.id);
   }
 
-  responder(solicitacao: TourRequestItem, status: RequestStatus): void {
-    this.executar(this.tourService.responderSolicitacao(solicitacao.id, status));
+  async responder(solicitacao: TourRequestItem, status: RequestStatus): Promise<void> {
+    const nome = solicitacao.requester?.first_name || 'essa pessoa';
+    if (status === 'DENIED') {
+      const confirmou = await this.feedback.confirmar({
+        titulo: `Recusar o pedido de ${nome}?`,
+        texto: 'A pessoa vai ver que não conseguiu a vaga nessa data.',
+        confirmar: 'Recusar',
+        perigo: true,
+      });
+      if (!confirmou) return;
+    }
+    this.executar(
+      this.tourService.responderSolicitacao(solicitacao.id, status),
+      status === 'ACCEPTED' ? `${nome} está no grupo.` : 'Pedido recusado.',
+    );
   }
 
   abrirChat(data: TourInstance): void {
@@ -141,9 +190,9 @@ export class PasseioGestaoComponent implements OnInit {
     this.navigationService.navigateTo('meus-passeios');
   }
 
-  private editarData(data: TourInstance, payload: TourInstancePayload): void {
+  private editarData(data: TourInstance, payload: TourInstancePayload, sucesso: string): void {
     if (!this.tourId) return;
-    this.executar(this.tourService.editarData(this.tourId, data.id, payload));
+    this.executar(this.tourService.editarData(this.tourId, data.id, payload), sucesso);
   }
 
   private buscarSolicitacoes(instanceId: number): void {
@@ -153,14 +202,21 @@ export class PasseioGestaoComponent implements OnInit {
     });
   }
 
-  private executar(acao: Observable<unknown>, depois?: () => void): void {
+  private executar(acao: Observable<unknown>, sucesso: string, depois?: () => void): void {
+    if (this.ocupado()) return;
+    this.ocupado.set(true);
     this.erro.set('');
     acao.subscribe({
       next: () => {
+        this.ocupado.set(false);
         depois?.();
+        this.feedback.sucesso(sucesso);
         this.recarregar();
       },
-      error: (error: HttpErrorResponse) => this.mostrarErro(error),
+      error: (error: HttpErrorResponse) => {
+        this.ocupado.set(false);
+        this.feedback.erro(mensagemDeErro(error, 'Algo deu errado. Tente de novo.'));
+      },
     });
   }
 

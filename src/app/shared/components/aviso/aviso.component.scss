@@ -1,0 +1,32 @@
+.aviso-area {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 1050;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.aviso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 420px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+
+  i {
+    color: #d9f18c;
+  }
+
+  &--erro i {
+    color: #ff9b95;
+  }
+}

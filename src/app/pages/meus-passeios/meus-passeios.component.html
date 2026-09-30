@@ -42,8 +42,8 @@
         </p>
 
         <div class="cartao__acoes">
-          <button class="btn-primary" type="button" (click)="alternarPublicacao(passeio)">
-            {{ passeio.published ? 'Tirar do ar' : 'Publicar' }}
+          <button class="btn-primary" type="button" [disabled]="mudando() === passeio.id" (click)="alternarPublicacao(passeio)">
+            {{ mudando() === passeio.id ? 'Salvando...' : passeio.published ? 'Tirar do ar' : 'Publicar' }}
           </button>
           @if (ehDono(passeio)) {
             <button class="btn-secundario" type="button" (click)="gerenciar(passeio)">

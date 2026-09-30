@@ -1,0 +1,13 @@
+<div class="aviso-area" aria-live="polite">
+  @if (feedback.aviso(); as aviso) {
+    <div class="aviso" [class.aviso--erro]="aviso.tipo === 'erro'" [attr.role]="aviso.tipo === 'erro' ? 'alert' : 'status'">
+      <i
+        class="bi"
+        [class.bi-check-circle-fill]="aviso.tipo === 'sucesso'"
+        [class.bi-exclamation-circle-fill]="aviso.tipo === 'erro'"
+        aria-hidden="true"
+      ></i>
+      <span>{{ aviso.texto }}</span>
+    </div>
+  }
+</div>
