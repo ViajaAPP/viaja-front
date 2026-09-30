@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { UserRole } from '../../enums/user.model';
+import { limparCacheDeRespostas } from '../../interceptors/cache.interceptor';
 
 export interface SessaoSalva {
   userId: number;
@@ -64,6 +65,7 @@ export class AuthService {
   }
 
   clearToken(): void {
+    limparCacheDeRespostas();
     localStorage.removeItem(this.TOKEN_KEY);
     this.tokenSubject.next(null);
   }
