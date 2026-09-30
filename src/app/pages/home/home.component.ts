@@ -1,55 +1,52 @@
-import { Component, inject, signal, OnInit, DestroyRef, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { AppFacade } from '../../shared/facade';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
-import { HomeResponse, Category, Activity } from '../../shared/enums/home.model';
-import { TourService } from '../../shared/services/tour/tour.service';
+import { HomeResponse, Category } from '../../shared/enums/home.model';
 import { FalhaDePosicao, LocalizacaoService } from '../../shared/services/localizacao/localizacao.service';
-import { NavigationService } from '../../shared/services/navigation';
-import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
+import { BuscaService, FiltrosDaBusca, PasseioEncontrado } from '../../shared/services/busca/busca.service';
+import { CartaoPasseioComponent } from '../../shared/components/cartao-passeio/cartao-passeio.component';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
+
+const FILTROS_DA_CATEGORIA: Record<string, FiltrosDaBusca> = {
+  all: { ordem: 'relevancia' },
+  'most-liked': { ordem: 'curtidos' },
+  'most-searched': { ordem: 'procurados' },
+};
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, BotaoFavoritoComponent, FalhaCarregarComponent],
+  imports: [HeaderComponent, CartaoPasseioComponent, FalhaCarregarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly dados = inject(DadosClienteService);
-  private readonly navigationService = inject(NavigationService);
-  private readonly tourService = inject(TourService);
+  private readonly router = inject(Router);
+  private readonly buscaService = inject(BuscaService);
   private readonly localizacao = inject(LocalizacaoService);
-  readonly starIndexes = [0, 1, 2, 3, 4];
-  
+
   dadosHome = signal<HomeResponse | null>(null);
   erro = signal('');
-  searchQuery = signal<string>('');
   selectedCategoryId = signal<string>('all');
   categories = computed(() => this.dadosHome()?.categories ?? []);
-  passeiosPerto = signal<Activity[] | null>(null);
+  passeios = signal<PasseioEncontrado[]>([]);
+  carregandoLista = signal(true);
   situacaoPerto = signal<'parado' | 'buscando' | 'sem-permissao' | 'erro' | 'pronto'>('parado');
   mostrandoPerto = computed(() => this.selectedCategoryId() === 'nearby');
+  private posicao: { lat: number; lon: number } | null = null;
 
-  popularActivities = computed(() => {
-    const all = this.dadosHome()?.popularActivities ?? [];
-    const selectedId = this.selectedCategoryId();
-
-    if (selectedId === 'all') return all;
-    if (selectedId === 'nearby') return this.passeiosPerto() ?? [];
-
-    const medida = selectedId === 'most-liked'
-      ? (activity: Activity) => activity.likes ?? 0
-      : selectedId === 'most-searched'
-        ? (activity: Activity) => activity.searches ?? 0
-        : null;
-    if (!medida) return all;
-
-    return all.filter((activity) => medida(activity) > 0).sort((a, b) => medida(b) - medida(a));
+  tituloDaLista = computed(() => {
+    switch (this.selectedCategoryId()) {
+      case 'nearby': return 'Perto de você';
+      case 'most-liked': return 'Mais curtidos';
+      case 'most-searched': return 'Mais procurados';
+      default: return 'Passeios para você';
+    }
   });
 
   ngOnInit(): void {
@@ -62,9 +59,8 @@ export class HomeComponent implements OnInit {
       next: (data) => {
         this.facade.setLoading(false);
         this.dadosHome.set(data);
-
         const activeCategory = data.categories.find((cat: Category) => cat.active);
-        if (activeCategory) this.selectedCategoryId.set(activeCategory.id);
+        this.selectCategory(activeCategory?.id ?? 'all');
       },
       error: (error) => {
         this.facade.setLoading(false);
@@ -79,45 +75,69 @@ export class HomeComponent implements OnInit {
     this.buscarDadosHome();
   }
 
-  onSearchInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(value);
-  }
-
   selectCategory(selectedId: string): void {
     this.selectedCategoryId.set(selectedId);
-    if (selectedId === 'nearby' && this.situacaoPerto() !== 'pronto') this.buscarPasseiosPerto();
+    if (selectedId === 'nearby') {
+      this.buscarPasseiosPerto();
+      return;
+    }
+    this.carregarLista(FILTROS_DA_CATEGORIA[selectedId] ?? FILTROS_DA_CATEGORIA['all']);
   }
 
-  private buscarPasseiosPerto(): void {
-    this.situacaoPerto.set('buscando');
-    this.localizacao.acompanhar().subscribe({
-      next: (posicao) => {
-        this.tourService.listarPasseiosPerto(posicao.lat, posicao.lon).subscribe({
-          next: (passeios) => {
-            this.passeiosPerto.set(passeios);
-            this.situacaoPerto.set('pronto');
-          },
-          error: () => this.situacaoPerto.set('erro'),
-        });
-      },
-      error: (falha: FalhaDePosicao) => this.situacaoPerto.set(falha),
+  verTodos(): void {
+    const filtros = this.filtrosAtuais();
+    if (!filtros) return;
+    this.router.navigate(['/buscar/resultados'], {
+      queryParams: { ...filtros, rotulo: this.tituloDaLista(), detalhe: this.mostrandoPerto() ? 'Até 50 km' : 'Todo o Brasil' },
     });
-  }
-
-  abrirPasseio(tourId: string): void {
-    this.navigationService.navigateToTour('passeio', Number(tourId));
   }
 
   textoDaListaVazia(): string {
     switch (this.selectedCategoryId()) {
       case 'most-liked': return 'Ninguém curtiu passeios ainda. Toque no coração dos que você gostar.';
       case 'most-searched': return 'Ninguém pediu vaga em passeios ainda.';
+      case 'nearby': return 'Ainda não tem passeio perto de você. Dá uma olhada nos outros enquanto isso.';
       default: return 'Ainda não tem passeios publicados por aqui.';
     }
   }
 
-  isStarFilled(index: number, rating: number): boolean {
-    return index < Math.round(rating);
+  private filtrosAtuais(): FiltrosDaBusca | null {
+    if (this.mostrandoPerto()) return this.posicao ? { ...this.posicao, raio: 50, ordem: 'perto' } : null;
+    return FILTROS_DA_CATEGORIA[this.selectedCategoryId()] ?? FILTROS_DA_CATEGORIA['all'];
+  }
+
+  private carregarLista(filtros: FiltrosDaBusca): void {
+    const categoria = this.selectedCategoryId();
+    this.carregandoLista.set(true);
+    this.buscaService.passeios({ ...filtros, limite: 12 }).subscribe({
+      next: (passeios) => {
+        if (this.selectedCategoryId() !== categoria) return;
+        const uteis = filtros.ordem === 'curtidos'
+          ? passeios.filter((p) => p.likes > 0)
+          : filtros.ordem === 'procurados' ? passeios.filter((p) => p.searches > 0) : passeios;
+        this.passeios.set(uteis);
+        this.carregandoLista.set(false);
+      },
+      error: () => {
+        this.passeios.set([]);
+        this.carregandoLista.set(false);
+      },
+    });
+  }
+
+  private buscarPasseiosPerto(): void {
+    this.situacaoPerto.set('buscando');
+    this.passeios.set([]);
+    this.localizacao.acompanhar().subscribe({
+      next: (posicao) => {
+        this.posicao = posicao;
+        this.situacaoPerto.set('pronto');
+        this.carregarLista({ ...posicao, raio: 50, ordem: 'perto' });
+      },
+      error: (falha: FalhaDePosicao) => {
+        this.situacaoPerto.set(falha);
+        this.carregandoLista.set(false);
+      },
+    });
   }
 }

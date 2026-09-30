@@ -1,28 +1,30 @@
 @if (dadosHome(); as data) {
-    
-    <app-header [dados]="data" />
-    
- <section class="home__section" aria-labelledby="section-title">
-  <nav class="home__categories" aria-label="Categorias de passeios">
-    <div class="home__categories-scroll" role="list">
-      @for (cat of categories(); track cat.id) {
-        <button
-          class="home__category-chip"
-          [class.home__category-chip--active]="selectedCategoryId() === cat.id"
-          [attr.aria-pressed]="selectedCategoryId() === cat.id"
-          type="button"
-          role="listitem"
-          (click)="selectCategory(cat.id)"
-        >
-          {{ cat.label }}
-        </button>
+  <app-header [dados]="data" />
+
+  <section class="home__section" aria-labelledby="section-title">
+    <nav class="home__categories" aria-label="Categorias de passeios">
+      <div class="home__categories-scroll" role="list">
+        @for (cat of categories(); track cat.id) {
+          <button
+            class="home__category-chip"
+            [class.home__category-chip--active]="selectedCategoryId() === cat.id"
+            [attr.aria-pressed]="selectedCategoryId() === cat.id"
+            type="button"
+            role="listitem"
+            (click)="selectCategory(cat.id)"
+          >
+            {{ cat.label }}
+          </button>
+        }
+      </div>
+    </nav>
+
+    <div class="home__titulo-linha">
+      <h2 class="home__section-title" id="section-title">{{ tituloDaLista() }}</h2>
+      @if (passeios().length) {
+        <button class="home__ver-todos" type="button" (click)="verTodos()">Ver todos</button>
       }
     </div>
-  </nav>
-
-    <h2 class="home__section-title" id="section-title">
-      {{ mostrandoPerto() ? 'Passeios perto de você' : 'Passeios populares' }}
-    </h2>
 
     @if (mostrandoPerto()) {
       @switch (situacaoPerto()) {
@@ -40,96 +42,29 @@
             Não conseguimos achar sua localização agora. Tente de novo daqui a pouco.
           </p>
         }
-        @case ('pronto') {
-          @if (popularActivities().length === 0) {
-            <p class="home__aviso" role="status">
-              Ainda não tem passeio perto de você. Dá uma olhada nos populares enquanto isso.
-            </p>
-          }
-        }
       }
     }
 
-    <ul class="home__activities" role="list">
-      @for (activity of popularActivities(); track activity.id) {
-        <li class="activity-card" role="listitem" (click)="abrirPasseio(activity.id)">
-
-          <div class="activity-card__photo">
-            <img
-              class="activity-card__image"
-              [src]="activity.imageUrl"
-              [alt]="activity.title"
-              loading="lazy"
-            />
-
-            <div class="activity-card__top-row">
-              @if (activity.tag) {
-                <span class="activity-card__tag">{{ activity.tag }}</span>
-              }
-              <app-botao-favorito
-                class="activity-card__favorito"
-                [tourId]="activity.id"
-                [titulo]="activity.title"
-                [favorito]="!!activity.favorite"
-              />
-            </div>
-          </div>
-
-          <div class="activity-card__body">
-            <div class="activity-card__guide-row">
-              @if (activity.guideFoto) {
-                <img
-                  class="activity-card__avatar"
-                  [src]="activity.guideFoto"
-                  [alt]="'Foto de ' + activity.guide"
-                  loading="lazy"
-                />
-              } @else {
-                <span class="activity-card__avatar activity-card__avatar--inicial" aria-hidden="true">
-                  {{ (activity.guide || '?').charAt(0) }}
-                </span>
-              }
-              <div class="activity-card__guide-info">
-                @if (activity.rating && activity.reviewCount) {
-                  <div class="activity-card__stars" [attr.aria-label]="'Nota ' + activity.rating + ' de 5, ' + activity.reviewCount + (activity.reviewCount === 1 ? ' avaliação' : ' avaliações')">
-                    @for (i of starIndexes; track i) {
-                      <span
-                        class="activity-card__star"
-                        [class.activity-card__star--on]="isStarFilled(i, activity.rating)"
-                        aria-hidden="true"
-                      >★</span>
-                    }
-                    <span class="activity-card__nota" aria-hidden="true">{{ activity.rating }} ({{ activity.reviewCount }})</span>
-                  </div>
-                } @else {
-                  <span class="activity-card__sem-nota">Sem avaliações ainda</span>
-                }
-                <span class="activity-card__guide-name">{{ activity.guide }}</span>
-              </div>
-            </div>
-
-            <div class="activity-card__bottom-row">
-              <h3 class="activity-card__title">{{ activity.title }}</h3>
-              <button
-                class="activity-card__arrow"
-                type="button"
-                [attr.aria-label]="'Ver detalhes de ' + activity.title"
-              >
-                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </li>
-      } @empty {
-        @if (!mostrandoPerto()) {
-          <li class="home__aviso" role="status">{{ textoDaListaVazia() }}</li>
+    @if (carregandoLista()) {
+      <ul class="home__lista" aria-busy="true" aria-label="Carregando passeios">
+        @for (i of [1, 2, 3]; track i) {
+          <li class="home__esqueleto"></li>
         }
+      </ul>
+    } @else {
+      <ul class="home__lista">
+        @for (passeio of passeios(); track passeio.id) {
+          <li><app-cartao-passeio [passeio]="passeio" /></li>
+        } @empty {
+          @if (!mostrandoPerto() || situacaoPerto() === 'pronto') {
+            <li class="home__aviso" role="status">{{ textoDaListaVazia() }}</li>
+          }
+        }
+      </ul>
+      @if (passeios().length >= 6) {
+        <button class="btn-secundario home__mais" type="button" (click)="verTodos()">Ver todos os passeios</button>
       }
-    </ul>
+    }
   </section>
 } @else if (erro()) {
   <div class="pagina">
