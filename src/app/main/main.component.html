@@ -1,4 +1,4 @@
-<div class="main-pages">
+<div class="main-pages" [class.main-pages--com-nav]="facade.showBottomNav() && !facade.semConexao()" [class.main-pages--menu-aberto]="layout.menuAberto()">
   @if (!facade.semConexao()) {
     <router-outlet/>
   }

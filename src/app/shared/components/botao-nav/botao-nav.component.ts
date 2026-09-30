@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { AppFacade } from '../../facade/app.facade';
 import { AvisosService } from '../../services/avisos/avisos.service';
+import { LayoutService } from '../../services/layout/layout.service';
 import { NavigationService } from '../../services/navigation/navigation.service';
 import { AppPage } from '../../store/app.store';
 
@@ -14,6 +15,7 @@ export class BotaoNavComponent {
   facade = inject(AppFacade);
   private navigation = inject(NavigationService);
   readonly avisos = inject(AvisosService);
+  readonly layout = inject(LayoutService);
 
   readonly navItems = computed<{ id: AppPage; icon: string; label: string }[]>(() => [
     { id: 'home', icon: 'bi bi-house-door-fill', label: 'Início' },

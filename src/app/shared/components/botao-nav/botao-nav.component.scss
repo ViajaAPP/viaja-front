@@ -1,3 +1,5 @@
+@use 'responsivo' as *;
+
 :host {
   display: flex;
   justify-content: center;
@@ -74,4 +76,115 @@
   font-size: 10px;
   font-weight: 700;
   line-height: 18px;
+}
+
+.bottom-nav__topo {
+  display: none;
+}
+
+@include a-partir-do-pc {
+  :host {
+    display: block;
+  }
+
+  .bottom-nav {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 76px;
+    padding: 18px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 4px;
+    border-radius: 0;
+    border: none;
+    border-right: 1px solid #ece6d6;
+    background: #fffaf0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transform: none;
+    transition: width 0.2s ease;
+
+    &--aberta {
+      width: 220px;
+    }
+  }
+
+  .bottom-nav__topo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .bottom-nav__alternar {
+    flex-shrink: 0;
+    width: 52px;
+    height: 44px;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: #3e3e3e;
+    font-size: 20px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f3eedf;
+    }
+  }
+
+  .bottom-nav__marca {
+    display: none;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #3d5c00;
+    white-space: nowrap;
+  }
+
+  .bottom-nav--aberta .bottom-nav__marca {
+    display: block;
+  }
+
+  .bottom-nav__btn {
+    flex: none;
+    height: 48px;
+    padding: 0 16px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 14px;
+    border-radius: 14px;
+    color: #3e3e3e;
+
+    &:not(.bottom-nav__btn--active):hover {
+      background: #f3eedf;
+    }
+  }
+
+  .bottom-nav__btn--active {
+    background: #d9f18d;
+    color: #2e4500;
+  }
+
+  .bottom-nav__rotulo {
+    display: none;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .bottom-nav--aberta .bottom-nav__rotulo {
+    display: inline;
+  }
+
+  .bottom-nav__contador {
+    top: 6px;
+    right: 6px;
+  }
+
+  .bottom-nav--aberta .bottom-nav__contador {
+    position: static;
+    margin-left: auto;
+    order: 3;
+  }
 }

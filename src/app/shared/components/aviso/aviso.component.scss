@@ -3,6 +3,11 @@
   left: 16px;
   right: 16px;
   bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+
+  @media (min-width: 1024px) {
+    left: 92px;
+    bottom: 24px;
+  }
   z-index: 1050;
   display: flex;
   justify-content: center;

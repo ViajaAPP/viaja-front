@@ -1,6 +1,19 @@
+@use 'responsivo' as *;
+
 .main-camada {
   position: fixed;
   inset: 0;
   z-index: 1000;
   overflow-y: auto;
+}
+
+.main-pages--com-nav {
+  @include a-partir-do-pc {
+    padding-left: 76px;
+    transition: padding-left 0.2s ease;
+
+    &.main-pages--menu-aberto {
+      padding-left: 220px;
+    }
+  }
 }

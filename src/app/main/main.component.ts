@@ -8,6 +8,7 @@ import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.comp
 import { ConfirmacaoComponent } from '../shared/components/confirmacao/confirmacao.component';
 import { AvisoComponent } from '../shared/components/aviso/aviso.component';
 import { AvisosService } from '../shared/services/avisos/avisos.service';
+import { LayoutService } from '../shared/services/layout/layout.service';
 
 @Component({
   selector: 'app-main',
@@ -27,6 +28,7 @@ import { AvisosService } from '../shared/services/avisos/avisos.service';
 export class MainComponent implements OnInit {
   facade = inject(AppFacade);
   private readonly avisos = inject(AvisosService);
+  readonly layout = inject(LayoutService);
 
   ngOnInit() {
     this.facade.initializeApp();

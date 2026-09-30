@@ -1,9 +1,22 @@
-<nav class="bottom-nav" aria-label="Navegação principal">
+<nav class="bottom-nav" [class.bottom-nav--aberta]="layout.menuAberto()" aria-label="Navegação principal">
+  <div class="bottom-nav__topo">
+    <button
+      class="bottom-nav__alternar"
+      type="button"
+      [attr.aria-expanded]="layout.menuAberto()"
+      [attr.aria-label]="layout.menuAberto() ? 'Recolher menu' : 'Abrir menu'"
+      (click)="layout.alternarMenu()"
+    >
+      <i class="bi" [class.bi-list]="!layout.menuAberto()" [class.bi-chevron-double-left]="layout.menuAberto()" aria-hidden="true"></i>
+    </button>
+    <span class="bottom-nav__marca" aria-hidden="true">Viajá</span>
+  </div>
   @for (item of navItems(); track item.id) {
     <button
       class="bottom-nav__btn"
       [class.bottom-nav__btn--active]="item.id === abaAtiva()"
       type="button"
+      [attr.title]="layout.menuAberto() ? null : item.label"
       [attr.aria-current]="item.id === abaAtiva() ? 'page' : null"
       (click)="onSelect(item.id)"
     >
