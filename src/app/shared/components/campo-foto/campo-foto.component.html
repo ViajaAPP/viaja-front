@@ -1,0 +1,30 @@
+<div class="campo-foto" [class.campo-foto--capa]="formato() === 'capa'">
+  <label class="campo-foto__area" [class.campo-foto__area--enviando]="enviando()">
+    @if (foto()) {
+      <img class="campo-foto__imagem" [src]="foto()" alt="" />
+    } @else {
+      <i class="bi bi-camera campo-foto__icone" aria-hidden="true"></i>
+    }
+    <input
+      class="campo-foto__arquivo"
+      [id]="idDoCampo"
+      type="file"
+      [accept]="tiposAceitos"
+      [disabled]="enviando()"
+      [attr.aria-label]="textoDoBotao()"
+      (change)="aoEscolher($event)"
+    />
+  </label>
+
+  <div class="campo-foto__textos">
+    <label class="campo-foto__acao" [for]="idDoCampo">{{ textoDoBotao() }}</label>
+    @if (foto() && !enviando()) {
+      <button class="campo-foto__remover" type="button" (click)="remover()">
+        <i class="bi bi-trash3" aria-hidden="true"></i> Remover
+      </button>
+    }
+    @if (erro()) {
+      <span class="campo-foto__erro" role="alert">{{ erro() }}</span>
+    }
+  </div>
+</div>

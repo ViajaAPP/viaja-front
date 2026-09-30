@@ -1,0 +1,101 @@
+.campo-foto {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  &__area {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px dashed #e0c9a0;
+    background: #FFF8EA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+
+    &:hover,
+    &:focus-within {
+      border-color: #EE8700;
+    }
+
+    &--enviando {
+      opacity: 0.6;
+      cursor: wait;
+    }
+  }
+
+  &__imagem {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__icone {
+    font-size: 28px;
+    color: #EE8700;
+  }
+
+  &__arquivo {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &__textos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__acao {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+
+  &__remover {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #a12622;
+    cursor: pointer;
+  }
+
+  &__erro {
+    font-size: 12px;
+    color: #a12622;
+  }
+
+  &--capa {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+
+    .campo-foto__area {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      max-height: 260px;
+      border-radius: 20px;
+    }
+
+    .campo-foto__textos {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 16px;
+    }
+  }
+}
