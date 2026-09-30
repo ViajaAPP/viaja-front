@@ -129,6 +129,6 @@ export class PerfilEditarComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('perfil');
+    this.navigationService.voltar('perfil');
   }
 }

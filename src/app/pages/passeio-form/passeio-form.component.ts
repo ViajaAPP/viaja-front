@@ -159,7 +159,7 @@ export class PasseioFormComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('meus-passeios');
+    this.navigationService.voltar('meus-passeios');
   }
 
   private falhou(error: HttpErrorResponse): void {

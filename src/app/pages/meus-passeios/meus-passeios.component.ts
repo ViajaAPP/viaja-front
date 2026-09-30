@@ -90,6 +90,6 @@ export class MeusPasseiosComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('perfil');
+    this.navigationService.voltar('perfil');
   }
 }

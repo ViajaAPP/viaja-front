@@ -143,7 +143,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('chat');
+    this.navigationService.voltar('chat');
   }
 
   private scrollToBottom(): void {

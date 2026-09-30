@@ -45,6 +45,6 @@ export class FavoritosComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('home');
+    this.navigationService.voltar('home');
   }
 }

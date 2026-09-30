@@ -81,6 +81,6 @@ export class PasseioComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('home');
+    this.navigationService.voltar('home');
   }
 }

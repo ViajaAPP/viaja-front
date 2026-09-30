@@ -187,7 +187,7 @@ export class PasseioGestaoComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.navigateTo('meus-passeios');
+    this.navigationService.voltar('meus-passeios');
   }
 
   private editarData(data: TourInstance, payload: TourInstancePayload, sucesso: string): void {
