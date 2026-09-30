@@ -277,6 +277,44 @@ input {
   cursor: default;
 }
 
+.btn-aceitar,
+.btn-recusar,
+.btn-perigo {
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.btn-aceitar {
+  border: none;
+  background: #16a34a;
+  color: #fff;
+}
+
+.btn-perigo {
+  border: none;
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-recusar {
+  border: 1.5px solid #fca5a5;
+  background: #fff;
+  color: #dc2626;
+}
+
 .btn-secundario {
   background-color: #fff;
   color: #545454;

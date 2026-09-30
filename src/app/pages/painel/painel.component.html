@@ -55,8 +55,8 @@
                 <p class="pedido__mensagem">"{{ pedido.message }}"</p>
               }
               <div class="pedido__acoes">
-                <button class="btn-secundario" type="button" [disabled]="respondendo() === pedido.id" (click)="responder(pedido, false)">Recusar</button>
-                <button class="btn-primary" type="button" [disabled]="respondendo() === pedido.id" (click)="responder(pedido, true)">
+                <button class="btn-recusar" type="button" [disabled]="respondendo() === pedido.id" (click)="responder(pedido, false)">Recusar</button>
+                <button class="btn-aceitar" type="button" [disabled]="respondendo() === pedido.id" (click)="responder(pedido, true)">
                   {{ respondendo() === pedido.id ? 'Salvando...' : 'Aceitar' }}
                 </button>
               </div>
