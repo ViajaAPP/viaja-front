@@ -7,11 +7,9 @@
 }
 
 .chat-page{
-    padding-top: 40%;
+    padding: 8px 0 120px;
 
     @include a-partir-do-tablet {
-      padding-top: 8px;
-      padding-bottom: 120px;
       @include conteudo-centralizado;
     }
 

@@ -2,12 +2,9 @@
 
 :host {
   display: block;
-  margin-top: 9%;
-  position: absolute;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 20px 0;
 
   @include a-partir-do-tablet {
-    position: static;
-    margin-top: 0;
     padding-top: 40px;
     @include conteudo-centralizado;
   }
@@ -16,13 +13,9 @@
 .app-header {
   display: flex;
   align-items: flex-start;
-  justify-content: space-evenly;
-  width: 100vw;
-
-  @include a-partir-do-tablet {
-    justify-content: space-between;
-    width: 100%;
-  }
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
 }
 
 .header{
@@ -30,7 +23,8 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        margin: 5px 25px 5px 0px;
+        min-width: 0;
+        margin: 5px 0;
     }
 
     &__avatar {
@@ -45,6 +39,7 @@
         display: flex;
         flex-direction: column;
         gap: 2px;
+        min-width: 0;
     }
 
     &__greeting {
@@ -64,7 +59,6 @@
 
     &__titulo{
         color: #3E3E3E;
-        width: 80%;
         font-family: "Poppins", sans-serif;
         font-weight: 600;
         font-size: 18px;
@@ -87,7 +81,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  margin: 10px 15px;
+  margin: 14px 0 0;
   position: relative;
 
   @include a-partir-do-tablet {
@@ -100,8 +94,9 @@
 }
 
 .filtro-btn {
-    width: 35px;
-    height: 36px;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -220,8 +215,8 @@
     background: #FDFDFD;
     border: 1px solid #B4B4B4;
     border-radius: 50px;
-    width: 313px;
-    height: 40px;
+    min-width: 0;
+    height: 44px;
 
     &__icone{
         background: url('../../../../assets/lupa.svg');
