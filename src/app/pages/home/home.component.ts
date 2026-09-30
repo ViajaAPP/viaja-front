@@ -1,12 +1,15 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { AppFacade } from '../../shared/facade';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { HomeResponse, Category } from '../../shared/enums/home.model';
 import { FalhaDePosicao, LocalizacaoService } from '../../shared/services/localizacao/localizacao.service';
 import { BuscaService, FiltrosDaBusca, PasseioEncontrado } from '../../shared/services/busca/busca.service';
-import { CartaoPasseioComponent } from '../../shared/components/cartao-passeio/cartao-passeio.component';
+import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
+import { NavigationService } from '../../shared/services/navigation';
+import { PRICE_FORMAT } from '../../shared/config/tour.config';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 
@@ -19,7 +22,7 @@ const FILTROS_DA_CATEGORIA: Record<string, FiltrosDaBusca> = {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HeaderComponent, CartaoPasseioComponent, FalhaCarregarComponent],
+  imports: [DatePipe, HeaderComponent, BotaoFavoritoComponent, FalhaCarregarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -29,6 +32,8 @@ export class HomeComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly buscaService = inject(BuscaService);
   private readonly localizacao = inject(LocalizacaoService);
+  private readonly navigationService = inject(NavigationService);
+  readonly starIndexes = [0, 1, 2, 3, 4];
 
   dadosHome = signal<HomeResponse | null>(null);
   erro = signal('');
@@ -99,6 +104,18 @@ export class HomeComponent implements OnInit {
       case 'nearby': return 'Ainda não tem passeio perto de você. Dá uma olhada nos outros enquanto isso.';
       default: return 'Ainda não tem passeios publicados por aqui.';
     }
+  }
+
+  abrirPasseio(tourId: number): void {
+    this.navigationService.navigateToTour('passeio', tourId);
+  }
+
+  formatarPreco(preco: number): string {
+    return preco > 0 ? PRICE_FORMAT.format(preco) : 'Gratuito';
+  }
+
+  isStarFilled(index: number, rating: number): boolean {
+    return index < Math.round(rating);
   }
 
   private filtrosAtuais(): FiltrosDaBusca | null {
