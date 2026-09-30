@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation/navigation.service';
 import { ApiService } from '../../shared/services/api/api.service';
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
   private navigationService = inject(NavigationService);
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   credentials = {
     email: '',
@@ -49,6 +51,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('sessao') === 'expirada') {
+      this.errorMessage.set('Sua sessão acabou. Entre de novo para continuar.');
+    }
     setTimeout(() => {
     this.facade.setLoading(false);
     }, 100);

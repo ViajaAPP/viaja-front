@@ -76,9 +76,9 @@ export const AppStore = signalStore(
     startSession(userId: number, role: UserRole) {
       patchState(store, { myUserId: userId, myRole: role });
     },
-    endSession() {
+    endSession(destino = '/') {
       patchState(store, { ...initialState, loading: false });
-      router.navigateByUrl('/');
+      router.navigateByUrl(destino);
     }
   })),
   withComputed((store) => ({
