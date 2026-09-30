@@ -23,6 +23,7 @@ export class BotaoNavComponent {
   private readonly abaDaPagina: Partial<Record<AppPage, AppPage>> = {
     passeio: 'home',
     buscar: 'home',
+    avisos: 'home',
     resultados: 'home',
     'chat-tour': 'chat',
     'perfil-editar': 'perfil',

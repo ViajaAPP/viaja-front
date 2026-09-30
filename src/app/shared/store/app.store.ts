@@ -13,6 +13,7 @@ export type AppPage =
   | 'redefinir-senha'
   | 'home'
   | 'buscar'
+  | 'avisos'
   | 'resultados'
   | 'chat'
   | 'chat-tour'

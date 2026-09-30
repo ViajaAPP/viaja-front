@@ -53,6 +53,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/resultados/resultados.component').then((m) => m.ResultadosComponent),
   },
   {
+    path: 'avisos',
+    data: { page: 'avisos' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/avisos/avisos.component').then((m) => m.AvisosComponent),
+  },
+  {
     path: 'mensagens',
     data: { page: 'chat' },
     canActivate: [paginaGuard],

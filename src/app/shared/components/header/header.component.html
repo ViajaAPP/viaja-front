@@ -12,7 +12,17 @@
   </div>
 
   <div class="header__actions">
-    <button class="header__icon-btn" type="button" aria-label="Avisos"></button>
+    <button
+      class="header__icon-btn"
+      type="button"
+      [attr.aria-label]="avisos.naoLidas() ? 'Avisos, ' + avisos.naoLidas() + ' novos' : 'Avisos'"
+      (click)="abrirAvisos()"
+    >
+      <i class="bi bi-bell" aria-hidden="true"></i>
+      @if (avisos.naoLidas()) {
+        <span class="header__contador" aria-hidden="true">{{ avisos.naoLidas() > 9 ? '9+' : avisos.naoLidas() }}</span>
+      }
+    </button>
   </div>
 </header>
 

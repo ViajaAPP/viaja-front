@@ -9,6 +9,7 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'redefinir-senha': return '/redefinir-senha';
     case 'home': return '/inicio';
     case 'buscar': return '/buscar';
+    case 'avisos': return '/avisos';
     case 'resultados': return '/buscar/resultados';
     case 'chat': return '/mensagens';
     case 'chat-tour': return id ? `/mensagens/${id}` : '/mensagens';

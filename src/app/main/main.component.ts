@@ -7,6 +7,7 @@ import { AppFacade } from '../shared/facade/app.facade';
 import { BotaoNavComponent } from '../shared/components/botao-nav/botao-nav.component';
 import { ConfirmacaoComponent } from '../shared/components/confirmacao/confirmacao.component';
 import { AvisoComponent } from '../shared/components/aviso/aviso.component';
+import { AvisosService } from '../shared/services/avisos/avisos.service';
 
 @Component({
   selector: 'app-main',
@@ -25,8 +26,10 @@ import { AvisoComponent } from '../shared/components/aviso/aviso.component';
 })
 export class MainComponent implements OnInit {
   facade = inject(AppFacade);
+  private readonly avisos = inject(AvisosService);
 
   ngOnInit() {
     this.facade.initializeApp();
+    this.avisos.iniciar();
   }
 }

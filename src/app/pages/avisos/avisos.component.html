@@ -1,0 +1,42 @@
+<section class="pagina avisos">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">NOVIDADES</p>
+      <h1 class="pagina__titulo">Avisos</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="carregar()" />
+  } @else if (!carregando()) {
+    <ul class="avisos__lista">
+      @for (aviso of avisos(); track aviso.id) {
+        <li>
+          <button class="aviso-item" type="button" [class.aviso-item--novo]="!aviso.read_at" (click)="abrir(aviso)">
+            <span class="aviso-item__icone" [attr.data-tipo]="aviso.kind">
+              <i class="bi {{ icone(aviso) }}" aria-hidden="true"></i>
+            </span>
+            <span class="aviso-item__textos">
+              <span class="aviso-item__titulo">{{ aviso.title }}</span>
+              @if (aviso.body) {
+                <span class="aviso-item__corpo">{{ aviso.body }}</span>
+              }
+              <span class="aviso-item__quando">{{ quando(aviso.created_at) }}</span>
+            </span>
+            @if (!aviso.read_at) {
+              <span class="aviso-item__ponto" aria-label="Novo"></span>
+            }
+          </button>
+        </li>
+      } @empty {
+        <li class="avisos__vazio">
+          <i class="bi bi-bell" aria-hidden="true"></i>
+          <p>Nada novo por aqui. Quando alguém pedir vaga, responder seu pedido ou avaliar um passeio, aparece aqui.</p>
+        </li>
+      }
+    </ul>
+  }
+</section>
