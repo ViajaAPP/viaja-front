@@ -24,6 +24,11 @@
       border-color: #EE8700;
     }
 
+    &--com-foto {
+      border: 3px solid #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
     &--enviando {
       opacity: 0.6;
       cursor: wait;

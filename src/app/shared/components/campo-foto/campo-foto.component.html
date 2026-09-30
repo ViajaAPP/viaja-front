@@ -1,5 +1,9 @@
 <div class="campo-foto" [class.campo-foto--capa]="formato() === 'capa'">
-  <label class="campo-foto__area" [class.campo-foto__area--enviando]="enviando()">
+  <label
+    class="campo-foto__area"
+    [class.campo-foto__area--com-foto]="foto()"
+    [class.campo-foto__area--enviando]="enviando()"
+  >
     @if (foto()) {
       <img class="campo-foto__imagem" [src]="foto()" alt="" />
     } @else {

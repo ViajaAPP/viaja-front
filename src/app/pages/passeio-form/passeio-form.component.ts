@@ -10,10 +10,11 @@ import { CidadesService } from '../../shared/services/cidades/cidades.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { TourDetail, TourPayload } from '../../shared/enums/tour.model';
 import { UFS } from '../../shared/config/tour.config';
+import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-foto.component';
 
 @Component({
   selector: 'app-passeio-form',
-  imports: [FormsModule],
+  imports: [FormsModule, CampoFotoComponent],
   templateUrl: './passeio-form.component.html',
 })
 export class PasseioFormComponent implements OnInit {
@@ -43,6 +44,8 @@ export class PasseioFormComponent implements OnInit {
   };
 
   salvando = signal(false);
+  enviandoCapa = signal(false);
+  previaDaCapa = signal('');
   erro = signal('');
   cidadesSugeridas = signal<string[]>([]);
 
@@ -88,7 +91,40 @@ export class PasseioFormComponent implements OnInit {
     };
   }
 
+  escolherCapa(arquivo: File): void {
+    const anterior = this.passeio.photo;
+    this.previaDaCapa.set(URL.createObjectURL(arquivo));
+    this.enviandoCapa.set(true);
+    this.erro.set('');
+    this.tourService.enviarCapa(arquivo).subscribe({
+      next: ({ photo }) => {
+        this.passeio.photo = photo;
+        this.limparPreviaDaCapa();
+        this.enviandoCapa.set(false);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.passeio.photo = anterior;
+        this.limparPreviaDaCapa();
+        this.enviandoCapa.set(false);
+        this.erro.set(mensagemDeErro(error, 'Não conseguimos enviar a foto. Tente de novo.'));
+      },
+    });
+  }
+
+  removerCapa(): void {
+    this.passeio.photo = '';
+  }
+
+  private limparPreviaDaCapa(): void {
+    if (this.previaDaCapa()) URL.revokeObjectURL(this.previaDaCapa());
+    this.previaDaCapa.set('');
+  }
+
   salvar(): void {
+    if (!this.passeio.photo) {
+      this.erro.set('Escolha uma foto de capa para o passeio.');
+      return;
+    }
     this.salvando.set(true);
     this.erro.set('');
     if (this.tourId) {

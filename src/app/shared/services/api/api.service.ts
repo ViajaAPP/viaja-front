@@ -34,8 +34,12 @@ export class ApiService {
     return this.request.post<LoginResponse>('/auth/login', payload);
   }
 
-  register(payload: RegisterRequest): Observable<any> {
-    return this.request.post('/auth/register', payload);
+  register(payload: RegisterRequest, foto?: File | null): Observable<any> {
+    if (!foto) return this.request.post('/auth/register', payload);
+    const formulario = new FormData();
+    Object.entries(payload).forEach(([campo, valor]) => formulario.append(campo, valor ?? ''));
+    formulario.append('photo', foto);
+    return this.request.post('/auth/register', formulario);
   }
 
   startChat(tourInstanceId: number): Observable<{ chat_id: number }> {

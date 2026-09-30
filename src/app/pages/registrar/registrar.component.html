@@ -14,6 +14,8 @@
   }
 
   <form class="formulario" (ngSubmit)="cadastrar()">
+    <app-campo-foto [foto]="previa()" (escolhida)="escolherFoto($event)" (removida)="removerFoto()" />
+
     <label for="tipo">Você é</label>
     <select id="tipo" name="role" [(ngModel)]="cadastro.role">
       @for (tipo of tiposDeConta; track tipo.role) {
@@ -23,32 +25,45 @@
 
     <div class="formulario__linha">
       <div>
-        <label for="nome">Nome</label>
+        <label for="nome">Nome <span class="obrigatorio">*</span></label>
         <input id="nome" name="first_name" [(ngModel)]="cadastro.first_name" required />
       </div>
       <div>
-        <label for="sobrenome">Sobrenome</label>
+        <label for="sobrenome">Sobrenome <span class="obrigatorio">*</span></label>
         <input id="sobrenome" name="last_name" [(ngModel)]="cadastro.last_name" required />
       </div>
     </div>
 
-    <label for="usuario">Nome de usuário</label>
+    <label for="usuario">Nome de usuário <span class="obrigatorio">*</span></label>
     <input id="usuario" name="username" [(ngModel)]="cadastro.username" required />
 
-    <label for="email">Email</label>
+    <label for="email">Email <span class="obrigatorio">*</span></label>
     <input id="email" type="email" name="email" [(ngModel)]="cadastro.email" required />
 
-    <label for="senha">Senha</label>
-    <input id="senha" type="password" name="password" [(ngModel)]="cadastro.password" required />
+    <label for="senha">Senha <span class="obrigatorio">*</span></label>
+    <div class="campo-senha">
+      <input
+        id="senha"
+        [type]="senhaVisivel() ? 'text' : 'password'"
+        name="password"
+        [(ngModel)]="cadastro.password"
+        required
+      />
+      <button
+        class="campo-senha__olho"
+        type="button"
+        [attr.aria-label]="senhaVisivel() ? 'Esconder senha' : 'Mostrar senha'"
+        (click)="senhaVisivel.set(!senhaVisivel())"
+      >
+        <i class="bi" [class.bi-eye]="!senhaVisivel()" [class.bi-eye-slash]="senhaVisivel()" aria-hidden="true"></i>
+      </button>
+    </div>
 
-    <label for="telefone">Telefone</label>
+    <label for="telefone">Telefone <span class="obrigatorio">*</span></label>
     <input id="telefone" type="tel" name="phone" [(ngModel)]="cadastro.phone" required />
 
-    <label for="foto">Link da sua foto (opcional)</label>
-    <input id="foto" type="url" name="photo" [(ngModel)]="cadastro.photo" />
-
     @if (pedeCnpj()) {
-      <label for="cnpj">CNPJ da sua empresa de turismo</label>
+      <label for="cnpj">CNPJ da sua empresa de turismo <span class="obrigatorio">*</span></label>
       <input id="cnpj" name="cnpj" [(ngModel)]="cadastro.cnpj" required />
     }
 

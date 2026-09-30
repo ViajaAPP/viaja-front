@@ -23,6 +23,12 @@ export class TourService {
     return this.request.get<Activity[]>(`/tour/perto?lat=${lat}&lon=${lon}`);
   }
 
+  enviarCapa(foto: File): Observable<{ photo: string }> {
+    const formulario = new FormData();
+    formulario.append('photo', foto);
+    return this.request.post<{ photo: string }>('/tour/photo', formulario);
+  }
+
   buscarPasseio(tourId: number): Observable<TourDetail> {
     return this.request.get<TourDetail>(`/tour/${tourId}`);
   }

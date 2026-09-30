@@ -7,12 +7,13 @@ import { NavigationService } from '../../shared/services/navigation';
 import { ApiService, RegisterRequest } from '../../shared/services/api/api.service';
 import { AuthService } from '../../shared/services/auth/auth.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
+import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-foto.component';
 import { UserRole } from '../../shared/enums/user.model';
 import { ROLE_LABELS } from '../../shared/config/tour.config';
 
 @Component({
   selector: 'app-registrar',
-  imports: [FormsModule],
+  imports: [FormsModule, CampoFotoComponent],
   templateUrl: './registrar.component.html',
   styleUrl: './registrar.component.scss',
 })
@@ -41,9 +42,28 @@ export class RegistrarComponent implements OnInit {
 
   enviando = signal(false);
   erro = signal('');
+  foto = signal<File | null>(null);
+  previa = signal('');
+  senhaVisivel = signal(false);
 
   ngOnInit(): void {
     this.facade.setLoading(false);
+  }
+
+  escolherFoto(arquivo: File): void {
+    this.liberarPrevia();
+    this.foto.set(arquivo);
+    this.previa.set(URL.createObjectURL(arquivo));
+  }
+
+  removerFoto(): void {
+    this.liberarPrevia();
+    this.foto.set(null);
+    this.previa.set('');
+  }
+
+  private liberarPrevia(): void {
+    if (this.previa()) URL.revokeObjectURL(this.previa());
   }
 
   pedeCnpj(): boolean {
@@ -56,7 +76,7 @@ export class RegistrarComponent implements OnInit {
     const credenciais = { email: this.cadastro.email, password: this.cadastro.password };
 
     this.apiService
-      .register(this.cadastro)
+      .register(this.cadastro, this.foto())
       .pipe(switchMap(() => this.apiService.login(credenciais)))
       .subscribe({
         next: (response) => {

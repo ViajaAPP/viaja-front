@@ -14,6 +14,15 @@
   }
 
   <form class="formulario" (ngSubmit)="salvar()">
+    <label>Foto de capa <span class="obrigatorio">*</span></label>
+    <app-campo-foto
+      formato="capa"
+      [foto]="previaDaCapa() || passeio.photo"
+      [enviando]="enviandoCapa()"
+      (escolhida)="escolherCapa($event)"
+      (removida)="removerCapa()"
+    />
+
     <label for="titulo">Nome do passeio</label>
     <input id="titulo" name="title" [(ngModel)]="passeio.title" required />
 
@@ -26,8 +35,6 @@
       required
     ></textarea>
 
-    <label for="foto">Link da foto de capa</label>
-    <input id="foto" type="url" name="photo" [(ngModel)]="passeio.photo" required />
 
     <div class="formulario__linha">
       <div>
@@ -104,7 +111,7 @@
       </div>
     </div>
 
-    <button class="btn-primary mt-1" type="submit" [disabled]="salvando()">
+    <button class="btn-primary mt-1" type="submit" [disabled]="salvando() || enviandoCapa()">
       {{ salvando() ? 'Salvando...' : tourId ? 'Salvar alterações' : 'Criar e marcar datas' }}
     </button>
   </form>
