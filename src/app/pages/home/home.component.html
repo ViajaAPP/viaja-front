@@ -77,12 +77,18 @@
 
           <div class="activity-card__body">
             <div class="activity-card__guide-row">
-              <img
-                class="activity-card__avatar"
-                [src]="activity.guideFoto || fotoUser()"
-                [alt]="'Foto de ' + activity.guide"
-                loading="lazy"
-              />
+              @if (activity.guideFoto) {
+                <img
+                  class="activity-card__avatar"
+                  [src]="activity.guideFoto"
+                  [alt]="'Foto de ' + activity.guide"
+                  loading="lazy"
+                />
+              } @else {
+                <span class="activity-card__avatar activity-card__avatar--inicial" aria-hidden="true">
+                  {{ (activity.guide || '?').charAt(0) }}
+                </span>
+              }
               <div class="activity-card__guide-info">
                 <div class="activity-card__stars" [attr.aria-label]="activity.rating + ' de 5 estrelas'">
                   @for (i of starIndexes; track i) {

@@ -28,7 +28,6 @@ export class HomeComponent implements OnInit {
   erro = signal('');
   searchQuery = signal<string>('');
   selectedCategoryId = signal<string>('all');
-  fotoUser = computed(() => this.dadosHome()?.user?.fotoUser ?? '');
   categories = computed(() => this.dadosHome()?.categories ?? []);
   passeiosPerto = signal<Activity[] | null>(null);
   situacaoPerto = signal<'parado' | 'buscando' | 'sem-permissao' | 'erro' | 'pronto'>('parado');
