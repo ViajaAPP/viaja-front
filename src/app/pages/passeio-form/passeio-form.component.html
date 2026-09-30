@@ -95,6 +95,10 @@
     <small class="campo-erro">Diga onde o grupo se encontra.</small>
 
     <h2 class="pagina__subtitulo">Onde é</h2>
+    <button class="btn-secundario busca-local__minha-posicao" type="button" [disabled]="localizando()" (click)="usarMinhaLocalizacao()">
+      <i class="bi bi-crosshair" aria-hidden="true"></i>
+      {{ localizando() ? 'Procurando você...' : 'Usar minha localização' }}
+    </button>
     <app-busca-local (escolhido)="usarLocal($event)" />
     <app-mapa
       [lat]="passeio.lat"
@@ -103,10 +107,13 @@
       rotulo="Mapa para marcar onde é o passeio"
       (moveu)="moverPino($event)"
     />
+    @if (semLocal()) {
+      <p class="campo-erro campo-erro--visivel" role="alert">Marque no mapa onde é o passeio. Pode buscar pelo nome ou tocar no lugar.</p>
+    }
     <div class="formulario__linha">
       <div>
-        <label for="cep">CEP <span class="obrigatorio">*</span></label>
-        <input id="cep" name="cep" inputmode="numeric" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" [(ngModel)]="passeio.cep" required />
+        <label for="cep">CEP</label>
+        <input id="cep" name="cep" inputmode="numeric" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" [(ngModel)]="passeio.cep" />
         <small class="campo-erro">Use os 8 números do CEP.</small>
       </div>
       <div>
@@ -147,9 +154,8 @@
         <small class="campo-erro">Coloque a rua.</small>
       </div>
       <div>
-        <label for="numero">Número <span class="obrigatorio">*</span></label>
-        <input id="numero" name="number" [(ngModel)]="passeio.number" required />
-        <small class="campo-erro">Coloque o número. Use S/N se não tiver.</small>
+        <label for="numero">Número</label>
+        <input id="numero" name="number" placeholder="S/N" [(ngModel)]="passeio.number" />
       </div>
     </div>
 

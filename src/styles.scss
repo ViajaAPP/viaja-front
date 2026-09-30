@@ -461,6 +461,19 @@ input {
   color: #a12622;
 }
 
+.campo-erro--visivel {
+  display: block;
+  margin-top: 6px;
+}
+
+.busca-local__minha-posicao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0 0 10px;
+}
+
 form.ng-submitted {
   input.ng-invalid,
   select.ng-invalid,

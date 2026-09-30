@@ -14,6 +14,7 @@
       [value]="texto()"
       (input)="digitar($any($event.target).value)"
       (keydown.escape)="aberto.set(false)"
+      (focus)="aberto.set(resultados().length > 0)"
     />
     @if (buscando()) {
       <span class="busca-local__carregando" role="status">Buscando...</span>

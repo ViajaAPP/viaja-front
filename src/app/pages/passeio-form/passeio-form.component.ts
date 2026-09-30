@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal, HostListener } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal, HostListener } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, distinctUntilChanged, of, switchMap, catchError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-fot
 import { BuscaLocalComponent } from '../../shared/components/busca-local/busca-local.component';
 import { MapaComponent } from '../../shared/components/mapa/mapa.component';
 import { LocaisService, LocalEncontrado } from '../../shared/services/locais/locais.service';
+import { LocalizacaoService } from '../../shared/services/localizacao/localizacao.service';
 
 @Component({
   selector: 'app-passeio-form',
@@ -30,6 +31,8 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
   private readonly tourService = inject(TourService);
   private readonly cidadesService = inject(CidadesService);
   private readonly locaisService = inject(LocaisService);
+  private readonly localizacao = inject(LocalizacaoService);
+  private readonly telas = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cidadeDigitada = new Subject<string>();
 
@@ -55,6 +58,8 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
   };
 
   fotos = signal<TourPhoto[]>([]);
+  localizando = signal(false);
+  semLocal = signal(false);
   enviandoFoto = signal(false);
   readonly limiteDeFotos = 10;
 
@@ -138,6 +143,7 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
   }
 
   usarLocal(local: LocalEncontrado): void {
+    this.semLocal.set(false);
     this.passeio = {
       ...this.passeio,
       cep: local.cep || this.passeio.cep,
@@ -145,15 +151,36 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
       city: local.cidade || this.passeio.city,
       neighborhood: local.bairro || this.passeio.neighborhood,
       street: local.rua || this.passeio.street,
-      number: local.numero || this.passeio.number || 'S/N',
+      number: local.numero || this.passeio.number,
       lat: local.lat,
       lon: local.lon,
     };
     if (!this.passeio.meeting_point && local.nome) this.passeio.meeting_point = local.nome;
+    this.telas.markForCheck();
+  }
+
+  usarMinhaLocalizacao(): void {
+    this.localizando.set(true);
+    let ultima: { lat: number; lon: number } | null = null;
+    this.localizacao.acompanhar().subscribe({
+      next: (posicao) => (ultima = posicao),
+      complete: () => {
+        this.localizando.set(false);
+        if (ultima) this.moverPino(ultima);
+      },
+      error: (falha) => {
+        this.localizando.set(false);
+        this.feedback.erro(falha === 'sem-permissao'
+          ? 'O navegador não liberou sua localização. Busque pelo nome ou toque no mapa.'
+          : 'Não conseguimos achar sua localização agora.');
+      },
+    });
   }
 
   moverPino(ponto: { lat: number; lon: number }): void {
+    this.semLocal.set(false);
     this.passeio = { ...this.passeio, lat: ponto.lat, lon: ponto.lon };
+    this.telas.markForCheck();
     this.locaisService.enderecoDoPonto(ponto.lat, ponto.lon).subscribe({
       next: (local) => {
         if (local) this.usarLocal({ ...local, lat: ponto.lat, lon: ponto.lon });
@@ -206,6 +233,11 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
   }
 
   salvar(): void {
+    if (this.passeio.lat == null || this.passeio.lon == null) {
+      this.semLocal.set(true);
+      document.getElementById('busca-local')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
     if (!this.passeio.photo) {
       this.erro.set('Escolha uma foto de capa para o passeio.');
       return;
