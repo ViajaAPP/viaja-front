@@ -78,15 +78,13 @@ export class PasseioComponent implements OnInit {
   }
 
   linkDoUber(passeio: TourDetail): string {
-    const params = new URLSearchParams({
-      action: 'setPickup',
-      pickup: 'my_location',
-      'dropoff[latitude]': String(passeio.address?.lat ?? ''),
-      'dropoff[longitude]': String(passeio.address?.lon ?? ''),
-      'dropoff[nickname]': passeio.meeting_point || passeio.title,
-      'dropoff[formatted_address]': this.enderecoCompleto(passeio),
-    });
-    return `https://m.uber.com/ul/?${params.toString()}`;
+    const destino = {
+      latitude: passeio.address?.lat,
+      longitude: passeio.address?.lon,
+      addressLine1: passeio.meeting_point || passeio.title,
+      addressLine2: this.enderecoCompleto(passeio),
+    };
+    return `https://m.uber.com/looking?pickup=my_location&drop[0]=${encodeURIComponent(JSON.stringify(destino))}`;
   }
 
   enderecoCompleto(passeio: TourDetail): string {

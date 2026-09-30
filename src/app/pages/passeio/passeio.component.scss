@@ -258,9 +258,9 @@
 .passeio__uber {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 18px;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px 0 9px;
   border-radius: 999px;
   background: #000;
   color: #fff;
@@ -269,8 +269,18 @@
   text-decoration: none;
 }
 
+.passeio__uber-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #fff;
+  color: #000;
+}
+
 .passeio__uber-logo {
-  width: 46px;
-  height: 46px;
-  margin: -12px 0;
+  width: 26px;
+  height: 26px;
 }
