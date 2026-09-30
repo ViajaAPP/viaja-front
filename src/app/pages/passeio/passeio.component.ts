@@ -84,8 +84,16 @@ export class PasseioComponent implements OnInit {
       'dropoff[latitude]': String(passeio.address?.lat ?? ''),
       'dropoff[longitude]': String(passeio.address?.lon ?? ''),
       'dropoff[nickname]': passeio.meeting_point || passeio.title,
+      'dropoff[formatted_address]': this.enderecoCompleto(passeio),
     });
     return `https://m.uber.com/ul/?${params.toString()}`;
+  }
+
+  enderecoCompleto(passeio: TourDetail): string {
+    const endereco = passeio.address;
+    if (!endereco) return passeio.meeting_point;
+    const rua = [endereco.street, endereco.number && endereco.number !== 'S/N' ? endereco.number : ''].filter(Boolean).join(', ');
+    return [rua, endereco.neighborhood, `${endereco.city} - ${endereco.uf}`, endereco.cep].filter(Boolean).join(', ');
   }
 
   aoRolarGaleria(trilho: HTMLElement): void {
