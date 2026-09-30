@@ -17,11 +17,10 @@ export class BotaoNavComponent {
 
   readonly navItems = computed<{ id: AppPage; icon: string; label: string }[]>(() => [
     { id: 'home', icon: 'bi bi-house-door-fill', label: 'Início' },
-    this.facade.isGuide()
-      ? { id: 'painel', icon: 'bi bi-compass-fill', label: 'Passeios' }
-      : { id: 'viagens', icon: 'bi bi-suitcase2-fill', label: 'Viagens' },
+    ...(this.facade.isGuide() ? [{ id: 'painel' as AppPage, icon: 'bi bi-compass-fill', label: 'Passeios' }] : []),
+    { id: 'viagens', icon: 'bi bi-suitcase2-fill', label: 'Viagens' },
     { id: 'chat', icon: 'bi bi-chat-dots-fill', label: 'Mensagens' },
-    { id: 'favoritos', icon: 'bi bi-heart', label: 'Favoritos' },
+    ...(this.facade.isGuide() ? [] : [{ id: 'favoritos' as AppPage, icon: 'bi bi-heart', label: 'Favoritos' }]),
     { id: 'perfil', icon: 'bi bi-person-fill', label: 'Perfil' },
   ]);
 

@@ -129,7 +129,7 @@ export class PasseioComponent implements OnInit {
   }
 
   podePedirVaga(data: TourInstance): boolean {
-    return this.facade.isTourist() && !!data.open_for_requests && !data.my_request_status;
+    return !this.passeio()?.is_owner && !!data.open_for_requests && !data.my_request_status;
   }
 
   pedirVaga(data: TourInstance): void {

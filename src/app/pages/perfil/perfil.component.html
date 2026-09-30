@@ -25,6 +25,9 @@
     }
 
     <div class="perfil__acoes">
+      @if (facade.isGuide()) {
+        <button class="btn-secundario" type="button" (click)="abrirFavoritos()"><i class="bi bi-heart" aria-hidden="true"></i> Seus favoritos</button>
+      }
       @if (facade.myRole() === 'ADMIN') {
         <button class="btn-primary" type="button" (click)="abrirMeusPasseios()">Passeios da plataforma</button>
       }
