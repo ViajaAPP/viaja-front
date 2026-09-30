@@ -17,7 +17,7 @@ export const REGISTRATION_LABELS: Record<RegistrationStatus, string> = {
 export const TOUR_STATUS_LABELS: Record<TourStatus, string> = {
   SCHEDULED: 'Agendado',
   DONE: 'Realizado',
-  CANCELED: 'Cancelado',
+  CANCELLED: 'Cancelado',
 };
 
 export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {

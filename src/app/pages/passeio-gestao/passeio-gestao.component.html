@@ -76,7 +76,7 @@
                 </p>
               </div>
               <div class="gestao__selos">
-                <span class="selo" [class.selo--alerta]="data.status === 'CANCELED'">{{
+                <span class="selo" [class.selo--alerta]="data.status === 'CANCELLED'">{{
                   rotulosDoStatus[data.status]
                 }}</span>
                 @if (estaAgendada(data)) {
@@ -113,7 +113,7 @@
                 <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'DONE')">
                   Marcar como realizado
                 </button>
-                <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'CANCELED')">
+                <button class="btn-secundario" type="button" (click)="mudarStatus(data, 'CANCELLED')">
                   Cancelar data
                 </button>
               </div>

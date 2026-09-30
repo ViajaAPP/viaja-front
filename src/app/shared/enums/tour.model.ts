@@ -1,4 +1,4 @@
-export type TourStatus = 'SCHEDULED' | 'DONE' | 'CANCELED';
+export type TourStatus = 'SCHEDULED' | 'DONE' | 'CANCELLED';
 export type RegistrationStatus = 'OPEN' | 'FULL' | 'CLOSED';
 export type RequestStatus = 'PENDING' | 'ACCEPTED' | 'DENIED';
 
