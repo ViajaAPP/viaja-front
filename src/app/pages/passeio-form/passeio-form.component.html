@@ -66,7 +66,7 @@
       </div>
       <div>
         <label for="uf">Estado</label>
-        <select id="uf" name="uf" [(ngModel)]="passeio.uf">
+        <select id="uf" name="uf" [(ngModel)]="passeio.uf" (ngModelChange)="trocarUf()">
           @for (uf of ufs; track uf) {
             <option [value]="uf">{{ uf }}</option>
           }
@@ -75,7 +75,20 @@
     </div>
 
     <label for="cidade">Cidade</label>
-    <input id="cidade" name="city" [(ngModel)]="passeio.city" required />
+    <input
+      id="cidade"
+      name="city"
+      list="cidades-sugeridas"
+      autocomplete="off"
+      [(ngModel)]="passeio.city"
+      (ngModelChange)="buscarCidades($event)"
+      required
+    />
+    <datalist id="cidades-sugeridas">
+      @for (cidade of cidadesSugeridas(); track cidade) {
+        <option [value]="cidade"></option>
+      }
+    </datalist>
 
     <label for="bairro">Bairro</label>
     <input id="bairro" name="neighborhood" [(ngModel)]="passeio.neighborhood" required />

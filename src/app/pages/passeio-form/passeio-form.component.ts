@@ -1,9 +1,12 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, debounceTime, distinctUntilChanged, of, switchMap, catchError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
 import { TourService } from '../../shared/services/tour/tour.service';
+import { CidadesService } from '../../shared/services/cidades/cidades.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { TourDetail, TourPayload } from '../../shared/enums/tour.model';
 import { UFS } from '../../shared/config/tour.config';
@@ -17,6 +20,9 @@ export class PasseioFormComponent implements OnInit {
   private readonly facade = inject(AppFacade);
   private readonly navigationService = inject(NavigationService);
   private readonly tourService = inject(TourService);
+  private readonly cidadesService = inject(CidadesService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cidadeDigitada = new Subject<string>();
 
   readonly ufs = UFS;
   readonly tourId = this.facade.selectedTourId();
@@ -38,8 +44,21 @@ export class PasseioFormComponent implements OnInit {
 
   salvando = signal(false);
   erro = signal('');
+  cidadesSugeridas = signal<string[]>([]);
 
   ngOnInit(): void {
+    this.cidadeDigitada
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((texto) =>
+          texto.trim().length < 2
+            ? of([])
+            : this.cidadesService.buscarCidades(texto.trim(), this.passeio.uf).pipe(catchError(() => of([]))),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((cidades) => this.cidadesSugeridas.set(cidades.map((cidade) => cidade.name)));
     if (this.tourId) this.carregarPasseio(this.tourId);
   }
 
@@ -83,6 +102,14 @@ export class PasseioFormComponent implements OnInit {
       next: ({ tour_id }) => this.navigationService.navigateToTour('passeio-gestao', tour_id),
       error: (error: HttpErrorResponse) => this.falhou(error),
     });
+  }
+
+  buscarCidades(texto: string): void {
+    this.cidadeDigitada.next(texto);
+  }
+
+  trocarUf(): void {
+    this.cidadesSugeridas.set([]);
   }
 
   voltar(): void {
