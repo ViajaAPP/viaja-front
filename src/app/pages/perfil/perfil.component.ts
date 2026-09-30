@@ -44,6 +44,10 @@ export class PerfilComponent implements OnInit {
     this.navigationService.navigateTo('meus-passeios');
   }
 
+  abrirAvisos(): void {
+    this.navigationService.navigateTo('avisos');
+  }
+
   abrirFavoritos(): void {
     this.navigationService.navigateTo('favoritos');
   }

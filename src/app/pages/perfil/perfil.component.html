@@ -11,27 +11,76 @@
   }
 
   <div class="perfil">
-    @if (perfil(); as dados) {
-      <app-cartao-perfil
-        [nome]="dados.first_name + ' ' + dados.last_name"
-        [email]="dados.email"
-        [foto]="dados.photo"
-        [tipoDeConta]="tipoDeConta()"
-      >
-        <button class="btn-secundario perfil__editar" type="button" (click)="editarPerfil()">
-          <i class="bi bi-pencil" aria-hidden="true"></i> Editar perfil
-        </button>
-      </app-cartao-perfil>
-    }
+    <div class="perfil__cartao">
+      @if (perfil(); as dados) {
+        <app-cartao-perfil
+          [nome]="dados.first_name + ' ' + dados.last_name"
+          [email]="dados.email"
+          [foto]="dados.photo"
+          [tipoDeConta]="tipoDeConta()"
+        >
+          <button class="btn-secundario perfil__editar" type="button" (click)="editarPerfil()">
+            <i class="bi bi-pencil" aria-hidden="true"></i> Editar perfil
+          </button>
+        </app-cartao-perfil>
+      } @else {
+        <div class="perfil__esqueleto" aria-busy="true" aria-label="Carregando perfil"></div>
+      }
+    </div>
 
-    <div class="perfil__acoes">
-      @if (facade.isGuide()) {
-        <button class="btn-secundario" type="button" (click)="abrirFavoritos()"><i class="bi bi-heart" aria-hidden="true"></i> Seus favoritos</button>
-      }
-      @if (facade.myRole() === 'ADMIN') {
-        <button class="btn-primary" type="button" (click)="abrirMeusPasseios()">Passeios da plataforma</button>
-      }
-      <button class="btn-secundario" type="button" (click)="sair()">Sair da conta</button>
+    <div class="perfil__lado">
+      <h2 class="perfil__secao">Sua conta</h2>
+      <ul class="opcoes">
+        <li>
+          <button class="opcao" type="button" (click)="abrirFavoritos()">
+            <span class="opcao__icone"><i class="bi bi-heart" aria-hidden="true"></i></span>
+            <span class="opcao__textos">
+              <span class="opcao__titulo">Seus favoritos</span>
+              <span class="opcao__detalhe">Passeios que você guardou para depois</span>
+            </span>
+            <i class="bi bi-chevron-right opcao__seta" aria-hidden="true"></i>
+          </button>
+        </li>
+        <li>
+          <button class="opcao" type="button" (click)="abrirAvisos()">
+            <span class="opcao__icone"><i class="bi bi-bell" aria-hidden="true"></i></span>
+            <span class="opcao__textos">
+              <span class="opcao__titulo">Avisos</span>
+              <span class="opcao__detalhe">Pedidos, respostas e mudanças de data</span>
+            </span>
+            <i class="bi bi-chevron-right opcao__seta" aria-hidden="true"></i>
+          </button>
+        </li>
+        <li>
+          <div class="opcao opcao--parada">
+            <span class="opcao__icone"><i class="bi bi-shield-check" aria-hidden="true"></i></span>
+            <span class="opcao__textos">
+              <span class="opcao__titulo">Verificação de identidade</span>
+              <span class="opcao__detalhe">Selo de perfil verificado, com documento e selfie</span>
+            </span>
+            <span class="selo">Em breve</span>
+          </div>
+        </li>
+        @if (facade.myRole() === 'ADMIN') {
+          <li>
+            <button class="opcao" type="button" (click)="abrirMeusPasseios()">
+              <span class="opcao__icone"><i class="bi bi-clipboard-check" aria-hidden="true"></i></span>
+              <span class="opcao__textos">
+                <span class="opcao__titulo">Passeios da plataforma</span>
+                <span class="opcao__detalhe">Moderar o que está publicado</span>
+              </span>
+              <i class="bi bi-chevron-right opcao__seta" aria-hidden="true"></i>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <button class="opcao opcao--sair" type="button" (click)="sair()">
+        <span class="opcao__icone"><i class="bi bi-box-arrow-right" aria-hidden="true"></i></span>
+        <span class="opcao__textos">
+          <span class="opcao__titulo">Sair da conta</span>
+        </span>
+      </button>
     </div>
   </div>
 </section>
