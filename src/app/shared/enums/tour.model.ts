@@ -1,6 +1,6 @@
 export type TourStatus = 'SCHEDULED' | 'DONE' | 'CANCELLED';
 export type RegistrationStatus = 'OPEN' | 'FULL' | 'CLOSED';
-export type RequestStatus = 'PENDING' | 'ACCEPTED' | 'DENIED';
+export type RequestStatus = 'PENDING' | 'ACCEPTED' | 'DENIED' | 'EXPIRED' | 'CANCELLED';
 
 export interface Address {
   cep: string;
@@ -21,6 +21,8 @@ export interface TourPayload extends Address {
   meeting_point: string;
   photo: string;
   photo_credit?: string | null;
+  instant_booking?: boolean;
+  min_participants?: number;
 }
 
 export interface TourPhoto {
@@ -82,6 +84,8 @@ export interface Tour {
   photo_credit?: string | null;
   address_id: number;
   published: boolean;
+  instant_booking?: boolean;
+  min_participants?: number;
   tour_instance?: TourInstance[];
 }
 

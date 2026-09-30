@@ -8,6 +8,7 @@ export const PAGE_ROLES: Partial<Record<AppPage, UserRole[]>> = {
   'passeio-form': ['GUIDE'],
   'passeio-gestao': ['GUIDE'],
   'minhas-solicitacoes': ['TOURIST'],
+  painel: ['GUIDE'],
 };
 
 export function canAccessPage(page: AppPage, role: UserRole | null): boolean {

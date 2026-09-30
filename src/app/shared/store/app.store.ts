@@ -14,6 +14,8 @@ export type AppPage =
   | 'home'
   | 'buscar'
   | 'avisos'
+  | 'painel'
+  | 'viagens'
   | 'resultados'
   | 'chat'
   | 'chat-tour'

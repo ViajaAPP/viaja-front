@@ -1,0 +1,391 @@
+@use 'responsivo' as *;
+
+.painel__topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.painel__novo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.abas {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 16px;
+  border-radius: 999px;
+  background: #f1eee4;
+}
+
+.aba {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+  cursor: pointer;
+
+  &--ativa {
+    background: #fff;
+    color: #1f1f1f;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  }
+}
+
+.aba__contador {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #a12622;
+  color: #fff;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+.painel__resumo {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3d5c00;
+}
+
+.cartoes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+
+  @include a-partir-do-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &--grade {
+    @include a-partir-do-pc {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+
+.pedido,
+.data,
+.passeio-card {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #efefe9;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 5%);
+}
+
+.pedido__topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pedido__foto {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &--inicial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #d9f18c;
+    color: #3d5c00;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+}
+
+.pedido__quem {
+  flex: 1;
+  min-width: 0;
+}
+
+.pedido__nome {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.pedido__passeio {
+  margin: 0;
+  font-size: 13px;
+  color: #6b6b6b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prazo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f5f8e8;
+  color: #3d5c00;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--urgente {
+    background: #fdecec;
+    color: #a12622;
+  }
+}
+
+.pedido__quando {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: #3e3e3e;
+}
+
+.pedido__mensagem {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #faf8f1;
+  font-size: 14px;
+  font-style: italic;
+  color: #545454;
+}
+
+.pedido__acoes,
+.data__acoes,
+.passeio-card__acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+
+  button {
+    flex: 1;
+    min-height: 44px;
+    border-radius: 999px;
+  }
+}
+
+.linhas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid #eeebe0;
+}
+
+.linha__textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.linha__titulo {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linha__detalhe {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.agenda__dia {
+  margin: 20px 4px 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3e3e3e;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.data__topo {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.data__hora {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.data__passeio {
+  flex: 1;
+  min-width: 0;
+}
+
+.data__titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data__vagas {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #6b6b6b;
+}
+
+.barra {
+  height: 8px;
+  margin: 12px 0 10px;
+  border-radius: 999px;
+  background: #efefe9;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: #9cc43a;
+  }
+}
+
+.data__selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.selo--botao {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  background: #fff1dc;
+  color: #b56400;
+}
+
+.passeio-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.passeio-card__foto {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: none;
+  background: linear-gradient(135deg, #3d5c00 0%, #1f2e00 100%);
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    color: transparent;
+  }
+}
+
+.passeio-card__estado {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.passeio-card__corpo {
+  padding: 14px 16px 16px;
+}
+
+.passeio-card__titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.passeio-card__detalhe {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b6b6b;
+}
+
+.vazio {
+  grid-column: 1 / -1;
+  padding: 32px 16px;
+  text-align: center;
+  color: #6b6b6b;
+
+  i {
+    font-size: 36px;
+    color: #b4b4b4;
+  }
+
+  p {
+    max-width: 340px;
+    margin: 10px auto 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  button {
+    min-height: 44px;
+    border-radius: 999px;
+  }
+}
+
+.esqueleto {
+  display: grid;
+  gap: 12px;
+
+  span {
+    display: block;
+    height: 140px;
+    border-radius: 20px;
+    background: #f1eee4;
+  }
+}

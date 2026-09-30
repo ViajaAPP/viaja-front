@@ -10,6 +10,8 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'home': return '/inicio';
     case 'buscar': return '/buscar';
     case 'avisos': return '/avisos';
+    case 'painel': return '/painel';
+    case 'viagens': return '/viagens';
     case 'resultados': return '/buscar/resultados';
     case 'chat': return '/mensagens';
     case 'chat-tour': return id ? `/mensagens/${id}` : '/mensagens';
@@ -20,6 +22,6 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'meus-passeios': return '/meus-passeios';
     case 'passeio-form': return id ? `/meus-passeios/${id}/editar` : '/meus-passeios/novo';
     case 'passeio-gestao': return id ? `/meus-passeios/${id}` : '/meus-passeios';
-    case 'minhas-solicitacoes': return '/minhas-solicitacoes';
+    case 'minhas-solicitacoes': return '/viagens';
   }
 }

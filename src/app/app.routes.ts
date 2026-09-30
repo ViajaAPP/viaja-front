@@ -53,6 +53,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/resultados/resultados.component').then((m) => m.ResultadosComponent),
   },
   {
+    path: 'painel',
+    data: { page: 'painel' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/painel/painel.component').then((m) => m.PainelComponent),
+  },
+  {
+    path: 'viagens',
+    data: { page: 'viagens' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/viagens/viagens.component').then((m) => m.ViagensComponent),
+  },
+  {
     path: 'avisos',
     data: { page: 'avisos' },
     canActivate: [paginaGuard],
@@ -121,11 +133,6 @@ export const routes: Routes = [
     canDeactivate: [alteracoesGuard],
     loadComponent: () => import('./pages/passeio-form/passeio-form.component').then((m) => m.PasseioFormComponent),
   },
-  {
-    path: 'minhas-solicitacoes',
-    data: { page: 'minhas-solicitacoes' },
-    canActivate: [paginaGuard],
-    loadComponent: () => import('./pages/minhas-solicitacoes/minhas-solicitacoes.component').then((m) => m.MinhasSolicitacoesComponent),
-  },
+  { path: 'minhas-solicitacoes', redirectTo: 'viagens' },
   { path: '**', redirectTo: '' },
 ];

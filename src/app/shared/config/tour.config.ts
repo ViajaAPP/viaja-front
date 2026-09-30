@@ -21,9 +21,11 @@ export const TOUR_STATUS_LABELS: Record<TourStatus, string> = {
 };
 
 export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
-  PENDING: 'Aguardando o guia',
+  PENDING: 'Esperando o guia',
   ACCEPTED: 'Confirmado',
   DENIED: 'Recusado',
+  EXPIRED: 'Expirou sem resposta',
+  CANCELLED: 'Cancelado',
 };
 
 export const UFS = [

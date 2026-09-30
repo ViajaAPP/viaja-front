@@ -1,0 +1,165 @@
+<section class="pagina painel">
+  <header class="painel__topo">
+    <div>
+      <p class="pagina__rotulo">SEU PAINEL</p>
+      <h1 class="pagina__titulo">Olá, {{ nomeDoGuia() }}</h1>
+    </div>
+    <button class="btn-primary painel__novo" type="button" (click)="novoPasseio()">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i> Novo passeio
+    </button>
+  </header>
+
+  <div class="abas" role="tablist" aria-label="Seções do painel">
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'pedidos'" [attr.aria-selected]="aba() === 'pedidos'" (click)="trocarAba('pedidos')">
+      Pedidos
+      @if (esperando().length) {
+        <span class="aba__contador">{{ esperando().length }}</span>
+      }
+    </button>
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'agenda'" [attr.aria-selected]="aba() === 'agenda'" (click)="trocarAba('agenda')">Agenda</button>
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'passeios'" [attr.aria-selected]="aba() === 'passeios'" (click)="trocarAba('passeios')">Passeios</button>
+  </div>
+
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="carregar()" />
+  } @else if (carregando()) {
+    <div class="esqueleto" aria-busy="true" aria-label="Carregando">
+      <span></span><span></span><span></span>
+    </div>
+  } @else {
+    @switch (aba()) {
+      @case ('pedidos') {
+        @if (esperando().length) {
+          <p class="painel__resumo">{{ esperando().length }} {{ esperando().length === 1 ? 'pessoa esperando' : 'pessoas esperando' }} sua resposta</p>
+        }
+        <ul class="cartoes">
+          @for (pedido of esperando(); track pedido.id) {
+            <li class="pedido">
+              <div class="pedido__topo">
+                @if (pedido.requester.photo) {
+                  <img class="pedido__foto" [src]="pedido.requester.photo" alt="" />
+                } @else {
+                  <span class="pedido__foto pedido__foto--inicial" aria-hidden="true">{{ (pedido.requester.first_name || '?').charAt(0) }}</span>
+                }
+                <div class="pedido__quem">
+                  <p class="pedido__nome">{{ pedido.requester.first_name }} {{ pedido.requester.last_name }}</p>
+                  <p class="pedido__passeio">{{ pedido.tour_title }}</p>
+                </div>
+                <span class="prazo" [class.prazo--urgente]="horasRestantes(pedido) <= 3">
+                  <i class="bi bi-hourglass-split" aria-hidden="true"></i> {{ textoDoPrazo(pedido) }}
+                </span>
+              </div>
+              <p class="pedido__quando"><i class="bi bi-calendar-event" aria-hidden="true"></i> {{ pedido.start_time | date: "EEEE, d 'de' MMMM 'às' HH:mm" : '' : 'pt-BR' }}</p>
+              @if (pedido.message) {
+                <p class="pedido__mensagem">"{{ pedido.message }}"</p>
+              }
+              <div class="pedido__acoes">
+                <button class="btn-secundario" type="button" [disabled]="respondendo() === pedido.id" (click)="responder(pedido, false)">Recusar</button>
+                <button class="btn-primary" type="button" [disabled]="respondendo() === pedido.id" (click)="responder(pedido, true)">
+                  {{ respondendo() === pedido.id ? 'Salvando...' : 'Aceitar' }}
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li class="vazio">
+              <i class="bi bi-inbox" aria-hidden="true"></i>
+              <p>Nenhum pedido esperando. Quando alguém pedir vaga, aparece aqui e no sino.</p>
+            </li>
+          }
+        </ul>
+
+        @if (respondidos().length) {
+          <h2 class="pagina__subtitulo">Respondidos nos últimos dias</h2>
+          <ul class="linhas">
+            @for (pedido of respondidos(); track pedido.id) {
+              <li class="linha">
+                <span class="linha__textos">
+                  <span class="linha__titulo">{{ pedido.requester.first_name }} · {{ pedido.tour_title }}</span>
+                  <span class="linha__detalhe">{{ pedido.start_time | date: "d/MM 'às' HH:mm" }}</span>
+                </span>
+                <span class="selo" [class.selo--ativo]="pedido.status === 'ACCEPTED'" [class.selo--alerta]="pedido.status !== 'ACCEPTED'">{{ rotulos[pedido.status] }}</span>
+              </li>
+            }
+          </ul>
+        }
+      }
+
+      @case ('agenda') {
+        @for (dia of dias(); track dia.rotulo) {
+          <h2 class="agenda__dia">{{ dia.rotulo }}</h2>
+          <ul class="cartoes">
+            @for (data of dia.datas; track data.id) {
+              <li class="data">
+                <div class="data__topo">
+                  <span class="data__hora">{{ data.start_time | date: 'HH:mm' }}</span>
+                  <div class="data__passeio">
+                    <p class="data__titulo">{{ data.tour_title }}</p>
+                    <p class="data__vagas">{{ data.confirmed }} de {{ data.max_capacity }} vagas confirmadas</p>
+                  </div>
+                </div>
+                <div class="barra" role="progressbar" [attr.aria-valuenow]="data.confirmed" [attr.aria-valuemax]="data.max_capacity" aria-label="Vagas confirmadas">
+                  <span [style.width.%]="ocupacao(data)"></span>
+                </div>
+                <div class="data__selos">
+                  @if (faltamParaSair(data)) {
+                    <span class="selo selo--alerta">Faltam {{ faltamParaSair(data) }} para sair</span>
+                  } @else {
+                    <span class="selo selo--ativo">Confirmado para sair</span>
+                  }
+                  @if (data.pending) {
+                    <button class="selo selo--botao" type="button" (click)="trocarAba('pedidos')">{{ data.pending }} {{ data.pending === 1 ? 'pedido esperando' : 'pedidos esperando' }}</button>
+                  }
+                  @if (data.registration !== 'OPEN') {
+                    <span class="selo">Pedidos fechados</span>
+                  }
+                </div>
+                <div class="data__acoes">
+                  <button class="btn-secundario" type="button" (click)="abrirChat(data)"><i class="bi bi-chat-dots" aria-hidden="true"></i> Chat do grupo</button>
+                  <button class="btn-secundario" type="button" (click)="gerenciar(data.tour_id)">Gerenciar</button>
+                </div>
+              </li>
+            }
+          </ul>
+        } @empty {
+          <div class="vazio">
+            <i class="bi bi-calendar2-week" aria-hidden="true"></i>
+            <p>Nenhuma data marcada. Abra um passeio e marque as próximas saídas.</p>
+            <button class="btn-primary" type="button" (click)="trocarAba('passeios')">Ver meus passeios</button>
+          </div>
+        }
+      }
+
+      @case ('passeios') {
+        <ul class="cartoes cartoes--grade">
+          @for (passeio of passeios(); track passeio.id) {
+            <li class="passeio-card">
+              <button class="passeio-card__foto" type="button" [attr.aria-label]="'Ver ' + passeio.title" (click)="verPasseio(passeio.id)">
+                @if (passeio.photo) {
+                  <img [src]="passeio.photo" alt="" loading="lazy" />
+                }
+                <span class="selo passeio-card__estado" [class.selo--ativo]="passeio.published">{{ passeio.published ? 'Publicado' : 'Rascunho' }}</span>
+              </button>
+              <div class="passeio-card__corpo">
+                <p class="passeio-card__titulo">{{ passeio.title }}</p>
+                <p class="passeio-card__detalhe">
+                  {{ proximasDatas(passeio) }} {{ proximasDatas(passeio) === 1 ? 'próxima data' : 'próximas datas' }}
+                  @if (passeio.instant_booking) { · Reserva na hora }
+                </p>
+                <div class="passeio-card__acoes">
+                  <button class="btn-primary" type="button" (click)="gerenciar(passeio.id)">Datas</button>
+                  <button class="btn-secundario" type="button" (click)="editar(passeio.id)">Editar</button>
+                </div>
+              </div>
+            </li>
+          } @empty {
+            <li class="vazio">
+              <i class="bi bi-compass" aria-hidden="true"></i>
+              <p>Você ainda não criou nenhum passeio. Que tal começar pelo que você mais gosta de mostrar?</p>
+              <button class="btn-primary" type="button" (click)="novoPasseio()">Criar meu primeiro passeio</button>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>

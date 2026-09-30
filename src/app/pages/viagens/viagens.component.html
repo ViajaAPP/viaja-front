@@ -1,0 +1,128 @@
+<section class="pagina viagens">
+  <header class="pagina__topo">
+    <div>
+      <p class="pagina__rotulo">SUAS VIAGENS</p>
+      <h1 class="pagina__titulo">Viagens</h1>
+    </div>
+  </header>
+
+  <div class="abas" role="tablist" aria-label="Suas viagens">
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'proximas'" [attr.aria-selected]="aba() === 'proximas'" (click)="trocarAba('proximas')">
+      Próximas
+      @if (viagens().proximas.length) {
+        <span class="aba__numero">{{ viagens().proximas.length }}</span>
+      }
+    </button>
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'esperando'" [attr.aria-selected]="aba() === 'esperando'" (click)="trocarAba('esperando')">
+      Esperando
+      @if (viagens().esperando.length) {
+        <span class="aba__numero">{{ viagens().esperando.length }}</span>
+      }
+    </button>
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'passadas'" [attr.aria-selected]="aba() === 'passadas'" (click)="trocarAba('passadas')">Já fui</button>
+  </div>
+
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="carregar()" />
+  } @else if (carregando()) {
+    <div class="esqueleto" aria-busy="true" aria-label="Carregando"><span></span><span></span></div>
+  } @else {
+    @switch (aba()) {
+      @case ('proximas') {
+        <ul class="viagens__lista">
+          @for (viagem of viagens().proximas; track viagem.id) {
+            <li class="viagem">
+              <button class="viagem__foto" type="button" [attr.aria-label]="'Ver ' + viagem.tour_title" (click)="abrirPasseio(viagem)">
+                @if (viagem.tour_photo) {
+                  <img [src]="viagem.tour_photo" alt="" loading="lazy" />
+                }
+                <span class="viagem__falta">{{ diasAte(viagem) }}</span>
+              </button>
+              <div class="viagem__corpo">
+                <span class="selo selo--ativo">Confirmado</span>
+                <p class="viagem__titulo">{{ viagem.tour_title }}</p>
+                <p class="viagem__quando"><i class="bi bi-calendar-event" aria-hidden="true"></i> {{ viagem.start_time | date: "EEEE, d 'de' MMMM 'às' HH:mm" : '' : 'pt-BR' }}</p>
+                <p class="viagem__onde"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ viagem.meeting_point }}</p>
+                @if (viagem.guide) {
+                  <p class="viagem__guia">Com {{ viagem.guide.first_name }}</p>
+                }
+                <div class="viagem__acoes">
+                  @if (viagem.chat_id) {
+                    <button class="btn-primary" type="button" (click)="abrirChat(viagem)"><i class="bi bi-chat-dots" aria-hidden="true"></i> Chat do grupo</button>
+                  }
+                  <button class="btn-secundario" type="button" (click)="abrirPasseio(viagem)">Como chegar</button>
+                </div>
+              </div>
+            </li>
+          } @empty {
+            <li class="vazio">
+              <i class="bi bi-suitcase2" aria-hidden="true"></i>
+              <p>Nenhuma viagem confirmada ainda. Bora achar um passeio?</p>
+              <button class="btn-primary" type="button" (click)="explorar()">Procurar passeios</button>
+            </li>
+          }
+        </ul>
+      }
+
+      @case ('esperando') {
+        <ul class="viagens__lista">
+          @for (viagem of viagens().esperando; track viagem.id) {
+            <li class="viagem viagem--compacta" tabindex="0" role="link" (click)="abrirPasseio(viagem)" (keydown.enter)="abrirPasseio(viagem)">
+              <div class="viagem__corpo">
+                <span class="selo">Esperando o guia</span>
+                <p class="viagem__titulo">{{ viagem.tour_title }}</p>
+                <p class="viagem__quando">{{ viagem.start_time | date: "d 'de' MMMM 'às' HH:mm" : '' : 'pt-BR' }}</p>
+                <p class="viagem__prazo">O guia tem até {{ horasRestantes(viagem) }} {{ horasRestantes(viagem) === 1 ? 'hora' : 'horas' }} para responder. Se não responder, o pedido cancela sozinho.</p>
+              </div>
+            </li>
+          } @empty {
+            <li class="vazio">
+              <i class="bi bi-hourglass" aria-hidden="true"></i>
+              <p>Nenhum pedido esperando resposta.</p>
+            </li>
+          }
+        </ul>
+
+        @if (viagens().encerradas.length) {
+          <h2 class="pagina__subtitulo">Não deu certo</h2>
+          <ul class="viagens__lista">
+            @for (viagem of viagens().encerradas; track viagem.id) {
+              <li class="viagem viagem--compacta viagem--apagada" tabindex="0" role="link" (click)="abrirPasseio(viagem)" (keydown.enter)="abrirPasseio(viagem)">
+                <div class="viagem__corpo">
+                  <span class="selo selo--alerta">{{ motivo(viagem) }}</span>
+                  <p class="viagem__titulo">{{ viagem.tour_title }}</p>
+                  <p class="viagem__quando">{{ viagem.start_time | date: "d 'de' MMMM" : '' : 'pt-BR' }} · veja outras datas</p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+
+      @case ('passadas') {
+        <ul class="viagens__lista">
+          @for (viagem of viagens().passadas; track viagem.id) {
+            <li class="viagem viagem--compacta">
+              <div class="viagem__corpo">
+                <p class="viagem__titulo">{{ viagem.tour_title }}</p>
+                <p class="viagem__quando">{{ viagem.start_time | date: "d 'de' MMMM 'de' y" : '' : 'pt-BR' }}</p>
+                @if (viagem.can_review) {
+                  <button class="btn-primary viagem__avaliar" type="button" (click)="abrirPasseio(viagem)">
+                    <span aria-hidden="true">★</span> Avaliar o passeio
+                  </button>
+                } @else {
+                  <p class="viagem__avaliado"><i class="bi bi-check2-circle" aria-hidden="true"></i> Você já avaliou</p>
+                }
+              </div>
+            </li>
+          } @empty {
+            <li class="vazio">
+              <i class="bi bi-camera" aria-hidden="true"></i>
+              <p>Os passeios que você fizer aparecem aqui, para você avaliar e lembrar.</p>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>
