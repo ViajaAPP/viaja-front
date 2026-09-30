@@ -1,8 +1,9 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { ComAlteracoes } from '../../shared/guards/alteracoes.guard';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { Perfil } from '../../shared/enums/user.model';
@@ -18,7 +19,7 @@ type CampoDoPerfil = 'first_name' | 'last_name' | 'phone';
   templateUrl: './perfil-editar.component.html',
   styleUrl: './perfil-editar.component.scss',
 })
-export class PerfilEditarComponent implements OnInit {
+export class PerfilEditarComponent implements OnInit, ComAlteracoes {
   private readonly facade = inject(AppFacade);
   private readonly navigationService = inject(NavigationService);
   private readonly dadosClienteService = inject(DadosClienteService);
@@ -33,6 +34,7 @@ export class PerfilEditarComponent implements OnInit {
   erro = signal('');
   sucesso = signal('');
   errosDosCampos = signal<Partial<Record<CampoDoPerfil, string>>>({});
+  private salvo = false;
 
   nomeCompleto = computed(() => `${this.nome()} ${this.sobrenome()}`.trim());
   tipoDeConta = computed(() => {
@@ -116,6 +118,7 @@ export class PerfilEditarComponent implements OnInit {
       .subscribe({
         next: () => {
           this.salvando.set(false);
+          this.salvo = true;
           this.sucesso.set('Perfil salvo.');
           this.dadosClienteService.limparCache();
           setTimeout(() => this.voltar(), 900);
@@ -126,6 +129,19 @@ export class PerfilEditarComponent implements OnInit {
           this.erro.set(mensagemDeErro(error, 'Não conseguimos salvar seu perfil. Tente de novo.'));
         },
       });
+  }
+
+  temAlteracoes(): boolean {
+    const perfil = this.perfil();
+    if (!perfil || this.salvo) return false;
+    return this.nome() !== perfil.first_name
+      || this.sobrenome() !== perfil.last_name
+      || this.telefone() !== (perfil.phone ?? '');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  avisarAoFechar(evento: BeforeUnloadEvent): void {
+    if (this.temAlteracoes()) evento.preventDefault();
   }
 
   voltar(): void {

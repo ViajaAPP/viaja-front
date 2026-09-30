@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { paginaGuard } from './shared/guards/pagina.guard';
+import { alteracoesGuard } from './shared/guards/alteracoes.guard';
 
 export const routes: Routes = [
   {
@@ -61,6 +62,7 @@ export const routes: Routes = [
     path: 'perfil/editar',
     data: { page: 'perfil-editar' },
     canActivate: [paginaGuard],
+    canDeactivate: [alteracoesGuard],
     loadComponent: () => import('./pages/perfil-editar/perfil-editar.component').then((m) => m.PerfilEditarComponent),
   },
   {
@@ -85,6 +87,7 @@ export const routes: Routes = [
     path: 'meus-passeios/novo',
     data: { page: 'passeio-form' },
     canActivate: [paginaGuard],
+    canDeactivate: [alteracoesGuard],
     loadComponent: () => import('./pages/passeio-form/passeio-form.component').then((m) => m.PasseioFormComponent),
   },
   {
@@ -97,6 +100,7 @@ export const routes: Routes = [
     path: 'meus-passeios/:tourId/editar',
     data: { page: 'passeio-form' },
     canActivate: [paginaGuard],
+    canDeactivate: [alteracoesGuard],
     loadComponent: () => import('./pages/passeio-form/passeio-form.component').then((m) => m.PasseioFormComponent),
   },
   {

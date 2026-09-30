@@ -1,10 +1,11 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, HostListener } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, distinctUntilChanged, of, switchMap, catchError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
+import { ComAlteracoes } from '../../shared/guards/alteracoes.guard';
 import { FeedbackService } from '../../shared/services/feedback/feedback.service';
 import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
 import { TourService } from '../../shared/services/tour/tour.service';
@@ -19,7 +20,7 @@ import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-fot
   imports: [FormsModule, CampoFotoComponent, ValidarFormularioDirective],
   templateUrl: './passeio-form.component.html',
 })
-export class PasseioFormComponent implements OnInit {
+export class PasseioFormComponent implements OnInit, ComAlteracoes {
   private readonly facade = inject(AppFacade);
   private readonly navigationService = inject(NavigationService);
   private readonly feedback = inject(FeedbackService);
@@ -51,6 +52,8 @@ export class PasseioFormComponent implements OnInit {
   previaDaCapa = signal('');
   erro = signal('');
   cidadesSugeridas = signal<string[]>([]);
+  private original = JSON.stringify(this.passeio);
+  private salvo = false;
 
   ngOnInit(): void {
     this.cidadeDigitada
@@ -92,6 +95,7 @@ export class PasseioFormComponent implements OnInit {
       street,
       number,
     };
+    this.original = JSON.stringify(this.passeio);
   }
 
   escolherCapa(arquivo: File): void {
@@ -134,6 +138,7 @@ export class PasseioFormComponent implements OnInit {
     if (this.tourId) {
       this.tourService.editarPasseio(this.tourId, this.passeio).subscribe({
         next: () => {
+          this.salvo = true;
           this.feedback.sucesso('Passeio atualizado.');
           this.navigationService.navigateTo('meus-passeios');
         },
@@ -143,6 +148,7 @@ export class PasseioFormComponent implements OnInit {
     }
     this.tourService.criarPasseio(this.passeio).subscribe({
       next: ({ tour_id }) => {
+        this.salvo = true;
         this.feedback.sucesso('Passeio criado. Agora marque as datas.');
         this.navigationService.navigateToTour('passeio-gestao', tour_id);
       },
@@ -156,6 +162,15 @@ export class PasseioFormComponent implements OnInit {
 
   trocarUf(): void {
     this.cidadesSugeridas.set([]);
+  }
+
+  temAlteracoes(): boolean {
+    return !this.salvo && JSON.stringify(this.passeio) !== this.original;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  avisarAoFechar(evento: BeforeUnloadEvent): void {
+    if (this.temAlteracoes()) evento.preventDefault();
   }
 
   voltar(): void {
