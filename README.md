@@ -118,6 +118,20 @@ Passeios, datas e pedidos de vaga:
 - `criarData(tourId, payload)` / `editarData(tourId, instanceId, payload)`
 - `listarSolicitacoesDaData(instanceId)` / `responderSolicitacao(requestId, status)`
 - `solicitarVaga(instanceId, message)` / `listarMinhasSolicitacoes()`
+- `listarPasseiosPerto(lat, lon)`: passeios publicados, do mais perto para o mais longe
+
+### `CidadesService`
+Sugestoes de cidade para o formulario do passeio:
+- `buscarCidades(texto, uf)`: cidades que combinam com o texto, filtradas pela UF
+
+## Cidades e filtro "mais perto"
+
+Os dados de cidade vem da CidadesBR-API, sempre passando pelo backend, que guarda as respostas em cache. O front nunca chama a CidadesBR-API direto.
+
+- No formulario do passeio, o campo de cidade sugere nomes conforme a pessoa digita, a partir da segunda letra, filtrando pela UF escolhida.
+- Na home, o filtro "mais perto" pede a localizacao do navegador e chama `GET /tour/perto`. Se a pessoa negar, a tela explica como liberar.
+- O navegador so libera a localizacao em `http://localhost` ou em `https`. Por um IP da rede local, o filtro sempre cai na mensagem de erro.
+- Se a CidadesBR-API estiver dormindo no Render, a primeira busca pode levar perto de um minuto.
 
 ## Modo Mock
 
@@ -125,11 +139,21 @@ Para desenvolvimento sem backend, defina `MOCK: true` em `src/app/shared/config/
 
 ## Desenvolvimento
 
+### Requisitos
+- Node.js 20.19 ou mais novo (o Angular 21 nao roda em versoes antigas)
+- Git
+- O backend `viaja_flaskapp` rodando, local ou em producao
+
+### Passo a passo
+
 A versao que esta funcionando fica na branch `staging`.
 
 ```bash
+git clone https://github.com/ViajaAPP/viaja-front.git
+cd viaja-front
+git checkout staging
 npm install
-ng serve
+npm start
 ```
 
 Acesse `http://localhost:4200/`. O `ng serve` chama a API em `http://localhost:5000`, entao suba o backend antes. No `viaja_flaskapp` da para rodar tudo local, sem nenhuma chave:
@@ -142,7 +166,17 @@ python run.py --local
 
 Contas de teste, todas com a senha `viaja123`: `guia@viaja.local`, `viajante@viaja.local` e `admin@viaja.local`.
 
-As chaves de producao ficam no backend, nunca no front. O README do `viaja_flaskapp` explica como pedir acesso a elas.
+As chaves de producao ficam no backend, nunca no front. O README do `viaja_flaskapp` explica como pedir acesso a elas e como baixa-las do Google Drive com `bash scripts/secrets.sh pull`.
+
+Para usar o front com o banco de producao, suba o backend com as chaves de producao (`bash scripts/secrets.sh pull` e `python run.py`, no `viaja_flaskapp`). O front continua apontando para `http://localhost:5000`.
+
+## Responsividade
+
+Toda tela precisa funcionar no celular, no tablet e no computador. O celular e a base; o resto e acrescentado por cima, sem mudar o que ja funciona no celular.
+
+- Os pontos de quebra e a largura maxima do conteudo ficam em `src/styles/_responsivo.scss`: tablet a partir de 768px, computador a partir de 1024px, conteudo com ate 1100px.
+- Em qualquer `.scss`, use `@use 'responsivo' as *;` e os mixins `a-partir-do-tablet`, `a-partir-do-pc` e `conteudo-centralizado`.
+- Nao use margem em porcentagem para posicionar blocos na vertical: ela e calculada pela largura da tela e cria buracos enormes no computador.
 
 ## Build
 
