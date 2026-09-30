@@ -5,6 +5,7 @@ import { DadosClienteService } from '../../shared/services/dados-cliente/dados-c
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { HomeResponse, Category, Activity } from '../../shared/enums/home.model';
 import { TourService } from '../../shared/services/tour/tour.service';
+import { FalhaDePosicao, LocalizacaoService } from '../../shared/services/localizacao/localizacao.service';
 import { NavigationService } from '../../shared/services/navigation';
 import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
@@ -22,6 +23,7 @@ export class HomeComponent implements OnInit {
   private readonly dados = inject(DadosClienteService);
   private readonly navigationService = inject(NavigationService);
   private readonly tourService = inject(TourService);
+  private readonly localizacao = inject(LocalizacaoService);
   readonly starIndexes = [0, 1, 2, 3, 4];
   
   dadosHome = signal<HomeResponse | null>(null);
@@ -88,14 +90,10 @@ export class HomeComponent implements OnInit {
   }
 
   private buscarPasseiosPerto(): void {
-    if (!navigator.geolocation) {
-      this.situacaoPerto.set('erro');
-      return;
-    }
     this.situacaoPerto.set('buscando');
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        this.tourService.listarPasseiosPerto(coords.latitude, coords.longitude).subscribe({
+    this.localizacao.acompanhar().subscribe({
+      next: (posicao) => {
+        this.tourService.listarPasseiosPerto(posicao.lat, posicao.lon).subscribe({
           next: (passeios) => {
             this.passeiosPerto.set(passeios);
             this.situacaoPerto.set('pronto');
@@ -103,9 +101,8 @@ export class HomeComponent implements OnInit {
           error: () => this.situacaoPerto.set('erro'),
         });
       },
-      (erro) => this.situacaoPerto.set(erro.code === erro.PERMISSION_DENIED ? 'sem-permissao' : 'erro'),
-      { timeout: 15000, maximumAge: 10 * 60 * 1000 },
-    );
+      error: (falha: FalhaDePosicao) => this.situacaoPerto.set(falha),
+    });
   }
 
   abrirPasseio(tourId: string): void {
