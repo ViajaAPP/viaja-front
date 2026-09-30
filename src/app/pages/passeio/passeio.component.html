@@ -6,6 +6,16 @@
     <div>
       <p class="pagina__rotulo">PASSEIO</p>
       <h1 class="pagina__titulo">{{ passeio()?.title }}</h1>
+      @if (passeio()?.rating; as nota) {
+        @if (nota.count) {
+          <p class="passeio__nota">
+            <span class="passeio__estrela" aria-hidden="true">★</span>
+            {{ nota.average }} · {{ nota.count }} {{ nota.count === 1 ? 'avaliação' : 'avaliações' }}
+          </p>
+        } @else {
+          <p class="passeio__nota passeio__nota--vazia">Sem avaliações ainda</p>
+        }
+      }
     </div>
     @if (passeio(); as dados) {
       <app-botao-favorito
@@ -27,7 +37,21 @@
   @if (passeio(); as dados) {
     <div class="passeio__layout">
       <div class="passeio__principal">
-        <img class="passeio__foto" [src]="dados.photo" [alt]="dados.title" />
+        <div class="galeria" role="region" aria-label="Fotos do passeio">
+          <div class="galeria__trilho" #trilho (scroll)="aoRolarGaleria(trilho)">
+            @for (foto of fotos(); track foto.url; let i = $index) {
+              <figure class="galeria__foto">
+                <img [src]="foto.url" [alt]="i === 0 ? dados.title : 'Foto ' + (i + 1) + ' de ' + dados.title" [attr.loading]="i === 0 ? null : 'lazy'" />
+                @if (foto.credit) {
+                  <figcaption>Foto: {{ foto.credit }}</figcaption>
+                }
+              </figure>
+            }
+          </div>
+          @if (fotos().length > 1) {
+            <span class="galeria__contador" aria-hidden="true">{{ fotoAtual() + 1 }} / {{ fotos().length }}</span>
+          }
+        </div>
 
         @if (dados.guide) {
           <p class="passeio__guia">Com {{ dados.guide.first_name }} {{ dados.guide.last_name }}</p>
@@ -37,11 +61,15 @@
           <p class="passeio__descricao">{{ dados.description }}</p>
           <ul class="passeio__infos">
             <li>
-              <i class="bi bi-cash" aria-hidden="true"></i> {{ formatarPreco(dados.price) }} por pessoa
+              <i class="bi bi-cash" aria-hidden="true"></i>
+              @if (dados.price > 0) {
+                {{ formatarPreco(dados.price) }} por pessoa
+              } @else {
+                Gratuito
+              }
             </li>
             <li>
-              <i class="bi bi-clock" aria-hidden="true"></i> Cerca de
-              {{ dados.estimated_duration_minutes }} minutos
+              <i class="bi bi-clock" aria-hidden="true"></i> {{ formatarDuracao(dados.estimated_duration_minutes) }}
             </li>
             <li>
               <i class="bi bi-geo-alt" aria-hidden="true"></i> Encontro: {{ dados.meeting_point }}
@@ -60,11 +88,22 @@
             </div>
           }
         </div>
+
+        @if (dados.address?.lat != null && dados.address?.lon != null) {
+          <h2 class="pagina__subtitulo">Onde é</h2>
+          <app-mapa [lat]="dados.address?.lat" [lon]="dados.address?.lon" rotulo="Mapa com o local do passeio" />
+          <a
+            class="passeio__rota"
+            [href]="'https://www.openstreetmap.org/directions?to=' + dados.address?.lat + '%2C' + dados.address?.lon"
+            target="_blank"
+            rel="noopener"
+          >Ver como chegar</a>
+        }
       </div>
 
       <div class="passeio__saidas">
         <h2 class="pagina__subtitulo">Próximas saídas</h2>
-        @for (data of dados.instances; track data.id) {
+        @for (data of proximasDatas(dados.instances); track data.id) {
           <article class="cartao passeio__data">
             <div>
               <p class="passeio__quando">{{ data.start_time | date: formatoData }}</p>
@@ -92,8 +131,60 @@
             }
           </article>
         } @empty {
-          <p class="pagina__vazio">O guia ainda não marcou nenhuma data.</p>
+          <p class="pagina__vazio">O guia ainda não marcou nenhuma data para os próximos dias.</p>
         }
+
+        <h2 class="pagina__subtitulo">Avaliações</h2>
+        @if (dados.review_instance_id) {
+          <form class="cartao formulario avaliar" (ngSubmit)="avaliar(dados.id)">
+            <p class="avaliar__titulo">Como foi o passeio?</p>
+            <div class="avaliar__estrelas" role="radiogroup" aria-label="Sua nota">
+              @for (n of [1, 2, 3, 4, 5]; track n) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="avaliar__estrela"
+                  [class.avaliar__estrela--on]="n <= minhaNota()"
+                  [attr.aria-checked]="n === minhaNota()"
+                  [attr.aria-label]="n + (n === 1 ? ' estrela' : ' estrelas')"
+                  (click)="minhaNota.set(n)"
+                >★</button>
+              }
+            </div>
+            <label for="comentario">Conte como foi, se quiser</label>
+            <textarea id="comentario" name="comentario" rows="3" maxlength="1000" [(ngModel)]="meuComentario"></textarea>
+            <button class="btn-primary" type="submit" [disabled]="!minhaNota() || avaliando()">
+              {{ avaliando() ? 'Enviando...' : 'Enviar avaliação' }}
+            </button>
+          </form>
+        }
+        <ul class="avaliacoes">
+          @for (avaliacao of dados.reviews; track avaliacao.id) {
+            <li class="avaliacao">
+              <div class="avaliacao__topo">
+                @if (avaliacao.author_photo) {
+                  <img class="avaliacao__foto" [src]="avaliacao.author_photo" alt="" loading="lazy" />
+                } @else {
+                  <span class="avaliacao__foto avaliacao__foto--inicial" aria-hidden="true">{{ avaliacao.author.charAt(0) }}</span>
+                }
+                <div>
+                  <p class="avaliacao__autor">{{ avaliacao.author }}</p>
+                  <p class="avaliacao__quando">{{ avaliacao.created_at | date: 'MMMM \'de\' y' : '' : 'pt-BR' }}</p>
+                </div>
+                <span class="avaliacao__nota" [attr.aria-label]="'Nota ' + avaliacao.rating + ' de 5'">
+                  @for (n of [1, 2, 3, 4, 5]; track n) {
+                    <span [class.avaliacao__estrela--on]="n <= avaliacao.rating" aria-hidden="true">★</span>
+                  }
+                </span>
+              </div>
+              @if (avaliacao.comment) {
+                <p class="avaliacao__texto">{{ avaliacao.comment }}</p>
+              }
+            </li>
+          } @empty {
+            <li class="pagina__vazio">Quem for nesse passeio pode deixar a primeira avaliação.</li>
+          }
+        </ul>
       </div>
     </div>
   }
