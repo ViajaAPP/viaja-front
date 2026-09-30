@@ -1,19 +1,61 @@
-<div class="login-container">
-    <div class="login-container__logo"></div>
+<div class="login">
+  <aside class="login__hero">
+    <button class="login__voltar" type="button" aria-label="Voltar" (click)="navigateToWelcome()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div class="login__logo" role="img" aria-label="Viajá"></div>
+    <p class="login__slogan">Guiado por quem vive isso</p>
+  </aside>
 
-    <div class="login-container__form">
-        <h1 class="login-container__titulo">Bem-vindo de volta!</h1>
-        <p>Faça login para continuar</p>
-        <div class="login-container__alerta-erro" *ngIf="errorMessage()">
-          <p>{{ errorMessage() }}</p>
+  <main class="login__painel">
+    <div class="login__conteudo">
+      <h1 class="login__titulo">Bem-vindo de volta!</h1>
+      <p class="login__subtitulo">Entre para ver seus passeios e conversas.</p>
+
+      @if (errorMessage()) {
+        <div class="alerta-erro" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <form class="formulario login__form" (ngSubmit)="login()">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          autocomplete="email"
+          [(ngModel)]="credentials.email"
+          required
+        />
+
+        <label for="senha">Senha</label>
+        <div class="campo-senha">
+          <input
+            id="senha"
+            [type]="senhaVisivel() ? 'text' : 'password'"
+            name="password"
+            autocomplete="current-password"
+            [(ngModel)]="credentials.password"
+            required
+          />
+          <button
+            class="campo-senha__olho"
+            type="button"
+            [attr.aria-label]="senhaVisivel() ? 'Esconder senha' : 'Mostrar senha'"
+            (click)="senhaVisivel.set(!senhaVisivel())"
+          >
+            <i class="bi" [class.bi-eye]="!senhaVisivel()" [class.bi-eye-slash]="senhaVisivel()" aria-hidden="true"></i>
+          </button>
         </div>
-        <form (ngSubmit)="login()">
-            <input type="text" placeholder="Email" [(ngModel)]="credentials.email" name="email" required>
-            <input type="password" placeholder="Senha" [(ngModel)]="credentials.password" name="password" required>
-            <button class="mt-1 btn-primary" type="submit" [disabled]="isLoggingIn()">
-              {{isLoggingIn() ? 'Entrando...' : 'Entrar'}}
-            </button>
-        </form>
-        <p class="mt-1">Ainda não tem conta? <span class="login-container__link" (click)="navigateToRegistrar()">Criar conta</span></p>
+
+        <button class="btn-primary login__entrar" type="submit" [disabled]="isLoggingIn()">
+          {{ isLoggingIn() ? 'Entrando...' : 'Entrar' }}
+        </button>
+      </form>
+
+      <p class="login__rodape">
+        Ainda não tem conta?
+        <button class="login__link" type="button" (click)="navigateToRegistrar()">Criar conta</button>
+      </p>
     </div>
+  </main>
 </div>

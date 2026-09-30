@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit {
 
   isLoggingIn = signal(false);
   errorMessage = signal('');
+  senhaVisivel = signal(false);
 
   login(){
     this.isLoggingIn.set(true);
