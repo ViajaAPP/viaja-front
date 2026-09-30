@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: viaja-front
+    runtime: static
+    branch: staging
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist/viaja/browser
+    domains:
+      - viaja-app.com.br
+      - www.viaja-app.com.br
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
