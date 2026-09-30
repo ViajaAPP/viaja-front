@@ -1,5 +1,7 @@
 <div class="main-pages">
-  @if (facade.loading()) {
+  @if (facade.semConexao()) {
+      <app-sem-conexao/>
+  } @else if (facade.loading()) {
       <app-loading/>
   } @else {
       @switch(facade.currentPage()){
@@ -91,4 +93,4 @@
     }
 </div>
 
-<app-botao-nav *ngIf="facade.showBottomNav() && !facade.loading()"/>
+<app-botao-nav *ngIf="facade.showBottomNav() && !facade.loading() && !facade.semConexao()"/>

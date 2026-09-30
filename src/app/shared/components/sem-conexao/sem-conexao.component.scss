@@ -1,0 +1,44 @@
+@use 'responsivo' as *;
+
+.sem-conexao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: #0a0a0a;
+
+  &__cartao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+    padding: 32px 24px;
+    border-radius: 16px;
+    background: #1a1a1a;
+    text-align: center;
+
+    @include a-partir-do-tablet {
+      max-width: 420px;
+      padding: 40px 32px;
+    }
+  }
+
+  &__icone {
+    font-size: 40px;
+    color: #EE8700;
+  }
+
+  &__texto {
+    margin: 0;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  &__botao {
+    width: 100%;
+  }
+}

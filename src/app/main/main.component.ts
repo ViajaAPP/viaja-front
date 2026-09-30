@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { WelcomeComponent } from '../pages/welcome/welcome.component';
 import { LoginComponent } from '../pages/login/login.component';
 import { LoadingComponent } from '../shared/components/loading/loading.component';
+import { SemConexaoComponent } from '../shared/components/sem-conexao/sem-conexao.component';
 import { HomeComponent } from '../pages/home/home.component';
 import { ChatComponent } from '../pages/chat/chat.component';
 import { AppFacade } from '../shared/facade/app.facade';
@@ -26,6 +27,7 @@ import { MinhasSolicitacoesComponent } from '../pages/minhas-solicitacoes/minhas
     LoginComponent,
     BotaoNavComponent,
     LoadingComponent,
+    SemConexaoComponent,
     HomeComponent,
     ChatComponent,
     RegistrarComponent,

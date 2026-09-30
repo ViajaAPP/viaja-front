@@ -8,6 +8,7 @@ export class AppFacade {
 
   currentPage = this.store.currentPage;
   loading = this.store.loading;
+  semConexao = this.store.semConexao;
   isWelcome = this.store.isWelcome;
   isLogin = this.store.isLogin;
   isHome = this.store.isHome;
@@ -34,6 +35,10 @@ export class AppFacade {
 
   endSession() {
     this.store.endSession();
+  }
+
+  tentarDeNovo() {
+    this.store.tentarDeNovo();
   }
 
   initializeApp() {

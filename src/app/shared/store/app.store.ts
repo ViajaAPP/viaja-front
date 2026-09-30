@@ -22,6 +22,7 @@ const PAGES_WITHOUT_BOTTOM_NAV: AppPage[] = ['welcome', 'login', 'registrar', 'c
 interface AppState {
   currentPage: AppPage;
   loading: boolean;
+  semConexao: boolean;
   selectedChatId: number | null;
   selectedTourId: number | null;
   myUserId: number | null;
@@ -31,6 +32,7 @@ interface AppState {
 const initialState: AppState = {
   currentPage: 'welcome',
   loading: true,
+  semConexao: false,
   selectedChatId: null,
   selectedTourId: null,
   myUserId: null,
@@ -52,6 +54,12 @@ export const AppStore = signalStore(
     },
     setLoading(value: boolean) {
       patchState(store, { loading: value });
+    },
+    avisarSemConexao() {
+      patchState(store, { loading: false, semConexao: true });
+    },
+    tentarDeNovo() {
+      patchState(store, { semConexao: false });
     },
     initializeApp() {
       setTimeout(() => {
