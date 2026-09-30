@@ -94,32 +94,37 @@
                   </span>
                 }
                 <div class="activity-card__guide-info">
-                  @if (activity.rating && activity.reviewCount) {
-                    <div class="activity-card__stars" [attr.aria-label]="'Nota ' + activity.rating + ' de 5, ' + activity.reviewCount + (activity.reviewCount === 1 ? ' avaliação' : ' avaliações')">
-                      @for (i of starIndexes; track i) {
-                        <span
-                          class="activity-card__star"
-                          [class.activity-card__star--on]="isStarFilled(i, activity.rating)"
-                          aria-hidden="true"
-                        >★</span>
-                      }
-                      <span class="activity-card__nota" aria-hidden="true">{{ activity.rating }} ({{ activity.reviewCount }})</span>
-                    </div>
-                  } @else {
-                    <span class="activity-card__sem-nota">Sem avaliações ainda</span>
-                  }
                   <span class="activity-card__guide-name">{{ activity.guide }}</span>
+                  @if (activity.rating && activity.reviewCount) {
+                    <span class="activity-card__avaliacao" [attr.aria-label]="'Nota ' + activity.rating + ' de 5, ' + activity.reviewCount + (activity.reviewCount === 1 ? ' avaliação' : ' avaliações')">
+                      <span class="activity-card__star activity-card__star--on" aria-hidden="true">★</span>
+                      <strong aria-hidden="true">{{ activity.rating.toFixed(1).replace('.', ',') }}</strong>
+                      <span aria-hidden="true">· {{ activity.reviewCount }} {{ activity.reviewCount === 1 ? 'avaliação' : 'avaliações' }}</span>
+                    </span>
+                  } @else {
+                    <span class="activity-card__avaliacao activity-card__avaliacao--novo">Novo · sem avaliações ainda</span>
+                  }
                 </div>
               </div>
 
               <div class="activity-card__bottom-row">
                 <div>
                   <h3 class="activity-card__title">{{ activity.title }}</h3>
-                  <p class="activity-card__meta">
-                    {{ activity.city }}
-                    @if (activity.distance_km != null) { · {{ activity.distance_km }} km }
-                    · {{ activity.nextDate ? 'Próxima ' + (activity.nextDate | date: 'dd/MM') : 'Sem data marcada' }}
-                  </p>
+                  <div class="activity-card__selos">
+                    <span class="activity-card__selo"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ activity.city }}@if (activity.distance_km != null) { · {{ activity.distance_km }} km }</span>
+                    @if (activity.nextDate) {
+                      <span class="activity-card__selo"><i class="bi bi-calendar-event" aria-hidden="true"></i> {{ proximaData(activity.nextDate) }}</span>
+                      @if (activity.spotsLeft === 0) {
+                        <span class="activity-card__selo activity-card__selo--lotado">Lotado</span>
+                      } @else if (activity.spotsLeft != null && activity.spotsLeft <= 3) {
+                        <span class="activity-card__selo activity-card__selo--ultimas">{{ activity.spotsLeft === 1 ? 'Última vaga' : 'Últimas ' + activity.spotsLeft + ' vagas' }}</span>
+                      } @else if (activity.spotsLeft != null) {
+                        <span class="activity-card__selo">{{ activity.spotsLeft }} vagas</span>
+                      }
+                    } @else {
+                      <span class="activity-card__selo">Sem data marcada</span>
+                    }
+                  </div>
                 </div>
                 <button
                   class="activity-card__arrow"

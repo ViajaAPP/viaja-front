@@ -1,6 +1,5 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { AppFacade } from '../../shared/facade';
 import { DadosClienteService } from '../../shared/services/dados-cliente/dados-cliente.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
@@ -22,7 +21,7 @@ const FILTROS_DA_CATEGORIA: Record<string, FiltrosDaBusca> = {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [DatePipe, HeaderComponent, BotaoFavoritoComponent, FalhaCarregarComponent],
+  imports: [HeaderComponent, BotaoFavoritoComponent, FalhaCarregarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -112,6 +111,21 @@ export class HomeComponent implements OnInit {
 
   formatarPreco(preco: number): string {
     return preco > 0 ? PRICE_FORMAT.format(preco) : 'Gratuito';
+  }
+
+  proximaData(inicio: string): string {
+    const data = new Date(inicio);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dia = new Date(data);
+    dia.setHours(0, 0, 0, 0);
+    const dias = Math.round((dia.getTime() - hoje.getTime()) / 86400000);
+    const hora = data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    if (dias === 0) return `Hoje, ${hora}`;
+    if (dias === 1) return `Amanhã, ${hora}`;
+    const semana = data.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+    const diaMes = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    return `${semana.charAt(0).toUpperCase()}${semana.slice(1)}, ${diaMes}`;
   }
 
   isStarFilled(index: number, rating: number): boolean {

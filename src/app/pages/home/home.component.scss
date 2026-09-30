@@ -92,7 +92,7 @@
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
-  height: 220px;
+  height: 260px;
 
   @include a-partir-do-pc {
     height: 260px;
@@ -258,13 +258,51 @@
   color: rgb(255 255 255 / 85%);
 }
 
-.activity-card__meta {
-  margin: 4px 0 0;
+.activity-card__selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.activity-card__selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 20%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
   font-size: 12px;
-  color: rgb(255 255 255 / 88%);
+  font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  &--lotado {
+    background: #e5484d;
+  }
+
+  &--ultimas {
+    background: #ee8700;
+  }
+}
+
+.activity-card__avaliacao {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #fff;
+
+  strong {
+    font-size: 14px;
+  }
+
+  &--novo {
+    font-size: 12px;
+    color: rgb(255 255 255 / 85%);
+  }
 }
 
 .home__titulo-linha {
@@ -290,7 +328,7 @@
 }
 
 .home__esqueleto {
-  height: 220px;
+  height: 260px;
   border-radius: 20px;
   background: #f1eee4;
 }

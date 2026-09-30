@@ -67,6 +67,7 @@ export interface PasseioEncontrado {
   likes: number;
   searches: number;
   nextDate: string | null;
+  spotsLeft: number | null;
   favorite: boolean;
 }
 
