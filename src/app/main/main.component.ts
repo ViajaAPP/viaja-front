@@ -17,6 +17,7 @@ import { PasseioFormComponent } from '../pages/passeio-form/passeio-form.compone
 import { PasseioGestaoComponent } from '../pages/passeio-gestao/passeio-gestao.component';
 import { MinhasSolicitacoesComponent } from '../pages/minhas-solicitacoes/minhas-solicitacoes.component';
 import { FavoritosComponent } from '../pages/favoritos/favoritos.component';
+import { PerfilEditarComponent } from '../pages/perfil-editar/perfil-editar.component';
 
 @Component({
   selector: 'app-main',
@@ -39,6 +40,7 @@ import { FavoritosComponent } from '../pages/favoritos/favoritos.component';
     PasseioGestaoComponent,
     MinhasSolicitacoesComponent,
     FavoritosComponent,
+    PerfilEditarComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

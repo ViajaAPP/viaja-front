@@ -16,7 +16,8 @@ export type AppPage =
   | 'passeio-form'
   | 'passeio-gestao'
   | 'minhas-solicitacoes'
-  | 'favoritos';
+  | 'favoritos'
+  | 'perfil-editar';
 
 const PAGES_WITHOUT_BOTTOM_NAV: AppPage[] = ['welcome', 'login', 'registrar', 'chat-tour'];
 

@@ -1,0 +1,71 @@
+@use 'responsivo' as *;
+
+.cartao-perfil {
+  background: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  margin-bottom: 16px;
+
+  &__capa {
+    height: 110px;
+    background:
+      linear-gradient(to top, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.05)),
+      url(../../../../assets/fundo-login.jpg) center / cover;
+
+    @include a-partir-do-tablet {
+      height: 150px;
+    }
+  }
+
+  &__corpo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px 20px;
+  }
+
+  &__avatar {
+    width: 104px;
+    height: 104px;
+    margin-top: -52px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    background: #FFF8EA;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #EE8700;
+    font-size: 44px;
+
+    @include a-partir-do-tablet {
+      width: 128px;
+      height: 128px;
+      margin-top: -64px;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__nome {
+    margin: 12px 0 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    word-break: break-word;
+  }
+
+  &__email {
+    margin: 2px 0 10px;
+    font-size: 13px;
+    word-break: break-all;
+  }
+}

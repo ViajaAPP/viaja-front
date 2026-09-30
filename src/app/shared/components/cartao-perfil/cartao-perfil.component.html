@@ -1,0 +1,20 @@
+<div class="cartao-perfil">
+  <div class="cartao-perfil__capa" aria-hidden="true"></div>
+  <div class="cartao-perfil__corpo">
+    <div class="cartao-perfil__avatar">
+      @if (foto()) {
+        <img [src]="foto()" [alt]="'Foto de ' + nome()" />
+      } @else {
+        <i class="bi bi-person-fill" aria-hidden="true"></i>
+      }
+    </div>
+    <h2 class="cartao-perfil__nome">{{ nome() || 'Seu nome' }}</h2>
+    @if (email()) {
+      <p class="cartao-perfil__email">{{ email() }}</p>
+    }
+    @if (tipoDeConta()) {
+      <span class="selo selo--ativo">{{ tipoDeConta() }}</span>
+    }
+    <ng-content />
+  </div>
+</div>

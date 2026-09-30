@@ -1,0 +1,86 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">SUA CONTA</p>
+      <h1 class="pagina__titulo">Editar perfil</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+  @if (sucesso()) {
+    <div class="alerta-sucesso" role="status">{{ sucesso() }}</div>
+  }
+
+  @if (perfil(); as dados) {
+    <div class="editar">
+      <form class="cartao formulario editar__form" (ngSubmit)="salvar()">
+        <app-campo-foto
+          [foto]="foto()"
+          [enviando]="enviandoFoto()"
+          (escolhida)="escolherFoto($event)"
+          (removida)="removerFoto()"
+        />
+
+        <div class="formulario__linha">
+          <div>
+            <label for="nome">Nome <span class="obrigatorio">*</span></label>
+            <input
+              id="nome"
+              name="first_name"
+              autocomplete="given-name"
+              [class.campo-com-erro]="errosDosCampos().first_name"
+              [ngModel]="nome()"
+              (ngModelChange)="alterar('first_name', $event)"
+            />
+            @if (errosDosCampos().first_name) {
+              <p class="erro-do-campo">{{ errosDosCampos().first_name }}</p>
+            }
+          </div>
+          <div>
+            <label for="sobrenome">Sobrenome <span class="obrigatorio">*</span></label>
+            <input
+              id="sobrenome"
+              name="last_name"
+              autocomplete="family-name"
+              [class.campo-com-erro]="errosDosCampos().last_name"
+              [ngModel]="sobrenome()"
+              (ngModelChange)="alterar('last_name', $event)"
+            />
+            @if (errosDosCampos().last_name) {
+              <p class="erro-do-campo">{{ errosDosCampos().last_name }}</p>
+            }
+          </div>
+        </div>
+
+        <label for="telefone">Telefone</label>
+        <input
+          id="telefone"
+          type="tel"
+          name="phone"
+          autocomplete="tel"
+          [ngModel]="telefone()"
+          (ngModelChange)="alterar('phone', $event)"
+        />
+
+        <button class="btn-primary editar__salvar" type="submit" [disabled]="salvando() || enviandoFoto()">
+          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </form>
+
+      <aside class="editar__previa">
+        <p class="editar__previa-titulo">Prévia do seu perfil</p>
+        <app-cartao-perfil
+          [nome]="nomeCompleto()"
+          [email]="dados.email"
+          [foto]="foto()"
+          [tipoDeConta]="tipoDeConta()"
+        />
+      </aside>
+    </div>
+  }
+</section>

@@ -89,6 +89,13 @@
             <app-loading/>
           }
         }
+        @case ('perfil-editar') {
+          @defer (on immediate){
+            <app-perfil-editar/>
+          }@placeholder{
+            <app-loading/>
+          }
+        }
         @case ('favoritos') {
           @defer (on immediate){
             <app-favoritos/>

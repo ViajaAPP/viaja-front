@@ -7,10 +7,11 @@ import { DadosClienteService } from '../../shared/services/dados-cliente/dados-c
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { Perfil } from '../../shared/enums/user.model';
 import { ROLE_LABELS } from '../../shared/config/tour.config';
+import { CartaoPerfilComponent } from '../../shared/components/cartao-perfil/cartao-perfil.component';
 
 @Component({
   selector: 'app-perfil',
-  imports: [],
+  imports: [CartaoPerfilComponent],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
 })
@@ -33,6 +34,10 @@ export class PerfilComponent implements OnInit {
       error: (error: HttpErrorResponse) =>
         this.erro.set(mensagemDeErro(error, 'Não conseguimos carregar seu perfil.')),
     });
+  }
+
+  editarPerfil(): void {
+    this.navigationService.navigateTo('perfil-editar');
   }
 
   abrirMeusPasseios(): void {

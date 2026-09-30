@@ -10,34 +10,32 @@
     <div class="alerta-erro" role="alert">{{ erro() }}</div>
   }
 
-  @if (perfil(); as dados) {
-    <div class="cartao perfil">
-      @if (dados.photo) {
-        <img class="perfil__foto" [src]="dados.photo" [alt]="'Foto de ' + dados.first_name" />
-      } @else {
-        <div class="perfil__foto perfil__foto--vazia" aria-hidden="true">
-          <i class="bi bi-person-fill"></i>
-        </div>
-      }
-      <div>
-        <h2 class="perfil__nome">{{ dados.first_name }} {{ dados.last_name }}</h2>
-        <p class="perfil__email">{{ dados.email }}</p>
-        <span class="selo selo--ativo">{{ tipoDeConta() }}</span>
-      </div>
-    </div>
-  }
+  <div class="perfil">
+    @if (perfil(); as dados) {
+      <app-cartao-perfil
+        [nome]="dados.first_name + ' ' + dados.last_name"
+        [email]="dados.email"
+        [foto]="dados.photo"
+        [tipoDeConta]="tipoDeConta()"
+      >
+        <button class="btn-secundario perfil__editar" type="button" (click)="editarPerfil()">
+          <i class="bi bi-pencil" aria-hidden="true"></i> Editar perfil
+        </button>
+      </app-cartao-perfil>
+    }
 
-  <div class="perfil__acoes">
-    @if (facade.canManageTours()) {
-      <button class="btn-primary" type="button" (click)="abrirMeusPasseios()">
-        {{ facade.isGuide() ? 'Meus passeios' : 'Passeios da plataforma' }}
-      </button>
-    }
-    @if (facade.isTourist()) {
-      <button class="btn-primary" type="button" (click)="abrirMinhasSolicitacoes()">
-        Minhas reservas
-      </button>
-    }
-    <button class="btn-secundario" type="button" (click)="sair()">Sair da conta</button>
+    <div class="perfil__acoes">
+      @if (facade.canManageTours()) {
+        <button class="btn-primary" type="button" (click)="abrirMeusPasseios()">
+          {{ facade.isGuide() ? 'Meus passeios' : 'Passeios da plataforma' }}
+        </button>
+      }
+      @if (facade.isTourist()) {
+        <button class="btn-primary" type="button" (click)="abrirMinhasSolicitacoes()">
+          Minhas reservas
+        </button>
+      }
+      <button class="btn-secundario" type="button" (click)="sair()">Sair da conta</button>
+    </div>
   </div>
 </section>

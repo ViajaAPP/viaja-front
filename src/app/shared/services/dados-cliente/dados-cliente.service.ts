@@ -34,6 +34,20 @@ export class DadosClienteService {
     return this.request.post<Perfil>('/pages/profile');
   }
 
+  atualizarPerfil(dados: Pick<Perfil, 'first_name' | 'last_name' | 'phone'>): Observable<{ message: string }> {
+    return this.request.patch<{ message: string }>('/users/me', dados);
+  }
+
+  enviarFoto(foto: File): Observable<{ photo: string }> {
+    const formulario = new FormData();
+    formulario.append('photo', foto);
+    return this.request.post<{ photo: string }>('/users/me/photo', formulario);
+  }
+
+  removerFoto(): Observable<{ photo: string }> {
+    return this.request.delete<{ photo: string }>('/users/me/photo');
+  }
+
   limparCache(): void {
     this.homeRequest$ = undefined;
   }
