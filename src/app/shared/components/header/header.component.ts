@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal, computed } from '@angular/core';
+import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   @Input() dados: any;
 
   mostrarFiltros = signal(false);
@@ -20,19 +20,12 @@ export class HeaderComponent implements OnInit {
     return Array.from(tags) as string[];
   });
 
-  ngOnInit(): void {
-    if(this.dados) {
-      console.log('dados header recebidos');
-    }
-  }
-
   toggleFiltros(): void {
     this.mostrarFiltros.update(val => !val);
   }
 
   aplicarFiltro(filtro: string): void {
     this.filtroSelecionado.set(filtro);
-    console.log('Filtro aplicado:', filtro);
     this.mostrarFiltros.set(false);
   }
 }
