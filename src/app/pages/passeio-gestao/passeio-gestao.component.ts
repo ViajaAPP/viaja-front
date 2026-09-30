@@ -7,6 +7,7 @@ import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
 import { FeedbackService } from '../../shared/services/feedback/feedback.service';
 import { ValidarFormularioDirective } from '../../shared/directives/validar-formulario.directive';
+import { EscolherDataHoraComponent } from '../../shared/components/escolher-data-hora/escolher-data-hora.component';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { ApiService } from '../../shared/services/api/api.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
@@ -30,7 +31,7 @@ const VAGAS_PADRAO = 10;
 
 @Component({
   selector: 'app-passeio-gestao',
-  imports: [DatePipe, FormsModule, ValidarFormularioDirective],
+  imports: [DatePipe, FormsModule, ValidarFormularioDirective, EscolherDataHoraComponent],
   templateUrl: './passeio-gestao.component.html',
   styleUrl: './passeio-gestao.component.scss',
 })
@@ -90,16 +91,14 @@ export class PasseioGestaoComponent implements OnInit {
     );
   }
 
-  agora(): string {
-    const agora = new Date();
-    agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
-    return agora.toISOString().slice(0, 16);
-  }
-
   criarData(): void {
-    if (!this.tourId || !this.novaData.inicio) return;
+    if (!this.tourId) return;
+    if (!this.novaData.inicio) {
+      this.feedback.erro('Escolha o dia e o horário da nova data.');
+      return;
+    }
     if (new Date(this.novaData.inicio) <= new Date()) {
-      this.erro.set('Escolha um dia e horário que ainda não passaram.');
+      this.feedback.erro('Escolha um dia e horário que ainda não passaram.');
       return;
     }
     const payload = {

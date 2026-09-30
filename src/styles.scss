@@ -454,6 +454,37 @@ input {
   }
 }
 
+.contador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 12px;
+
+  input {
+    width: 72px;
+    min-height: 44px;
+    margin: 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.contador__botao {
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #e0e0d8;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
 .interruptor {
   position: relative;
   display: flex;

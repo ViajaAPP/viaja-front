@@ -1,0 +1,208 @@
+.escolher {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.escolher__passo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #1f1f1f;
+    color: #fff;
+    font-size: 12px;
+  }
+}
+
+.escolher__atalhos,
+.escolher__horas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid #e4e4de;
+  border-radius: 999px;
+  background: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f1f1f;
+  cursor: pointer;
+
+  &--hora {
+    min-width: 72px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--ativo {
+    border-color: #1f1f1f;
+    background: #1f1f1f;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.calendario {
+  padding: 12px;
+  border: 1.5px solid #e4e4de;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.calendario__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.calendario__mes {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.calendario__seta {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #f4f2ea;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}
+
+.calendario__grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.calendario__semana {
+  padding: 6px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a8a8a;
+}
+
+.calendario__dia {
+  aspect-ratio: 1;
+  max-height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #1f1f1f;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #f4f2ea;
+  }
+
+  &--fora {
+    color: #b0b0a8;
+  }
+
+  &--hoje {
+    box-shadow: inset 0 0 0 1.5px #3d5c00;
+    font-weight: 700;
+  }
+
+  &--escolhido,
+  &--escolhido:hover:not(:disabled) {
+    background: #3d5c00;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  &:disabled {
+    color: #d0d0c8;
+    text-decoration: line-through;
+    cursor: default;
+  }
+}
+
+.escolher__periodo {
+  margin: 4px 0 -2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.escolher__link {
+  align-self: flex-start;
+  min-height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3d5c00;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.escolher__outro {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+
+  input {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1.5px solid #e0e0d8;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+  }
+}
+
+.escolher__resumo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f4f2ea;
+  font-size: 14px;
+  font-weight: 600;
+  color: #545454;
+
+  &--pronto {
+    background: #eef6d6;
+    color: #3d5c00;
+  }
+}
