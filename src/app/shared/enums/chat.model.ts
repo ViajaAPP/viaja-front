@@ -51,6 +51,7 @@ export interface MensagensList {
   user_id: number;
   text: string;
   created_at: string;
+  estado?: 'enviando' | 'falhou';
 }
 
 export interface UserChatList {

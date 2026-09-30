@@ -1,4 +1,4 @@
-import { Injectable, inject, OnDestroy } from '@angular/core';
+import { Injectable, inject, OnDestroy, signal } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from '../request/request.service';
 import { ChatMessage, ChatResponse, MensagensList } from '../../enums/chat.model';
@@ -10,6 +10,10 @@ export class ChatMessageService implements OnDestroy {
   private readonly request = inject(RequestService);
 
   private webSocket: WebSocket | null = null;
+  private urlConectada: string | null = null;
+  private tentativas = 0;
+  private reconexao?: ReturnType<typeof setTimeout>;
+  readonly conexao = signal<'desconectado' | 'conectando' | 'conectado' | 'reconectando'>('desconectado');
   private readonly mensagemRecebida$ = new Subject<MensagensList>();
 
   get onMensagemRecebida(): Observable<MensagensList> {
@@ -41,54 +45,57 @@ export class ChatMessageService implements OnDestroy {
     this.webSocket.send(payload);
   }
 
-  conectarWebSocket(url: string, usuarioAtualId: number): void {
+  conectarWebSocket(url: string): void {
     this.desconectarWebSocket();
+    this.urlConectada = url;
+    this.tentativas = 0;
+    this.abrirConexao();
+  }
 
-    console.debug('[ChatMessageService] conectando websocket', { url, usuarioAtualId });
-    this.webSocket = new WebSocket(url);
+  private abrirConexao(): void {
+    if (!this.urlConectada) return;
 
-    this.webSocket.onopen = () => {
-      console.debug('[ChatMessageService] websocket conectado', { url, usuarioAtualId });
+    this.conexao.set(this.tentativas ? 'reconectando' : 'conectando');
+    const socket = new WebSocket(this.urlConectada);
+    this.webSocket = socket;
+
+    socket.onopen = () => {
+      this.tentativas = 0;
+      this.conexao.set('conectado');
     };
 
-    this.webSocket.onerror = (event) => {
-      console.error('[ChatMessageService] websocket com erro', { url, usuarioAtualId, event });
-    };
-
-    this.webSocket.onmessage = async (event) => {
+    socket.onmessage = async (event) => {
       try {
-        console.log('[ChatMessageService] websocket mensagem recebida', { url, usuarioAtualId, eventData: event.data });
-        const bruto = await this.normalizarMensagemSocket(event.data);
-        console.debug('[ChatMessageService] websocket mensagem bruta', bruto);
-
-        const dados = JSON.parse(bruto);
-
+        const dados = JSON.parse(await this.normalizarMensagemSocket(event.data));
         const payload = dados?.payload ?? dados?.data ?? dados?.message ?? dados;
         const remetenteId = Number(payload?.user_id ?? dados?.user_id);
         const texto = payload?.text ?? payload?.content ?? dados?.text ?? dados?.content ?? '';
 
-        if (!texto) return;
-        if (!Number.isFinite(remetenteId)) return;
+        if (!texto || !Number.isFinite(remetenteId)) return;
 
-        const mensagem: MensagensList = {
+        this.mensagemRecebida$.next({
           id: Date.now(),
           chat_id: dados.chat_id,
           user_id: remetenteId,
           text: texto,
           created_at: new Date().toISOString(),
-        };
-
-        console.debug('[ChatMessageService] websocket mensagem emitida', mensagem);
-        this.mensagemRecebida$.next(mensagem);
-      } catch (error) {
-        console.error('[ChatMessageService] falha ao processar mensagem do websocket', { error, eventData: event.data });
-      }
+        });
+      } catch {}
     };
 
-    this.webSocket.onclose = () => {
-      console.debug('[ChatMessageService] websocket desconectado', { url, usuarioAtualId });
+    socket.onclose = () => {
+      if (this.webSocket !== socket) return;
       this.webSocket = null;
+      this.agendarReconexao();
     };
+  }
+
+  private agendarReconexao(): void {
+    if (!this.urlConectada) return;
+    this.conexao.set('reconectando');
+    const espera = Math.min(1000 * 2 ** this.tentativas, 15000);
+    this.tentativas++;
+    this.reconexao = setTimeout(() => this.abrirConexao(), espera);
   }
 
   private async normalizarMensagemSocket(data: string | ArrayBuffer | Blob): Promise<string> {
@@ -102,11 +109,15 @@ export class ChatMessageService implements OnDestroy {
   }
 
   desconectarWebSocket(): void {
+    this.urlConectada = null;
+    clearTimeout(this.reconexao);
+    this.conexao.set('desconectado');
     if (!this.webSocket) return;
-    try {
-      this.webSocket.close(1000, 'desconectando');
-    } catch {}
+    const socket = this.webSocket;
     this.webSocket = null;
+    try {
+      socket.close(1000, 'desconectando');
+    } catch {}
   }
 
   get webSocketConectado(): boolean {
