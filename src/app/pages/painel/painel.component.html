@@ -1,7 +1,7 @@
 <section class="pagina painel">
   <header class="painel__topo">
     <div>
-      <p class="pagina__rotulo">SEU PAINEL</p>
+      <p class="pagina__rotulo">SEUS PASSEIOS</p>
       <h1 class="pagina__titulo">Olá, {{ nomeDoGuia() }}</h1>
     </div>
     <button class="btn-primary painel__novo" type="button" (click)="novoPasseio()">
@@ -9,7 +9,7 @@
     </button>
   </header>
 
-  <div class="abas" role="tablist" aria-label="Seções do painel">
+  <div class="abas" role="tablist" aria-label="Seus passeios">
     <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'pedidos'" [attr.aria-selected]="aba() === 'pedidos'" (click)="trocarAba('pedidos')">
       Pedidos
       @if (esperando().length) {
@@ -17,7 +17,7 @@
       }
     </button>
     <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'agenda'" [attr.aria-selected]="aba() === 'agenda'" (click)="trocarAba('agenda')">Agenda</button>
-    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'passeios'" [attr.aria-selected]="aba() === 'passeios'" (click)="trocarAba('passeios')">Passeios</button>
+    <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'passeios'" [attr.aria-selected]="aba() === 'passeios'" (click)="trocarAba('passeios')">Anúncios</button>
   </div>
 
   @if (erro()) {
@@ -124,7 +124,7 @@
           <div class="vazio">
             <i class="bi bi-calendar2-week" aria-hidden="true"></i>
             <p>Nenhuma data marcada. Abra um passeio e marque as próximas saídas.</p>
-            <button class="btn-primary" type="button" (click)="trocarAba('passeios')">Ver meus passeios</button>
+            <button class="btn-primary" type="button" (click)="trocarAba('passeios')">Ver meus anúncios</button>
           </div>
         }
       }
