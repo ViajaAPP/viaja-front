@@ -136,9 +136,11 @@ export class PasseioComponent implements OnInit {
     this.enviandoPara.set(data.id);
     this.erro.set('');
     this.tourService.solicitarVaga(data.id, '').subscribe({
-      next: () => {
+      next: (resposta) => {
         this.enviandoPara.set(null);
-        this.sucesso.set('Pedido enviado. O guia vai responder por aqui.');
+        this.sucesso.set(resposta.status === 'ACCEPTED'
+          ? 'Vaga confirmada! O chat do grupo já está aberto em Mensagens.'
+          : 'Pedido enviado. O guia tem até 24 horas para responder, e você recebe um aviso.');
         this.buscarPasseio();
       },
       error: (error: HttpErrorResponse) => {

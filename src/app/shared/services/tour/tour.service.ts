@@ -65,8 +65,8 @@ export class TourService {
     return this.request.patch<void>(`/request/${requestId}`, { status });
   }
 
-  solicitarVaga(instanceId: number, message: string): Observable<void> {
-    return this.request.post<void>(`/request/instances/${instanceId}`, { message });
+  solicitarVaga(instanceId: number, message: string): Observable<{ status: RequestStatus }> {
+    return this.request.post<{ status: RequestStatus }>(`/request/instances/${instanceId}`, { message });
   }
 
   listarMinhasSolicitacoes(): Observable<TourRequestItem[]> {

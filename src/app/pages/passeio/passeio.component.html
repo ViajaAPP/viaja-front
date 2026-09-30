@@ -137,7 +137,7 @@
                 [disabled]="enviandoPara() === data.id"
                 (click)="pedirVaga(data)"
               >
-                Quero ir
+                {{ dados.instant_booking ? 'Reservar' : 'Pedir vaga' }}
               </button>
             }
           </article>

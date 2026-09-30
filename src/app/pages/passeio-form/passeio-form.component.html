@@ -94,6 +94,20 @@
     <input id="encontro" name="meeting_point" [(ngModel)]="passeio.meeting_point" required />
     <small class="campo-erro">Diga onde o grupo se encontra.</small>
 
+    <h2 class="pagina__subtitulo">Como as vagas funcionam</h2>
+    <label class="interruptor" for="reserva-instantanea">
+      <span class="interruptor__textos">
+        <span class="interruptor__titulo">Reserva na hora</span>
+        <span class="interruptor__detalhe">Quem pedir já fica com a vaga, sem esperar você aceitar. Desligado, você tem 24 horas para aceitar ou recusar cada pedido.</span>
+      </span>
+      <input id="reserva-instantanea" type="checkbox" role="switch" name="instant_booking" [(ngModel)]="passeio.instant_booking" />
+      <span class="interruptor__trilho" aria-hidden="true"></span>
+    </label>
+
+    <label for="minimo">Mínimo de pessoas para o passeio sair <span class="obrigatorio">*</span></label>
+    <input id="minimo" type="number" inputmode="numeric" min="1" name="min_participants" [(ngModel)]="passeio.min_participants" required />
+    <small class="formulario__dica">Se não fechar esse número até o dia, você pode cancelar a data sem que isso conte contra você.</small>
+
     <h2 class="pagina__subtitulo">Onde é</h2>
     <button class="btn-secundario busca-local__minha-posicao" type="button" [disabled]="localizando()" (click)="usarMinhaLocalizacao()">
       <i class="bi bi-crosshair" aria-hidden="true"></i>

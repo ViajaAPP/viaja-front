@@ -55,6 +55,8 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
     lat: null,
     lon: null,
     photo_credit: null,
+    instant_booking: false,
+    min_participants: 1,
   };
 
   fotos = signal<TourPhoto[]>([]);
@@ -114,6 +116,8 @@ export class PasseioFormComponent implements OnInit, ComAlteracoes {
       lat: lat ?? null,
       lon: lon ?? null,
       photo_credit: passeio.photo_credit ?? null,
+      instant_booking: !!passeio.instant_booking,
+      min_participants: passeio.min_participants ?? 1,
     };
     this.original = JSON.stringify(this.passeio);
   }
