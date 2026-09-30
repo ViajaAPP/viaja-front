@@ -77,6 +77,17 @@ export class PasseioComponent implements OnInit {
     return resto ? `Cerca de ${textoHoras} e ${resto} minutos` : `Cerca de ${textoHoras}`;
   }
 
+  linkDoUber(passeio: TourDetail): string {
+    const params = new URLSearchParams({
+      action: 'setPickup',
+      pickup: 'my_location',
+      'dropoff[latitude]': String(passeio.address?.lat ?? ''),
+      'dropoff[longitude]': String(passeio.address?.lon ?? ''),
+      'dropoff[nickname]': passeio.meeting_point || passeio.title,
+    });
+    return `https://m.uber.com/ul/?${params.toString()}`;
+  }
+
   aoRolarGaleria(trilho: HTMLElement): void {
     this.fotoAtual.set(Math.round(trilho.scrollLeft / Math.max(trilho.clientWidth, 1)));
   }

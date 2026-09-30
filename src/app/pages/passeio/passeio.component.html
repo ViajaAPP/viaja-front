@@ -92,12 +92,17 @@
         @if (dados.address?.lat != null && dados.address?.lon != null) {
           <h2 class="pagina__subtitulo">Onde é</h2>
           <app-mapa [lat]="dados.address?.lat" [lon]="dados.address?.lon" rotulo="Mapa com o local do passeio" />
-          <a
-            class="passeio__rota"
-            [href]="'https://www.openstreetmap.org/directions?to=' + dados.address?.lat + '%2C' + dados.address?.lon"
-            target="_blank"
-            rel="noopener"
-          >Ver como chegar</a>
+          <div class="passeio__chegar">
+            <a
+              class="passeio__rota"
+              [href]="'https://www.google.com/maps/dir/?api=1&destination=' + dados.address?.lat + '%2C' + dados.address?.lon"
+              target="_blank"
+              rel="noopener"
+            >Ver como chegar</a>
+            <a class="passeio__uber" [href]="linkDoUber(dados)" target="_blank" rel="noopener">
+              <i class="bi bi-car-front-fill" aria-hidden="true"></i> Abrir no Uber
+            </a>
+          </div>
         }
       </div>
 
