@@ -7,16 +7,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 258px;
-  height: 52px;
-  padding: 0 12px;
+  gap: 4px;
+  width: min(320px, calc(100% - 32px));
+  padding: 6px;
   border-radius: 50px;
-  background: rgb(0 0 0 / 18%);
+  background: rgb(28 28 28 / 88%);
   backdrop-filter: blur(90px);
   -webkit-backdrop-filter: blur(90px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   position: fixed;
-  bottom: 24px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
@@ -24,20 +24,25 @@
 
 .bottom-nav__btn {
   position: relative;
-  width: 44px;
-  height: 44px;
+  flex: 1;
+  min-width: 0;
+  height: 52px;
   border: none;
   background: transparent;
-  border-radius: 50%;
+  border-radius: 26px;
   display: flex;
+  flex-direction: column;
+  gap: 2px;
   align-items: center;
   justify-content: center;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: background 0.2s;
   color: #ffffff;
 
   i {
-    font-size: 22px;
+    font-size: 20px;
+    line-height: 1;
   }
 
   &--active {
@@ -48,4 +53,10 @@
   &:not(&--active):hover {
     background: rgba(255, 255, 255, 0.1);
   }
+}
+
+.bottom-nav__rotulo {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
 }

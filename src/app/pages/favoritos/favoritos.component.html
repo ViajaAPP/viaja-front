@@ -15,7 +15,14 @@
 
   <ul class="favoritos" role="list">
     @for (passeio of passeios(); track passeio.id) {
-      <li class="favorito" (click)="abrirPasseio(passeio.id)">
+      <li
+        class="favorito"
+        tabindex="0"
+        role="link"
+        [attr.aria-label]="'Abrir ' + passeio.title"
+        (click)="abrirPasseio(passeio.id)"
+        (keydown.enter)="abrirPasseio(passeio.id)"
+      >
         <div class="favorito__foto">
           <img [src]="passeio.imageUrl" [alt]="passeio.title" loading="lazy" />
           <app-botao-favorito

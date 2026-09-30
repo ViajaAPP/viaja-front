@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { AppFacade } from '../../facade/app.facade';
 import { NavigationService } from '../../services/navigation/navigation.service';
 import { AppPage } from '../../store/app.store';
@@ -19,6 +19,21 @@ export class BotaoNavComponent {
     { id: 'favoritos', icon: 'bi bi-heart', label: 'Favoritos' },
     { id: 'perfil', icon: 'bi-person-fill', label: 'Perfil' },
   ];
+
+  private readonly abaDaPagina: Partial<Record<AppPage, AppPage>> = {
+    passeio: 'home',
+    'chat-tour': 'chat',
+    'perfil-editar': 'perfil',
+    'meus-passeios': 'perfil',
+    'passeio-form': 'perfil',
+    'passeio-gestao': 'perfil',
+    'minhas-solicitacoes': 'perfil',
+  };
+
+  readonly abaAtiva = computed(() => {
+    const pagina = this.facade.currentPage();
+    return this.abaDaPagina[pagina] ?? pagina;
+  });
 
   onSelect(id: string): void {
     if (id === 'home' || id === 'chat' || id === 'perfil' || id === 'favoritos') {

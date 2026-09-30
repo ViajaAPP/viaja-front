@@ -67,13 +67,13 @@
     }
 
     &__icon-btn{
-        background: url('../../../../assets/notificacao-header.svg');
-        background-size: cover;
-        width: 24.92px;
-        height: 30px;
+        background: url('../../../../assets/notificacao-header.svg') center / 25px 30px no-repeat;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
         border: none;
         display: flex;
-        margin: 8px 10px;
+        cursor: pointer;
     }
 }
 

@@ -2,13 +2,13 @@
   @for (item of navItems; track item.id) {
     <button
       class="bottom-nav__btn"
-      [class.bottom-nav__btn--active]="item.id === facade.currentPage()"
+      [class.bottom-nav__btn--active]="item.id === abaAtiva()"
       type="button"
-      [attr.aria-label]="item.label"
-      [attr.aria-current]="item.id === facade.currentPage() ? 'page' : null"
+      [attr.aria-current]="item.id === abaAtiva() ? 'page' : null"
       (click)="onSelect(item.id)"
     >
       <i class="{{ item.icon }}" aria-hidden="true"></i>
+      <span class="bottom-nav__rotulo">{{ item.label }}</span>
     </button>
   }
 </nav>
