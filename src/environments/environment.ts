@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: 'https://reediest-frenzily-lakiesha.ngrok-free.dev',
+  apiUrl: 'https://api.viaja-app.com.br',
 };
