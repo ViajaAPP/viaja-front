@@ -14,7 +14,8 @@ import { mensagemDeErro } from '../../shared/services/request/request-error';
 
 const FILTROS_DA_CATEGORIA: Record<string, FiltrosDaBusca> = {
   all: { ordem: 'relevancia' },
-  'most-liked': { ordem: 'curtidos' },
+  'for-you': { ordem: 'para_voce' },
+  'best-rated': { ordem: 'nota' },
   'most-searched': { ordem: 'procurados' },
 };
 
@@ -47,9 +48,10 @@ export class HomeComponent implements OnInit {
   tituloDaLista = computed(() => {
     switch (this.selectedCategoryId()) {
       case 'nearby': return 'Perto de você';
-      case 'most-liked': return 'Mais curtidos';
+      case 'for-you': return 'Escolhidos para você';
+      case 'best-rated': return 'Melhor avaliados';
       case 'most-searched': return 'Mais procurados';
-      default: return 'Passeios para você';
+      default: return 'Todos os passeios';
     }
   });
 
@@ -85,7 +87,9 @@ export class HomeComponent implements OnInit {
       this.buscarPasseiosPerto();
       return;
     }
-    this.carregarLista(FILTROS_DA_CATEGORIA[selectedId] ?? FILTROS_DA_CATEGORIA['all']);
+    const filtros = FILTROS_DA_CATEGORIA[selectedId] ?? FILTROS_DA_CATEGORIA['all'];
+    const posicao = selectedId === 'for-you' ? this.localizacao.ultimaPosicao() : null;
+    this.carregarLista(posicao ? { ...filtros, ...posicao } : filtros);
   }
 
   verTodos(): void {
@@ -98,7 +102,7 @@ export class HomeComponent implements OnInit {
 
   textoDaListaVazia(): string {
     switch (this.selectedCategoryId()) {
-      case 'most-liked': return 'Ninguém curtiu passeios ainda. Toque no coração dos que você gostar.';
+      case 'best-rated': return 'Ainda não tem passeios avaliados por aqui.';
       case 'most-searched': return 'Ninguém pediu vaga em passeios ainda.';
       case 'nearby': return 'Ainda não tem passeio perto de você. Dá uma olhada nos outros enquanto isso.';
       default: return 'Ainda não tem passeios publicados por aqui.';
@@ -143,8 +147,8 @@ export class HomeComponent implements OnInit {
     this.buscaService.passeios({ ...filtros, limite: 12 }).subscribe({
       next: (passeios) => {
         if (this.selectedCategoryId() !== categoria) return;
-        const uteis = filtros.ordem === 'curtidos'
-          ? passeios.filter((p) => p.likes > 0)
+        const uteis = filtros.ordem === 'nota'
+          ? passeios.filter((p) => p.reviewCount > 0)
           : filtros.ordem === 'procurados' ? passeios.filter((p) => p.searches > 0) : passeios;
         this.passeios.set(uteis);
         this.carregandoLista.set(false);

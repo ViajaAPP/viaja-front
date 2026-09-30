@@ -13,6 +13,7 @@ type Ordem = NonNullable<FiltrosDaBusca['ordem']>;
 
 export const ORDENS: { valor: Ordem; rotulo: string; precisaDeLocal?: boolean }[] = [
   { valor: 'relevancia', rotulo: 'Relevância' },
+  { valor: 'para_voce', rotulo: 'Para você' },
   { valor: 'perto', rotulo: 'Mais perto', precisaDeLocal: true },
   { valor: 'nota', rotulo: 'Melhor avaliados' },
   { valor: 'curtidos', rotulo: 'Mais curtidos' },

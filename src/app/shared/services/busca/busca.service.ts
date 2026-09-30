@@ -48,7 +48,7 @@ export interface FiltrosDaBusca {
   preco_max?: number;
   quando?: 'hoje' | 'fim-de-semana' | '7-dias';
   nota_min?: number;
-  ordem?: 'relevancia' | 'perto' | 'nota' | 'curtidos' | 'procurados' | 'preco';
+  ordem?: 'relevancia' | 'para_voce' | 'perto' | 'nota' | 'curtidos' | 'procurados' | 'preco';
   limite?: number;
 }
 
