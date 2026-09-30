@@ -1,3 +1,22 @@
+@use 'responsivo' as *;
+
+.gestao__layout {
+  @include a-partir-do-pc {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+.gestao__datas {
+  @include a-partir-do-pc {
+    .pagina__subtitulo:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
 .gestao__data-topo {
   display: flex;
   justify-content: space-between;

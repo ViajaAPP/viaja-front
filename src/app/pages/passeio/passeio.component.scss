@@ -1,9 +1,32 @@
+@use 'responsivo' as *;
+
+.passeio__layout {
+  @include a-partir-do-pc {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+.passeio__saidas {
+  @include a-partir-do-pc {
+    .pagina__subtitulo {
+      margin-top: 0;
+    }
+  }
+}
+
 .passeio__foto {
   width: 100%;
   height: 220px;
   object-fit: cover;
   border-radius: 20px;
   display: block;
+
+  @include a-partir-do-tablet {
+    height: 320px;
+  }
 }
 
 .passeio__guia {

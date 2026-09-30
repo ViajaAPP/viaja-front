@@ -17,70 +17,76 @@
   }
 
   @if (passeio(); as dados) {
-    <img class="passeio__foto" [src]="dados.photo" [alt]="dados.title" />
+    <div class="passeio__layout">
+      <div class="passeio__principal">
+        <img class="passeio__foto" [src]="dados.photo" [alt]="dados.title" />
 
-    @if (dados.guide) {
-      <p class="passeio__guia">Com {{ dados.guide.first_name }} {{ dados.guide.last_name }}</p>
-    }
-
-    <div class="cartao">
-      <p class="passeio__descricao">{{ dados.description }}</p>
-      <ul class="passeio__infos">
-        <li>
-          <i class="bi bi-cash" aria-hidden="true"></i> {{ formatarPreco(dados.price) }} por pessoa
-        </li>
-        <li>
-          <i class="bi bi-clock" aria-hidden="true"></i> Cerca de
-          {{ dados.estimated_duration_minutes }} minutos
-        </li>
-        <li>
-          <i class="bi bi-geo-alt" aria-hidden="true"></i> Encontro: {{ dados.meeting_point }}
-        </li>
-        @if (dados.address; as endereco) {
-          <li>
-            <i class="bi bi-map" aria-hidden="true"></i>
-            {{ endereco.street }}, {{ endereco.number }}, {{ endereco.neighborhood }},
-            {{ endereco.city }} - {{ endereco.uf }}
-          </li>
+        @if (dados.guide) {
+          <p class="passeio__guia">Com {{ dados.guide.first_name }} {{ dados.guide.last_name }}</p>
         }
-      </ul>
-      @if (dados.is_owner) {
-        <div class="cartao__acoes">
-          <button class="btn-primary" type="button" (click)="gerenciar()">Gerenciar passeio</button>
+
+        <div class="cartao">
+          <p class="passeio__descricao">{{ dados.description }}</p>
+          <ul class="passeio__infos">
+            <li>
+              <i class="bi bi-cash" aria-hidden="true"></i> {{ formatarPreco(dados.price) }} por pessoa
+            </li>
+            <li>
+              <i class="bi bi-clock" aria-hidden="true"></i> Cerca de
+              {{ dados.estimated_duration_minutes }} minutos
+            </li>
+            <li>
+              <i class="bi bi-geo-alt" aria-hidden="true"></i> Encontro: {{ dados.meeting_point }}
+            </li>
+            @if (dados.address; as endereco) {
+              <li>
+                <i class="bi bi-map" aria-hidden="true"></i>
+                {{ endereco.street }}, {{ endereco.number }}, {{ endereco.neighborhood }},
+                {{ endereco.city }} - {{ endereco.uf }}
+              </li>
+            }
+          </ul>
+          @if (dados.is_owner) {
+            <div class="cartao__acoes">
+              <button class="btn-primary" type="button" (click)="gerenciar()">Gerenciar passeio</button>
+            </div>
+          }
         </div>
-      }
+      </div>
+
+      <div class="passeio__saidas">
+        <h2 class="pagina__subtitulo">Próximas saídas</h2>
+        @for (data of dados.instances; track data.id) {
+          <article class="cartao passeio__data">
+            <div>
+              <p class="passeio__quando">{{ data.start_time | date: formatoData }}</p>
+              <p class="passeio__vagas">
+                {{ textoDasVagas(data) }}
+              </p>
+            </div>
+            @if (data.my_request_status; as status) {
+              <span
+                class="selo"
+                [class.selo--ativo]="status === 'ACCEPTED'"
+                [class.selo--alerta]="status === 'DENIED'"
+              >
+                {{ rotulosDaSolicitacao[status] }}
+              </span>
+            } @else if (podePedirVaga(data)) {
+              <button
+                class="btn-primary"
+                type="button"
+                [disabled]="enviandoPara() === data.id"
+                (click)="pedirVaga(data)"
+              >
+                Quero ir
+              </button>
+            }
+          </article>
+        } @empty {
+          <p class="pagina__vazio">O guia ainda não marcou nenhuma data.</p>
+        }
+      </div>
     </div>
-
-    <h2 class="pagina__subtitulo">Próximas saídas</h2>
-    @for (data of dados.instances; track data.id) {
-      <article class="cartao passeio__data">
-        <div>
-          <p class="passeio__quando">{{ data.start_time | date: formatoData }}</p>
-          <p class="passeio__vagas">
-            {{ textoDasVagas(data) }}
-          </p>
-        </div>
-        @if (data.my_request_status; as status) {
-          <span
-            class="selo"
-            [class.selo--ativo]="status === 'ACCEPTED'"
-            [class.selo--alerta]="status === 'DENIED'"
-          >
-            {{ rotulosDaSolicitacao[status] }}
-          </span>
-        } @else if (podePedirVaga(data)) {
-          <button
-            class="btn-primary"
-            type="button"
-            [disabled]="enviandoPara() === data.id"
-            (click)="pedirVaga(data)"
-          >
-            Quero ir
-          </button>
-        }
-      </article>
-    } @empty {
-      <p class="pagina__vazio">O guia ainda não marcou nenhuma data.</p>
-    }
   }
 </section>
