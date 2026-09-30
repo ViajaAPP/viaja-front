@@ -48,7 +48,7 @@ export interface FiltrosDaBusca {
   preco_max?: number;
   quando?: 'hoje' | 'fim-de-semana' | '7-dias';
   nota_min?: number;
-  ordem?: 'relevancia' | 'perto' | 'nota' | 'curtidos' | 'preco';
+  ordem?: 'relevancia' | 'perto' | 'nota' | 'curtidos' | 'procurados' | 'preco';
   limite?: number;
 }
 
@@ -65,6 +65,7 @@ export interface PasseioEncontrado {
   rating: number | null;
   reviewCount: number;
   likes: number;
+  searches: number;
   nextDate: string | null;
   favorite: boolean;
 }

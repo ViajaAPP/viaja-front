@@ -1,0 +1,35 @@
+@if (passeio(); as passeio) {
+  <article class="item" tabindex="0" role="link" [attr.aria-label]="'Abrir ' + passeio.title" (click)="abrir()" (keydown.enter)="abrir()">
+    <div class="item__foto">
+      @if (passeio.imageUrl) {
+        <img [src]="passeio.imageUrl" alt="" loading="lazy" />
+      }
+      <app-botao-favorito class="item__favorito" [tourId]="passeio.id" [titulo]="passeio.title" [favorito]="passeio.favorite" />
+    </div>
+    <div class="item__corpo">
+      <p class="item__titulo">{{ passeio.title }}</p>
+      <p class="item__onde">
+        {{ passeio.city }} - {{ passeio.uf }}
+        @if (passeio.distance_km != null) { · {{ passeio.distance_km }} km }
+      </p>
+      <p class="item__nota">
+        @if (passeio.reviewCount) {
+          <span class="item__estrela" aria-hidden="true">★</span> {{ passeio.rating }} ({{ passeio.reviewCount }})
+        } @else {
+          Sem avaliações ainda
+        }
+        @if (passeio.likes) {
+          · <i class="bi bi-heart-fill item__coracao" aria-hidden="true"></i> {{ passeio.likes }}
+        }
+      </p>
+      <p class="item__rodape">
+        <strong>{{ formatarPreco(passeio.price) }}</strong>
+        @if (passeio.nextDate) {
+          <span>Próxima: {{ passeio.nextDate | date: 'dd/MM' }}</span>
+        } @else {
+          <span>Sem data marcada</span>
+        }
+      </p>
+    </div>
+  </article>
+}

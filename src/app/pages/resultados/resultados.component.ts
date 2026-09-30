@@ -2,13 +2,11 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
 import { BuscaService, FiltrosDaBusca, PasseioEncontrado } from '../../shared/services/busca/busca.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
-import { PRICE_FORMAT } from '../../shared/config/tour.config';
-import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
+import { CartaoPasseioComponent } from '../../shared/components/cartao-passeio/cartao-passeio.component';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
 
 type Ordem = NonNullable<FiltrosDaBusca['ordem']>;
@@ -18,6 +16,7 @@ export const ORDENS: { valor: Ordem; rotulo: string; precisaDeLocal?: boolean }[
   { valor: 'perto', rotulo: 'Mais perto', precisaDeLocal: true },
   { valor: 'nota', rotulo: 'Melhor avaliados' },
   { valor: 'curtidos', rotulo: 'Mais curtidos' },
+  { valor: 'procurados', rotulo: 'Mais procurados' },
   { valor: 'preco', rotulo: 'Menor preço' },
 ];
 
@@ -46,7 +45,7 @@ const RAIOS = [10, 30, 50, 100];
 
 @Component({
   selector: 'app-resultados',
-  imports: [DatePipe, BotaoFavoritoComponent, FalhaCarregarComponent],
+  imports: [CartaoPasseioComponent, FalhaCarregarComponent],
   templateUrl: './resultados.component.html',
   styleUrl: './resultados.component.scss',
 })
@@ -149,14 +148,6 @@ export class ResultadosComponent {
   aumentarDistancia(): void {
     const f = this.filtros();
     this.aplicar({ ...f, raio: Math.min((f.raio ?? 30) * 2, 200) });
-  }
-
-  formatarPreco(preco: number): string {
-    return preco > 0 ? PRICE_FORMAT.format(preco) : 'Gratuito';
-  }
-
-  abrirPasseio(passeio: PasseioEncontrado): void {
-    this.navigationService.navigateToTour('passeio', passeio.id);
   }
 
   editarBusca(): void {
