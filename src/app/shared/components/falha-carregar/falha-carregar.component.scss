@@ -1,0 +1,33 @@
+.falha-carregar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  color: #545454;
+
+  &__icone {
+    font-size: 40px;
+    color: #a4a4a4;
+  }
+
+  &__texto {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  &__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+
+    button {
+      min-height: 44px;
+    }
+  }
+}

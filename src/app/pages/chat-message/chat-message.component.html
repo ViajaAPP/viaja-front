@@ -67,6 +67,10 @@
     </div>
 
   </div>
+} @else if (erro()) {
+  <div class="pagina">
+    <app-falha-carregar [mensagem]="erro()" [mostrarVoltar]="true" (tentar)="tentarDeNovo()" (voltar)="voltar()" />
+  </div>
 } @else {
   <app-loading/>
 }

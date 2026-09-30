@@ -7,11 +7,13 @@ import { HomeResponse, Category, Activity } from '../../shared/enums/home.model'
 import { TourService } from '../../shared/services/tour/tour.service';
 import { NavigationService } from '../../shared/services/navigation';
 import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
+import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
+import { mensagemDeErro } from '../../shared/services/request/request-error';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, BotaoFavoritoComponent],
+  imports: [CommonModule, HeaderComponent, BotaoFavoritoComponent, FalhaCarregarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -23,6 +25,7 @@ export class HomeComponent implements OnInit {
   readonly starIndexes = [0, 1, 2, 3, 4];
   
   dadosHome = signal<HomeResponse | null>(null);
+  erro = signal('');
   searchQuery = signal<string>('');
   selectedCategoryId = signal<string>('all');
   fotoUser = computed(() => this.dadosHome()?.user?.fotoUser ?? '');
@@ -51,14 +54,25 @@ export class HomeComponent implements OnInit {
   }
 
   buscarDadosHome(): void {
-    this.dados
-      .getHome().subscribe((data) => {
+    this.dados.getHome().subscribe({
+      next: (data) => {
         this.facade.setLoading(false);
         this.dadosHome.set(data);
 
         const activeCategory = data.categories.find((cat: Category) => cat.active);
         if (activeCategory) this.selectedCategoryId.set(activeCategory.id);
-      });
+      },
+      error: (error) => {
+        this.facade.setLoading(false);
+        this.erro.set(mensagemDeErro(error, 'Não conseguimos carregar os passeios agora.'));
+      },
+    });
+  }
+
+  tentarDeNovo(): void {
+    this.erro.set('');
+    this.facade.setLoading(true);
+    this.buscarDadosHome();
   }
 
   onSearchInput(event: Event): void {

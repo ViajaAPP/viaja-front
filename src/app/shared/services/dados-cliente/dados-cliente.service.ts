@@ -4,7 +4,7 @@ import { HomeResponse } from '../../enums/home.model';
 import { Perfil } from '../../enums/user.model';
 import { APP_CONFIG } from '../../config/app.config';
 import { HOME_MOCK } from '../../mock/home.mock';
-import { Observable, of, shareReplay } from 'rxjs';
+import { Observable, of, shareReplay, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DadosClienteService {
@@ -23,6 +23,7 @@ export class DadosClienteService {
 
     if (!this.homeRequest$) {
       this.homeRequest$ = this.request.post<HomeResponse>('/pages/home').pipe(
+        tap({ error: () => (this.homeRequest$ = undefined) }),
         shareReplay({ bufferSize: 1, refCount: false })
       );
     }

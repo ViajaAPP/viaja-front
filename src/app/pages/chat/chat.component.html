@@ -1,6 +1,9 @@
 <app-header [dados]="homeData()"></app-header>
 
 <div class="chat-page">
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="tentarDeNovo()" />
+  } @else {
   <section class="chat-page__section" aria-labelledby="groups-title">
     <div class="chat-page__section-header">
       <div class="chat-page__section-label">ATIVIDADES ATIVAS</div>
@@ -71,4 +74,5 @@
     <h2>RECENTES</h2>
     <h1>Conversas Diretas</h1>
   </section>
+  }
 </div>

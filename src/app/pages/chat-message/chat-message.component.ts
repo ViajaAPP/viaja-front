@@ -8,12 +8,14 @@ import { ChatMessageService } from '../../shared/services/chat-message/chat-mess
 import { ChatMessage } from '../../shared/enums/chat.model';
 import { NavigationService } from '../../shared/services/navigation';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
+import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
+import { mensagemDeErro } from '../../shared/services/request/request-error';
 
 registerLocaleData(localePt, 'pt-BR');
 
 @Component({
   selector: 'app-chat-message',
-  imports: [DatePipe, FormsModule, LoadingComponent],
+  imports: [DatePipe, FormsModule, LoadingComponent, FalhaCarregarComponent],
   templateUrl: './chat-message.component.html',
   styleUrl: './chat-message.component.scss',
 })
@@ -25,6 +27,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
 
   chatMessage = signal<ChatMessage | null>(null);
+  erro = signal('');
   inputText = '';
   currentUserId: number | null = null;
   private chatId: number | null = null;
@@ -38,7 +41,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     const chatId = this.store.selectedChatId();
     this.chatId = chatId ?? null;
 
-    if (!chatId) return;
+    if (!chatId) {
+      this.erro.set('Não encontramos essa conversa.');
+      return;
+    }
 
     this.mensagemSubscription = this.chatMessageService.onMensagemRecebida.subscribe((mensagem) => {
       const atual = this.chatMessage();
@@ -51,26 +57,38 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
       this.scrollToBottom();
     });
 
-    this.chatMessageService.buscarChat(chatId).subscribe((data) => {
-      try {
-        console.log('chat data: ', data);
-        const url = data?.socket_connection_url ?? '';
-        const params = new URL(url).searchParams;
-        const userIdParam = params.get('user_id');
-        this.currentUserId = userIdParam ? Number(userIdParam) : null;
-      } catch {
-        this.currentUserId = null;
-      }
+    this.carregar(chatId);
+  }
 
-      this.chatMessage.set({
-        ...data,
-        messages_list: this.ordenarMensagensParaExibicao(data?.messages_list),
-      });
-      this.scrollToBottom();
+  tentarDeNovo(): void {
+    if (this.chatId === null) return;
+    this.erro.set('');
+    this.carregar(this.chatId);
+  }
 
-      if (data?.socket_connection_url && this.currentUserId !== null) {
-        this.chatMessageService.conectarWebSocket(data.socket_connection_url, this.currentUserId);
-      }
+  private carregar(chatId: number): void {
+    this.chatMessageService.buscarChat(chatId).subscribe({
+      next: (data) => {
+        try {
+          const url = data?.socket_connection_url ?? '';
+          const params = new URL(url).searchParams;
+          const userIdParam = params.get('user_id');
+          this.currentUserId = userIdParam ? Number(userIdParam) : null;
+        } catch {
+          this.currentUserId = null;
+        }
+
+        this.chatMessage.set({
+          ...data,
+          messages_list: this.ordenarMensagensParaExibicao(data?.messages_list),
+        });
+        this.scrollToBottom();
+
+        if (data?.socket_connection_url && this.currentUserId !== null) {
+          this.chatMessageService.conectarWebSocket(data.socket_connection_url, this.currentUserId);
+        }
+      },
+      error: (error) => this.erro.set(mensagemDeErro(error, 'Não conseguimos abrir essa conversa agora.')),
     });
   }
 

@@ -1,0 +1,10 @@
+<div class="falha-carregar" role="alert">
+  <i class="bi bi-cloud-slash falha-carregar__icone" aria-hidden="true"></i>
+  <p class="falha-carregar__texto">{{ mensagem() }}</p>
+  <div class="falha-carregar__acoes">
+    <button class="btn-primary" type="button" (click)="tentar.emit()">Tentar de novo</button>
+    @if (mostrarVoltar()) {
+      <button class="btn-secundario" type="button" (click)="voltar.emit()">Voltar</button>
+    }
+  </div>
+</div>
