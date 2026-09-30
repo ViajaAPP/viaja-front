@@ -53,7 +53,7 @@ export class ViagensComponent {
       },
       error: (error: HttpErrorResponse) => {
         this.carregando.set(false);
-        this.erro.set(mensagemDeErro(error, 'Não conseguimos carregar suas viagens.'));
+        this.erro.set(mensagemDeErro(error, 'Não conseguimos carregar suas reservas.'));
       },
     });
   }

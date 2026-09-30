@@ -15,7 +15,7 @@ export type AppPage =
   | 'buscar'
   | 'avisos'
   | 'painel'
-  | 'viagens'
+  | 'reservas'
   | 'resultados'
   | 'chat'
   | 'chat-tour'

@@ -1,12 +1,12 @@
 <section class="pagina viagens">
   <header class="pagina__topo">
     <div>
-      <p class="pagina__rotulo">SUAS VIAGENS</p>
-      <h1 class="pagina__titulo">Viagens</h1>
+      <p class="pagina__rotulo">SUAS RESERVAS</p>
+      <h1 class="pagina__titulo">Reservas</h1>
     </div>
   </header>
 
-  <div class="abas" role="tablist" aria-label="Suas viagens">
+  <div class="abas" role="tablist" aria-label="Suas reservas">
     <button class="aba" role="tab" type="button" [class.aba--ativa]="aba() === 'proximas'" [attr.aria-selected]="aba() === 'proximas'" (click)="trocarAba('proximas')">
       Próximas
       @if (viagens().proximas.length) {
@@ -56,8 +56,8 @@
             </li>
           } @empty {
             <li class="vazio">
-              <i class="bi bi-suitcase2" aria-hidden="true"></i>
-              <p>Nenhuma viagem confirmada ainda. Bora achar um passeio?</p>
+              <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
+              <p>Nenhuma reserva confirmada ainda. Bora achar um passeio ou evento?</p>
               <button class="btn-primary" type="button" (click)="explorar()">Procurar passeios</button>
             </li>
           }

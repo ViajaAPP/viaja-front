@@ -59,8 +59,8 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/painel/painel.component').then((m) => m.PainelComponent),
   },
   {
-    path: 'viagens',
-    data: { page: 'viagens' },
+    path: 'reservas',
+    data: { page: 'reservas' },
     canActivate: [paginaGuard],
     loadComponent: () => import('./pages/viagens/viagens.component').then((m) => m.ViagensComponent),
   },
@@ -133,6 +133,7 @@ export const routes: Routes = [
     canDeactivate: [alteracoesGuard],
     loadComponent: () => import('./pages/passeio-form/passeio-form.component').then((m) => m.PasseioFormComponent),
   },
-  { path: 'minhas-solicitacoes', redirectTo: 'viagens' },
+  { path: 'minhas-solicitacoes', redirectTo: 'reservas' },
+  { path: 'viagens', redirectTo: 'reservas' },
   { path: '**', redirectTo: '' },
 ];
