@@ -1,0 +1,21 @@
+$tela-tablet: 768px;
+$tela-pc: 1024px;
+$conteudo-max: 1100px;
+$margem-lateral: 32px;
+
+@mixin a-partir-do-tablet {
+  @media (min-width: $tela-tablet) {
+    @content;
+  }
+}
+
+@mixin a-partir-do-pc {
+  @media (min-width: $tela-pc) {
+    @content;
+  }
+}
+
+@mixin conteudo-centralizado {
+  padding-left: max(#{$margem-lateral}, calc((100% - #{$conteudo-max}) / 2));
+  padding-right: max(#{$margem-lateral}, calc((100% - #{$conteudo-max}) / 2));
+}

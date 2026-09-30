@@ -1,3 +1,4 @@
+@use 'responsivo' as *;
 @import url('https://fonts.googleapis.com/css2?family=Huninn&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Huninn&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -293,6 +294,12 @@ input {
   background: linear-gradient(159deg, #FFF8EA 20%, #FFFFFF 70%);
   padding: 24px 20px 110px;
   color: #545454;
+
+  @include a-partir-do-tablet {
+    @include conteudo-centralizado;
+    padding-top: 40px;
+    padding-bottom: 120px;
+  }
 }
 
 .pagina__topo {
