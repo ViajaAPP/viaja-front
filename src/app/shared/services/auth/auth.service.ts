@@ -12,6 +12,7 @@ export interface SessaoSalva {
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
+  private readonly JA_ENTROU_KEY = 'ja_entrou';
   private tokenSubject = new BehaviorSubject<string | null>(this.getStoredToken());
   public token$: Observable<string | null> = this.tokenSubject.asObservable();
 
@@ -20,6 +21,7 @@ export class AuthService {
   setToken(token: string): void {
     if (token && token.trim()) {
       localStorage.setItem(this.TOKEN_KEY, token);
+      localStorage.setItem(this.JA_ENTROU_KEY, '1');
       this.tokenSubject.next(token);
     }
   }
@@ -50,6 +52,15 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  jaEntrou(): boolean {
+    return localStorage.getItem(this.JA_ENTROU_KEY) === '1';
+  }
+
+  sair(): void {
+    localStorage.removeItem(this.JA_ENTROU_KEY);
+    this.clearToken();
   }
 
   clearToken(): void {

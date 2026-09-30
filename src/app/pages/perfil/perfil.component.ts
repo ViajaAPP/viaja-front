@@ -49,7 +49,7 @@ export class PerfilComponent implements OnInit {
   }
 
   sair(): void {
-    this.authService.clearToken();
+    this.authService.sair();
     this.dadosClienteService.limparCache();
     this.facade.endSession();
   }
