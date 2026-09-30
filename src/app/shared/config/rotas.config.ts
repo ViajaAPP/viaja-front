@@ -5,6 +5,8 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'welcome': return '/';
     case 'login': return '/entrar';
     case 'registrar': return '/cadastro';
+    case 'esqueci-senha': return '/esqueci-senha';
+    case 'redefinir-senha': return '/redefinir-senha';
     case 'home': return '/inicio';
     case 'chat': return '/mensagens';
     case 'chat-tour': return id ? `/mensagens/${id}` : '/mensagens';

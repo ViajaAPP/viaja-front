@@ -60,6 +60,10 @@ export class LoginComponent implements OnInit {
     }, 100);
   }
 
+  navigateToEsqueciSenha(): void {
+    this.navigationService.navigateTo('esqueci-senha');
+  }
+
   navigateToWelcome(){
     this.navigationService.navigateTo('welcome');
   }

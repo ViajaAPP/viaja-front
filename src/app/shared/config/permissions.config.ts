@@ -1,7 +1,7 @@
 import { AppPage } from '../store/app.store';
 import { UserRole } from '../enums/user.model';
 
-export const PUBLIC_PAGES: AppPage[] = ['welcome', 'login', 'registrar'];
+export const PUBLIC_PAGES: AppPage[] = ['welcome', 'login', 'registrar', 'esqueci-senha', 'redefinir-senha'];
 
 export const PAGE_ROLES: Partial<Record<AppPage, UserRole[]>> = {
   'meus-passeios': ['GUIDE', 'ADMIN'],

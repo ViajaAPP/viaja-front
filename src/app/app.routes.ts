@@ -22,6 +22,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/registrar/registrar.component').then((m) => m.RegistrarComponent),
   },
   {
+    path: 'esqueci-senha',
+    data: { page: 'esqueci-senha' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/esqueci-senha/esqueci-senha.component').then((m) => m.EsqueciSenhaComponent),
+  },
+  {
+    path: 'redefinir-senha',
+    data: { page: 'redefinir-senha' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/redefinir-senha/redefinir-senha.component').then((m) => m.RedefinirSenhaComponent),
+  },
+  {
     path: 'inicio',
     data: { page: 'home' },
     canActivate: [paginaGuard],

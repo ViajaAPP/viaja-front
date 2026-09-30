@@ -49,6 +49,7 @@
           </button>
         </div>
         <small class="campo-erro">Coloque sua senha.</small>
+        <button class="login__esqueci" type="button" (click)="navigateToEsqueciSenha()">Esqueci minha senha</button>
 
         <button class="btn-primary login__entrar" type="submit" [disabled]="isLoggingIn()">
           {{ isLoggingIn() ? 'Entrando...' : 'Entrar' }}

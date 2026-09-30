@@ -1,0 +1,65 @@
+<section class="pagina registrar">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="irParaLogin()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">SENHA</p>
+      <h1 class="pagina__titulo">Escolha uma senha nova</h1>
+    </div>
+  </header>
+
+  @if (trocou()) {
+    <div class="alerta-sucesso" role="status">Senha trocada. Já pode entrar com a senha nova.</div>
+    <button class="btn-primary" type="button" (click)="irParaLogin()">Entrar</button>
+  } @else {
+    @if (erro()) {
+      <div class="alerta-erro" role="alert">{{ erro() }}</div>
+    }
+
+    @if (codigo) {
+      <form class="formulario" #form="ngForm" appValidarFormulario (ngSubmit)="form.valid && trocarSenha()">
+        <label for="senha">Senha nova <span class="obrigatorio">*</span></label>
+        <div class="campo-senha">
+          <input
+            id="senha"
+            [type]="senhaVisivel() ? 'text' : 'password'"
+            name="senha"
+            autocomplete="new-password"
+            minlength="8"
+            [(ngModel)]="senha"
+            required
+          />
+          <button
+            class="campo-senha__olho"
+            type="button"
+            [attr.aria-label]="senhaVisivel() ? 'Esconder senha' : 'Mostrar senha'"
+            (click)="senhaVisivel.set(!senhaVisivel())"
+          >
+            <i class="bi" [class.bi-eye]="!senhaVisivel()" [class.bi-eye-slash]="senhaVisivel()" aria-hidden="true"></i>
+          </button>
+        </div>
+        <small class="campo-erro">A senha precisa ter pelo menos 8 caracteres.</small>
+
+        <label for="confirmacao">Repita a senha nova <span class="obrigatorio">*</span></label>
+        <input
+          id="confirmacao"
+          [type]="senhaVisivel() ? 'text' : 'password'"
+          name="confirmacao"
+          autocomplete="new-password"
+          [(ngModel)]="confirmacao"
+          required
+        />
+        <small class="campo-erro">Repita a senha nova.</small>
+
+        <button class="btn-primary mt-1" type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Trocando...' : 'Trocar senha' }}
+        </button>
+      </form>
+    }
+
+    <p class="registrar__login">
+      O link não funciona mais? <button type="button" (click)="pedirOutroLink()">Pedir outro</button>
+    </p>
+  }
+</section>

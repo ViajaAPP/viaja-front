@@ -1,0 +1,32 @@
+<section class="pagina registrar">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">SENHA</p>
+      <h1 class="pagina__titulo">Esqueceu a senha?</h1>
+    </div>
+  </header>
+
+  @if (enviado()) {
+    <div class="alerta-sucesso" role="status">{{ enviado() }} Olhe também a caixa de spam.</div>
+    <button class="btn-primary" type="button" (click)="voltar()">Voltar para entrar</button>
+  } @else {
+    @if (erro()) {
+      <div class="alerta-erro" role="alert">{{ erro() }}</div>
+    }
+
+    <form class="formulario" #form="ngForm" appValidarFormulario (ngSubmit)="form.valid && pedirLink()">
+      <p class="registrar__explicacao">Coloque o email da sua conta. Vamos mandar um link para você escolher uma senha nova.</p>
+
+      <label for="email">Email <span class="obrigatorio">*</span></label>
+      <input id="email" type="email" name="email" autocomplete="email" [(ngModel)]="email" required email />
+      <small class="campo-erro">Coloque um email válido, como nome&#64;email.com.</small>
+
+      <button class="btn-primary mt-1" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Mandando...' : 'Mandar o link' }}
+      </button>
+    </form>
+  }
+</section>

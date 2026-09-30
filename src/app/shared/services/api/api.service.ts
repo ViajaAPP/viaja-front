@@ -34,6 +34,14 @@ export class ApiService {
     return this.request.post<LoginResponse>('/auth/login', payload);
   }
 
+  esqueciSenha(email: string): Observable<{ message: string }> {
+    return this.request.post<{ message: string }>('/auth/esqueci-senha', { email });
+  }
+
+  redefinirSenha(codigo: string, password: string): Observable<{ message: string }> {
+    return this.request.post<{ message: string }>('/auth/redefinir-senha', { codigo, password });
+  }
+
   register(payload: RegisterRequest, foto?: File | null): Observable<any> {
     if (!foto) return this.request.post('/auth/register', payload);
     const formulario = new FormData();
