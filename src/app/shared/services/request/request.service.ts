@@ -17,6 +17,10 @@ export class RequestService {
     return this.http.get<T>(`${this.baseUrl}${endpoint}`);
   }
 
+  delete<T>(endpoint: string): Observable<T> {
+    return this.http.delete<T>(`${this.baseUrl}${endpoint}`);
+  }
+
   patch<T>(endpoint: string, body?: any): Observable<T> {
     return this.http.patch<T>(`${this.baseUrl}${endpoint}`, body);
   }

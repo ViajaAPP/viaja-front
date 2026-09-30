@@ -6,11 +6,12 @@ import { HeaderComponent } from '../../shared/components/header/header.component
 import { HomeResponse, Category, Activity } from '../../shared/enums/home.model';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { NavigationService } from '../../shared/services/navigation';
+import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HeaderComponent],
+  imports: [CommonModule, HeaderComponent, BotaoFavoritoComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

@@ -1,0 +1,10 @@
+<button
+  class="botao-favorito"
+  [class.botao-favorito--ativo]="ativo()"
+  type="button"
+  [attr.aria-pressed]="ativo()"
+  [attr.aria-label]="(ativo() ? 'Tirar dos favoritos ' : 'Favoritar ') + titulo()"
+  (click)="alternar($event)"
+>
+  <i class="bi" [class.bi-heart]="!ativo()" [class.bi-heart-fill]="ativo()" aria-hidden="true"></i>
+</button>

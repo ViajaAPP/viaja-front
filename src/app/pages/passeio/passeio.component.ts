@@ -5,6 +5,7 @@ import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
 import { TourService } from '../../shared/services/tour/tour.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
+import { BotaoFavoritoComponent } from '../../shared/components/botao-favorito/botao-favorito.component';
 import { TourDetail, TourInstance } from '../../shared/enums/tour.model';
 import {
   DATE_TIME_FORMAT,
@@ -14,7 +15,7 @@ import {
 
 @Component({
   selector: 'app-passeio',
-  imports: [DatePipe],
+  imports: [DatePipe, BotaoFavoritoComponent],
   templateUrl: './passeio.component.html',
   styleUrl: './passeio.component.scss',
 })

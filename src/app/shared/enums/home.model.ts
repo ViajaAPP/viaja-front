@@ -22,6 +22,7 @@ export interface Activity {
   distance_km?: number;
   city?: string;
   uf?: string;
+  favorite?: boolean;
 }
 
 export interface HomeResponse {

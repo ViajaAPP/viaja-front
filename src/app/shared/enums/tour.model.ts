@@ -66,6 +66,7 @@ export interface TourDetail extends Tour {
   instances: TourInstance[];
   is_owner: boolean;
   can_moderate: boolean;
+  favorite: boolean;
 }
 
 export interface TourRequestItem {

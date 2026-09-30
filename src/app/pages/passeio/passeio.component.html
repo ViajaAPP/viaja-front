@@ -7,6 +7,14 @@
       <p class="pagina__rotulo">PASSEIO</p>
       <h1 class="pagina__titulo">{{ passeio()?.title }}</h1>
     </div>
+    @if (passeio(); as dados) {
+      <app-botao-favorito
+        class="passeio__favorito"
+        [tourId]="dados.id"
+        [titulo]="dados.title"
+        [favorito]="dados.favorite"
+      />
+    }
   </header>
 
   @if (erro()) {

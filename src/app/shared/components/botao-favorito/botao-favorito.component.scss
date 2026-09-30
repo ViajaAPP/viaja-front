@@ -1,0 +1,27 @@
+:host {
+  display: inline-flex;
+}
+
+.botao-favorito {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 16px;
+  transition: transform 0.15s ease, color 0.15s ease;
+
+  &:active {
+    transform: scale(0.88);
+  }
+
+  &--ativo {
+    color: #EE8700;
+  }
+}
