@@ -86,6 +86,7 @@ Quem decide é o `resolveAllowedPage`, em `shared/config/permissions.config.ts`.
 
 - Sem login, você só vê as boas-vindas, o login, o cadastro e a recuperação de senha. Qualquer outro endereço leva para o login.
 - A área de Passeios (pedidos, agenda e anúncios) e a criação de passeio são do guia.
+- Criar evento é do guia e do produtor de eventos. A fila de análise dos eventos é só do admin.
 - O resto abre para qualquer pessoa logada.
 
 Se a pessoa não tem permissão, ela volta para o início. O backend confere as mesmas regras em todas as rotas. Esconder um botão no front nunca é a única proteção.
@@ -182,7 +183,8 @@ Para entrar, use uma das contas de teste. A senha de todas é `viaja123`:
 
 - `guia@viaja.local`: a Fabi, que é guia e tem passeios publicados;
 - `viajante@viaja.local`: o Tito, que reserva passeios;
-- `admin@viaja.local`: quem modera.
+- `admin@viaja.local`: quem modera e aprova os eventos;
+- `produtor@viaja.local`: a Lia, que cadastra eventos.
 
 As chaves de produção ficam só no backend, nunca no front. Se você quiser ver o app com os dados de produção, suba o backend com as chaves de produção. O README do `viaja_flaskapp` explica como pedir acesso a elas. O front continua apontando para `http://localhost:5000` do mesmo jeito.
 
