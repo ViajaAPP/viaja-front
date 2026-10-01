@@ -3,6 +3,7 @@ import { Component, inject, OnInit, OnDestroy, signal, computed, ViewChild, Elem
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
+import { MapaGrupoComponent, PessoaNoMapa } from '../../shared/components/mapa-grupo/mapa-grupo.component';
 import { Subscription } from 'rxjs';
 import { AppStore } from '../../shared/store/app.store';
 import { ChatMessageService } from '../../shared/services/chat-message/chat-message.service';
@@ -15,10 +16,11 @@ import { mensagemDeErro } from '../../shared/services/request/request-error';
 registerLocaleData(localePt, 'pt-BR');
 
 const ESPERA_DA_CONFIRMACAO = 8000;
+const INTERVALO_DA_LOCALIZACAO = 10000;
 
 @Component({
   selector: 'app-chat-message',
-  imports: [DatePipe, FormsModule, LoadingComponent, FalhaCarregarComponent],
+  imports: [DatePipe, FormsModule, LoadingComponent, FalhaCarregarComponent, MapaGrupoComponent],
   templateUrl: './chat-message.component.html',
   styleUrl: './chat-message.component.scss',
 })
@@ -44,6 +46,32 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   private chatId: number | null = null;
   private mensagemSubscription?: Subscription;
   private readonly esperas = new Map<number, ReturnType<typeof setTimeout>>();
+  @ViewChild('paineis') private paineis?: ElementRef<HTMLDivElement>;
+  @ViewChild(MapaGrupoComponent) private mapaGrupo?: MapaGrupoComponent;
+  aba = signal<'conversa' | 'mapa'>('conversa');
+  compartilhando = signal(false);
+  erroDeLocalizacao = signal('');
+  private minhaPosicao = signal<{ lat: number; lon: number } | null>(null);
+  private observacao: number | null = null;
+  private ultimoEnvio = 0;
+
+  pessoasNoMapa = computed<(PessoaNoMapa & { at: number })[]>(() => {
+    const membros = new Map((this.chatMessage()?.user_list ?? []).map((m) => [m.user_id, m]));
+    const pessoas: (PessoaNoMapa & { at: number })[] = [...this.chatMessageService.localizacoes().values()]
+      .filter((l) => l.user_id !== this.currentUserId)
+      .map((l) => {
+        const membro = membros.get(l.user_id);
+        return { user_id: l.user_id, nome: membro?.first_name || 'Alguém do grupo', foto: membro?.photo, lat: l.lat, lon: l.lon, at: l.at };
+      });
+    const eu = this.minhaPosicao();
+    if (eu && this.currentUserId !== null) {
+      const membro = membros.get(this.currentUserId);
+      pessoas.push({ user_id: this.currentUserId, nome: 'Você', foto: membro?.photo, lat: eu.lat, lon: eu.lon, at: Date.now() / 1000, eu: true });
+    }
+    return pessoas;
+  });
+
+  outrasPessoasNoMapa = computed(() => this.pessoasNoMapa().filter((p) => !p.eu));
 
   private ordenarMensagensParaExibicao(mensagens: ChatMessage['messages_list'] | undefined): ChatMessage['messages_list'] {
     return [...(mensagens ?? [])].reverse();
@@ -172,6 +200,70 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     this.navigationService.abrirPerfil(userId);
   }
 
+  irPara(aba: 'conversa' | 'mapa'): void {
+    const paineis = this.paineis?.nativeElement;
+    if (!paineis) return;
+    paineis.scrollTo({ left: aba === 'mapa' ? paineis.clientWidth : 0, behavior: 'smooth' });
+    this.aba.set(aba);
+    if (aba === 'mapa') setTimeout(() => this.mapaGrupo?.atualizarTamanho(), 350);
+  }
+
+  aoDeslizar(): void {
+    const paineis = this.paineis?.nativeElement;
+    if (!paineis) return;
+    const aba = paineis.scrollLeft > paineis.clientWidth / 2 ? 'mapa' : 'conversa';
+    if (aba !== this.aba()) {
+      this.aba.set(aba);
+      if (aba === 'mapa') this.mapaGrupo?.atualizarTamanho();
+    }
+  }
+
+  alternarLocalizacao(): void {
+    if (this.compartilhando()) return this.pararDeCompartilhar();
+    if (!('geolocation' in navigator)) {
+      this.erroDeLocalizacao.set('Esse navegador não deixa a gente ver sua localização.');
+      return;
+    }
+    this.erroDeLocalizacao.set('');
+    this.compartilhando.set(true);
+    this.ultimoEnvio = 0;
+    this.observacao = navigator.geolocation.watchPosition(
+      (posicao) => {
+        const lat = posicao.coords.latitude;
+        const lon = posicao.coords.longitude;
+        this.minhaPosicao.set({ lat, lon });
+        const agora = Date.now();
+        if (this.chatId !== null && agora - this.ultimoEnvio >= INTERVALO_DA_LOCALIZACAO) {
+          this.ultimoEnvio = agora;
+          this.chatMessageService.enviarLocalizacao(this.chatId, lat, lon);
+        }
+      },
+      () => {
+        this.erroDeLocalizacao.set('Não conseguimos sua localização. Confira se o navegador tem permissão para isso.');
+        this.pararDeCompartilhar();
+      },
+      { enableHighAccuracy: true, maximumAge: 5000 }
+    );
+  }
+
+  private pararDeCompartilhar(): void {
+    if (this.observacao !== null) navigator.geolocation.clearWatch(this.observacao);
+    this.observacao = null;
+    if (this.compartilhando() && this.chatId !== null) this.chatMessageService.desligarLocalizacao(this.chatId);
+    this.compartilhando.set(false);
+    this.minhaPosicao.set(null);
+  }
+
+  vistoHa(at: number): string {
+    const minutos = Math.floor((Date.now() / 1000 - at) / 60);
+    if (minutos < 1) return 'agora';
+    return minutos === 1 ? 'há 1 min' : `há ${minutos} min`;
+  }
+
+  mapaJaFechou(fechaEm: string): boolean {
+    return new Date(fechaEm).getTime() < Date.now();
+  }
+
   voltar(): void {
     this.navigationService.voltar('chat');
   }
@@ -184,6 +276,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.pararDeCompartilhar();
     this.esperas.forEach((espera) => clearTimeout(espera));
     this.chatMessageService.desconectarWebSocket();
     this.mensagemSubscription?.unsubscribe();

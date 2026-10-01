@@ -26,6 +26,22 @@
 
     </header>
 
+    @if (chat.map) {
+      <div class="chat-abas" role="tablist" aria-label="Conversa ou mapa do grupo">
+        <button class="chat-abas__aba" type="button" role="tab" [attr.aria-selected]="aba() === 'conversa'" [class.chat-abas__aba--ativa]="aba() === 'conversa'" (click)="irPara('conversa')">
+          <i class="bi bi-chat-dots" aria-hidden="true"></i> Conversa
+        </button>
+        <button class="chat-abas__aba" type="button" role="tab" [attr.aria-selected]="aba() === 'mapa'" [class.chat-abas__aba--ativa]="aba() === 'mapa'" (click)="irPara('mapa')">
+          <i class="bi bi-geo-alt" aria-hidden="true"></i> Mapa do grupo
+          @if (chat.map.open && pessoasNoMapa().length) {
+            <span class="chat-abas__contador">{{ pessoasNoMapa().length }}</span>
+          }
+        </button>
+      </div>
+    }
+
+    <div class="chat-paineis" #paineis (scroll)="aoDeslizar()">
+    <section class="chat-painel" aria-label="Conversa">
     <div class="chat-messages" #messagesContainer>
 
       @if (chat.messages_list.length) {
@@ -75,6 +91,58 @@
           <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
         </svg>
       </button>
+    </div>
+    </section>
+
+    @if (chat.map; as mapa) {
+      <section class="chat-painel chat-painel--mapa" aria-label="Mapa do grupo">
+        @if (mapa.open) {
+          <div class="mapa-painel__area">
+            <app-mapa-grupo [pontoLat]="mapa.lat" [pontoLon]="mapa.lon" [pontoNome]="mapa.meeting_point || 'Ponto de encontro'" [pessoas]="pessoasNoMapa()" />
+          </div>
+          <div class="mapa-painel__controle">
+            <button [class]="compartilhando() ? 'btn-secundario' : 'btn-primary'" type="button" (click)="alternarLocalizacao()">
+              <i class="bi" [class.bi-eye-slash]="compartilhando()" [class.bi-broadcast]="!compartilhando()" aria-hidden="true"></i>
+              {{ compartilhando() ? 'Parar de mostrar onde estou' : 'Mostrar onde estou' }}
+            </button>
+            <p class="mapa-painel__dica">
+              {{ compartilhando() ? 'O grupo vê você no mapa enquanto esta tela estiver aberta.' : 'Você está invisível. Só aparece no mapa se quiser.' }}
+            </p>
+            @if (erroDeLocalizacao()) {
+              <p class="mapa-painel__erro" role="alert">{{ erroDeLocalizacao() }}</p>
+            }
+          </div>
+          @if (outrasPessoasNoMapa().length) {
+            <ul class="mapa-painel__pessoas">
+              @for (pessoa of outrasPessoasNoMapa(); track pessoa.user_id) {
+                <li class="mapa-painel__pessoa">
+                  @if (pessoa.foto) {
+                    <img [src]="pessoa.foto" alt="" />
+                  } @else {
+                    <span class="mapa-painel__inicial" aria-hidden="true">{{ pessoa.nome.charAt(0) }}</span>
+                  }
+                  <span class="mapa-painel__nome">{{ pessoa.nome }}</span>
+                  <span class="mapa-painel__visto">{{ vistoHa(pessoa.at) }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="mapa-painel__vazio">Ninguém do grupo está aparecendo no mapa agora.</p>
+          }
+        } @else {
+          <div class="mapa-painel__fechado">
+            <i class="bi bi-map" aria-hidden="true"></i>
+            @if (mapaJaFechou(mapa.closes_at)) {
+              <p class="mapa-painel__titulo">O mapa do grupo já fechou</p>
+              <p>Ele fica aberto só até o fim {{ chat.is_event ? 'do evento' : 'do passeio' }}.</p>
+            } @else {
+              <p class="mapa-painel__titulo">O mapa abre 2 horas antes</p>
+              <p>A partir de {{ mapa.opens_at | date: 'EEEE, d \'de\' MMMM, \'às\' HH:mm' : '' : 'pt-BR' }}, quem quiser pode mostrar onde está para o grupo se achar.</p>
+            }
+          </div>
+        }
+      </section>
+    }
     </div>
 
   </div>

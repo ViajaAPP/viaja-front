@@ -23,6 +23,7 @@ export interface ActiveGroup {
   tour_instance_id?: number;
   tour_photo?: string;
   tour_title?: string;
+  event_id?: number;
 }
 
 export interface ChatResponse {
@@ -38,11 +39,29 @@ export interface ChatUser {
   user_id?: number;
 }
 
+export interface MapaDoGrupo {
+  opens_at: string;
+  closes_at: string;
+  open: boolean;
+  meeting_point: string | null;
+  lat: number | null;
+  lon: number | null;
+}
+
+export interface LocalizacaoNoGrupo {
+  user_id: number;
+  lat: number;
+  lon: number;
+  at: number;
+}
+
 export interface ChatMessage {
   chat_name: string;
   messages_list: MensagensList[];
   socket_connection_url?: string;
   user_list: ChatUser[];
+  is_event?: boolean;
+  map?: MapaDoGrupo | null;
 }
 
 export interface MensagensList {

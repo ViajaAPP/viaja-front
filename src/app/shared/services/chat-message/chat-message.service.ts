@@ -2,7 +2,7 @@ import { Injectable, inject, OnDestroy, signal } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from '../request/request.service';
 import { AuthService } from '../auth/auth.service';
-import { ChatMessage, ChatResponse, MensagensList } from '../../enums/chat.model';
+import { ChatMessage, ChatResponse, LocalizacaoNoGrupo, MensagensList } from '../../enums/chat.model';
 import { APP_CONFIG } from '../../config/app.config';
 import { CHAT_MOCK, CHAT_MESSAGE_MOCK } from '../../mock/chat.mock';
 
@@ -19,6 +19,7 @@ export class ChatMessageService implements OnDestroy {
   readonly conexao = signal<'desconectado' | 'conectando' | 'conectado' | 'reconectando'>('desconectado');
   private readonly mensagemRecebida$ = new Subject<MensagensList>();
   private readonly mensagemSalva$ = new Subject<number>();
+  readonly localizacoes = signal<Map<number, LocalizacaoNoGrupo>>(new Map());
 
   get onMensagemSalva(): Observable<number> {
     return this.mensagemSalva$.asObservable();
@@ -52,6 +53,28 @@ export class ChatMessageService implements OnDestroy {
     return true;
   }
 
+  enviarLocalizacao(chatId: number, lat: number, lon: number): void {
+    if (!this.webSocketConectado || this.conexao() !== 'conectado') return;
+    this.webSocket!.send(JSON.stringify({ type: 'location', chat_id: chatId, lat, lon }));
+  }
+
+  desligarLocalizacao(chatId: number): void {
+    if (!this.webSocketConectado) return;
+    this.webSocket!.send(JSON.stringify({ type: 'location_off', chat_id: chatId }));
+  }
+
+  private guardarLocalizacao(local: LocalizacaoNoGrupo): void {
+    this.localizacoes.update((atual) => new Map(atual).set(local.user_id, local));
+  }
+
+  private tirarLocalizacao(userId: number): void {
+    this.localizacoes.update((atual) => {
+      const nova = new Map(atual);
+      nova.delete(userId);
+      return nova;
+    });
+  }
+
   conectarWebSocket(url: string, chatId: number): void {
     this.desconectarWebSocket();
     this.urlConectada = url;
@@ -77,6 +100,18 @@ export class ChatMessageService implements OnDestroy {
         if (dados?.type === 'ready') {
           this.tentativas = 0;
           this.conexao.set('conectado');
+          return;
+        }
+        if (dados?.type === 'locations') {
+          this.localizacoes.set(new Map((dados.items ?? []).map((l: LocalizacaoNoGrupo) => [l.user_id, l])));
+          return;
+        }
+        if (dados?.type === 'location') {
+          this.guardarLocalizacao(dados);
+          return;
+        }
+        if (dados?.type === 'location_off') {
+          this.tirarLocalizacao(Number(dados.user_id));
           return;
         }
         if (dados?.type === 'sent') {
@@ -131,6 +166,7 @@ export class ChatMessageService implements OnDestroy {
   desconectarWebSocket(): void {
     this.urlConectada = null;
     this.chatConectado = null;
+    this.localizacoes.set(new Map());
     clearTimeout(this.reconexao);
     this.conexao.set('desconectado');
     if (!this.webSocket) return;
