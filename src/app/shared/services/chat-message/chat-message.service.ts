@@ -1,6 +1,7 @@
 import { Injectable, inject, OnDestroy, signal } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from '../request/request.service';
+import { AuthService } from '../auth/auth.service';
 import { ChatMessage, ChatResponse, MensagensList } from '../../enums/chat.model';
 import { APP_CONFIG } from '../../config/app.config';
 import { CHAT_MOCK, CHAT_MESSAGE_MOCK } from '../../mock/chat.mock';
@@ -8,9 +9,11 @@ import { CHAT_MOCK, CHAT_MESSAGE_MOCK } from '../../mock/chat.mock';
 @Injectable({ providedIn: 'root' })
 export class ChatMessageService implements OnDestroy {
   private readonly request = inject(RequestService);
+  private readonly auth = inject(AuthService);
 
   private webSocket: WebSocket | null = null;
   private urlConectada: string | null = null;
+  private chatConectado: number | null = null;
   private tentativas = 0;
   private reconexao?: ReturnType<typeof setTimeout>;
   readonly conexao = signal<'desconectado' | 'conectando' | 'conectado' | 'reconectando'>('desconectado');
@@ -38,16 +41,10 @@ export class ChatMessageService implements OnDestroy {
     return this.request.post<void>(`/chat/${chatId}/messages`, { content: conteudo });
   }
 
-  enviarPeloWebSocket(chatId: number, texto: string): void {
-    if (!this.webSocket || this.webSocket.readyState !== WebSocket.OPEN) return;
-
-    const payload = JSON.stringify({ chat_id: chatId, text: texto });
-    this.webSocket.send(payload);
-  }
-
-  conectarWebSocket(url: string): void {
+  conectarWebSocket(url: string, chatId: number): void {
     this.desconectarWebSocket();
     this.urlConectada = url;
+    this.chatConectado = chatId;
     this.tentativas = 0;
     this.abrirConexao();
   }
@@ -60,32 +57,40 @@ export class ChatMessageService implements OnDestroy {
     this.webSocket = socket;
 
     socket.onopen = () => {
-      this.tentativas = 0;
-      this.conexao.set('conectado');
+      socket.send(JSON.stringify({ type: 'auth', token: this.auth.getToken(), chats: [this.chatConectado] }));
     };
 
     socket.onmessage = async (event) => {
       try {
         const dados = JSON.parse(await this.normalizarMensagemSocket(event.data));
-        const payload = dados?.payload ?? dados?.data ?? dados?.message ?? dados;
-        const remetenteId = Number(payload?.user_id ?? dados?.user_id);
-        const texto = payload?.text ?? payload?.content ?? dados?.text ?? dados?.content ?? '';
+        if (dados?.type === 'ready') {
+          this.tentativas = 0;
+          this.conexao.set('conectado');
+          return;
+        }
+        if (dados?.type !== 'message') return;
 
-        if (!texto || !Number.isFinite(remetenteId)) return;
+        const remetenteId = Number(dados.user_id);
+        if (!dados.text || !Number.isFinite(remetenteId)) return;
 
         this.mensagemRecebida$.next({
-          id: Date.now(),
+          id: dados.id ?? Date.now(),
           chat_id: dados.chat_id,
           user_id: remetenteId,
-          text: texto,
-          created_at: new Date().toISOString(),
+          text: dados.text,
+          created_at: dados.created_at ?? new Date().toISOString(),
         });
       } catch {}
     };
 
-    socket.onclose = () => {
+    socket.onclose = (event) => {
       if (this.webSocket !== socket) return;
       this.webSocket = null;
+      if (event.code === 1008) {
+        this.urlConectada = null;
+        this.conexao.set('desconectado');
+        return;
+      }
       this.agendarReconexao();
     };
   }
@@ -110,6 +115,7 @@ export class ChatMessageService implements OnDestroy {
 
   desconectarWebSocket(): void {
     this.urlConectada = null;
+    this.chatConectado = null;
     clearTimeout(this.reconexao);
     this.conexao.set('desconectado');
     if (!this.webSocket) return;

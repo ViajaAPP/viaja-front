@@ -21,11 +21,6 @@ export interface RegisterRequest {
   username: string;
 }
 
-export interface MessageRequest {
-  chat_id: string;
-  content: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   constructor(private request: RequestService) {}
@@ -52,10 +47,6 @@ export class ApiService {
 
   startChat(tourInstanceId: number): Observable<{ chat_id: number }> {
     return this.request.post<{ chat_id: number }>(`/chat/instances/${tourInstanceId}`);
-  }
-
-  sendMessage(payload: MessageRequest): Observable<any> {
-    return this.request.post('/messages/send', payload);
   }
 
   getWebSocketUrl(): string {

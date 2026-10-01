@@ -77,7 +77,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
         this.scrollToBottom();
 
         if (data?.socket_connection_url) {
-          this.chatMessageService.conectarWebSocket(data.socket_connection_url);
+          this.chatMessageService.conectarWebSocket(data.socket_connection_url, chatId);
         }
       },
       error: (error) => this.erro.set(mensagemDeErro(error, 'Não conseguimos abrir essa conversa agora.')),
@@ -118,10 +118,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     if (chatId === null) return;
 
     this.chatMessageService.enviarMensagem(chatId, mensagem.text).subscribe({
-      next: () => {
-        this.atualizar(mensagem.id, undefined);
-        this.chatMessageService.enviarPeloWebSocket(chatId, mensagem.text);
-      },
+      next: () => this.atualizar(mensagem.id, undefined),
       error: () => this.atualizar(mensagem.id, 'falhou'),
     });
   }
