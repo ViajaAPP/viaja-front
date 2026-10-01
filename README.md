@@ -23,12 +23,20 @@ src/app/
     home/                        # Tela inicial com atividades
     chat/                        # Lista de grupos de chat
     chat-message/                # Tela de conversa individual
-    perfil/                      # Dados da conta, atalhos por papel e sair
-    passeio/                     # Detalhe do passeio e pedido de vaga
-    minhas-solicitacoes/         # Reservas do viajante
-    meus-passeios/               # Painel do guia: passeios, publicar e tirar do ar
+    esqueci-senha/               # Pedir o link para trocar a senha
+    redefinir-senha/             # Escolher a senha nova pelo link do e-mail
+    buscar/                      # Busca de passeios e destinos
+    resultados/                  # Resultado da busca, com filtros
+    passeio/                     # Página do passeio: fotos, mapa, avaliações e reserva
+    painel/                      # Passeios do guia: pedidos, agenda, anúncios e arquivados
+    viagens/                     # Reservas de quem vai aos passeios
+    favoritos/                   # Passeios salvos
+    avisos/                      # Notificações
+    perfil/                      # Perfil e atalhos da conta
+    perfil-editar/               # Editar foto, nome e senha
+    meus-passeios/               # Lista de passeios do guia
     passeio-form/                # Criar e editar passeio
-    passeio-gestao/              # Datas, vagas, pedidos e chat do grupo
+    passeio-gestao/              # Datas, vagas e pedidos de um passeio
   shared/
     components/
       header/                    # Header reutilizavel
@@ -37,13 +45,13 @@ src/app/
     config/
       api.config.ts              # URL base da API (vem de src/environments)
       app.config.ts              # Configuracoes gerais (modo mock)
-      permissions.config.ts      # Quais papeis abrem cada pagina
+      permissions.config.ts      # Quais papéis abrem cada página
       tour.config.ts             # Textos de status, UFs e formatos
     enums/
       chat.model.ts              # Interfaces do chat
       home.model.ts              # Interfaces da home
       tour.model.ts              # Interfaces de passeio, data e pedido
-      user.model.ts              # Papel do usuario, login e perfil
+      user.model.ts              # Papel do usuário, login e perfil
     facade/
       app.facade.ts              # Facade para acesso simplificado ao store
     interceptors/
@@ -58,33 +66,29 @@ src/app/
       dados-cliente/             # Servico de dados do cliente (home)
       navigation/                # Servico de navegacao entre paginas
       request/                   # Servico HTTP base (wrapper do HttpClient)
-      tour/                      # Servico de passeios, datas e pedidos
+      tour/                      # Passeios, datas e pedidos
     store/
       app.store.ts               # Store global com NgRx Signals
 src/environments/
-  environment.ts                 # URL da API de producao
-  environment.development.ts     # URL da API local (usada pelo ng serve)
+  environment.ts                 # Endereço da API em produção
+  environment.development.ts     # Endereço da API local, usado pelo ng serve
 ```
 
 ## Navegacao
 
 A aplicacao usa navegacao baseada em estado (sem Angular Router). O `AppStore` controla a pagina atual e o `MainComponent` renderiza condicionalmente a pagina correspondente.
 
-Paginas disponiveis: `welcome` | `login` | `registrar` | `home` | `chat` | `chat-tour` | `perfil` | `passeio` | `minhas-solicitacoes` | `meus-passeios` | `passeio-form` | `passeio-gestao`
+Hoje cada página também tem o seu endereço (`/inicio`, `/passeio/12`, `/reservas`...), definido em `app.routes.ts`. Assim dá para atualizar a página, voltar pelo navegador e mandar o link de um passeio para alguém. O `paginaGuard` avisa o `AppStore` qual página abriu, então o resto do app continua funcionando do mesmo jeito.
 
-## Papeis e permissoes
+## Quem pode abrir cada página
 
-O login devolve o papel do usuario, e o store guarda esse papel na sessao. Toda troca de pagina passa por `resolveAllowedPage` (`shared/config/permissions.config.ts`):
+Quem decide é o `resolveAllowedPage`, em `shared/config/permissions.config.ts`.
 
-- sem login, so abrem `welcome`, `login` e `registrar`; o resto manda para o login;
-- `meus-passeios`: guia e admin;
-- `passeio-form` e `passeio-gestao`: so guia;
-- `minhas-solicitacoes`: so viajante;
-- as demais paginas abrem para qualquer conta logada.
+- Sem login, você só vê as boas-vindas, o login, o cadastro e a recuperação de senha. Qualquer outro endereço leva para o login.
+- A área de Passeios (pedidos, agenda e anúncios) e a criação de passeio são do guia.
+- O resto abre para qualquer pessoa logada.
 
-Quem nao tem permissao volta para a home. O backend confere as mesmas regras em cada rota, entao esconder um botao nunca e a unica protecao.
-
-O guia so mexe nos proprios passeios. O admin ve todos e pode tirar qualquer um do ar, mas nao edita passeio de outra pessoa.
+Se a pessoa não tem permissão, ela volta para o início. O backend confere as mesmas regras em todas as rotas. Esconder um botão no front nunca é a única proteção.
 
 ## Servicos
 
@@ -111,27 +115,36 @@ Chamadas de API para autenticacao e chat:
 - `login(payload)` / `register(payload)`
 - `startChat(tourInstanceId)` abre o chat do grupo de uma data
 
-### `TourService`
-Passeios, datas e pedidos de vaga:
-- `listarPasseiosGerenciados()` / `buscarPasseio(tourId)`
-- `criarPasseio(payload)` / `editarPasseio(tourId, payload)` / `publicarPasseio(tourId, published)`
-- `criarData(tourId, payload)` / `editarData(tourId, instanceId, payload)`
-- `listarSolicitacoesDaData(instanceId)` / `responderSolicitacao(requestId, status)`
-- `solicitarVaga(instanceId, message)` / `listarMinhasSolicitacoes()`
-- `listarPasseiosPerto(lat, lon)`: passeios publicados, do mais perto para o mais longe
+### Os outros serviços
 
-### `CidadesService`
-Sugestoes de cidade para o formulario do passeio:
-- `buscarCidades(texto, uf)`: cidades que combinam com o texto, filtradas pela UF
+Cada assunto do app tem o seu serviço em `shared/services`, e o nome da pasta já diz do que ele cuida:
 
-## Cidades e filtro "mais perto"
+- `tour`: passeios, datas e pedidos de vaga;
+- `busca`: sugestões e resultados da busca;
+- `painel`: a área de Passeios do guia;
+- `avisos`: notificações e o número no sininho;
+- `favorito`: os passeios salvos;
+- `locais` e `localizacao`: busca de endereço no mapa e a localização do celular;
+- `cidades`: sugestões de cidade;
+- `feedback`: as mensagens de confirmação e os avisos que aparecem embaixo da tela;
+- `layout`: lembra se o menu do computador está aberto ou fechado.
 
-Os dados de cidade vem da CidadesBR-API, sempre passando pelo backend, que guarda as respostas em cache. O front nunca chama a CidadesBR-API direto.
+## Endereço, mapa e "mais perto"
 
-- No formulario do passeio, o campo de cidade sugere nomes conforme a pessoa digita, a partir da segunda letra, filtrando pela UF escolhida.
-- Na home, o filtro "mais perto" pede a localizacao do navegador e chama `GET /tour/perto`. Se a pessoa negar, a tela explica como liberar.
-- O navegador so libera a localizacao em `http://localhost` ou em `https`. Por um IP da rede local, o filtro sempre cai na mensagem de erro.
-- Se a CidadesBR-API estiver dormindo no Render, a primeira busca pode levar perto de um minuto.
+- O front nunca fala direto com serviços de fora. Busca de endereço, cidades e distância passam sempre pelo backend, que guarda as respostas em cache.
+- O mapa usa Leaflet com o OpenStreetMap, e não precisa de chave. O botão "Ver como chegar" abre o Google Maps, e o do Uber já abre com o destino preenchido.
+- O "mais perto" pede a localização do navegador. Se a pessoa negar, a tela explica como liberar.
+- O navegador só libera a localização em `http://localhost` ou em `https`. Se você abrir o app pelo IP da rede local, o "mais perto" sempre vai mostrar a mensagem de erro.
+
+## Cache
+
+Para não ficar carregando toda vez que alguém troca de página, o `cache.interceptor.ts` guarda as respostas por um tempo:
+
+- até 15 segundos, a página abre com o que já estava guardado, sem chamar a API;
+- até 10 minutos, abre com o que estava guardado e busca a versão nova por trás;
+- qualquer mudança (reservar, salvar, responder um pedido) limpa o cache inteiro. Sair da conta também limpa.
+
+O contador de avisos e o login nunca passam pelo cache.
 
 ## Modo Mock
 
@@ -139,14 +152,15 @@ Para desenvolvimento sem backend, defina `MOCK: true` em `src/app/shared/config/
 
 ## Desenvolvimento
 
-### Requisitos
-- Node.js 20.19 ou mais novo (o Angular 21 nao roda em versoes antigas)
-- Git
-- O backend `viaja_flaskapp` rodando, local ou em producao
+### O que você precisa ter
+
+- Node.js 20.19 ou mais novo. O Angular 21 não roda nas versões antigas.
+- Git.
+- O backend `viaja_flaskapp` rodando, na sua máquina ou em produção.
 
 ### Passo a passo
 
-A versao que esta funcionando fica na branch `staging`.
+A versão que está funcionando fica na branch `staging`.
 
 ```bash
 git clone https://github.com/ViajaAPP/viaja-front.git
@@ -156,7 +170,7 @@ npm install
 npm start
 ```
 
-Acesse `http://localhost:4200/`. O `ng serve` chama a API em `http://localhost:5000`, entao suba o backend antes. No `viaja_flaskapp` da para rodar tudo local, sem nenhuma chave:
+Depois é só abrir `http://localhost:4200/`. O front procura a API em `http://localhost:5000`, então suba o backend antes. Dá para rodar o backend todo na sua máquina, sem chave nenhuma. Na pasta do `viaja_flaskapp`:
 
 ```bash
 npx supabase start
@@ -164,19 +178,22 @@ bash scripts/secrets.sh local
 python run.py --local
 ```
 
-Contas de teste, todas com a senha `viaja123`: `guia@viaja.local`, `viajante@viaja.local` e `admin@viaja.local`.
+Para entrar, use uma das contas de teste. A senha de todas é `viaja123`:
 
-As chaves de producao ficam no backend, nunca no front. O README do `viaja_flaskapp` explica como pedir acesso a elas e como baixa-las do Google Drive com `bash scripts/secrets.sh pull`.
+- `guia@viaja.local`: a Fabi, que é guia e tem passeios publicados;
+- `viajante@viaja.local`: o Tito, que reserva passeios;
+- `admin@viaja.local`: quem modera.
 
-Para usar o front com o banco de producao, suba o backend com as chaves de producao (`bash scripts/secrets.sh pull` e `python run.py`, no `viaja_flaskapp`). O front continua apontando para `http://localhost:5000`.
+As chaves de produção ficam só no backend, nunca no front. Se você quiser ver o app com os dados de produção, suba o backend com as chaves de produção. O README do `viaja_flaskapp` explica como pedir acesso a elas. O front continua apontando para `http://localhost:5000` do mesmo jeito.
 
 ## Responsividade
 
-Toda tela precisa funcionar no celular, no tablet e no computador. O celular e a base; o resto e acrescentado por cima, sem mudar o que ja funciona no celular.
+Toda tela precisa funcionar bem no celular, no tablet e no computador, inclusive a área do guia. Comece sempre pelo celular e acrescente o resto por cima, sem estragar o que já funciona nele.
 
-- Os pontos de quebra e a largura maxima do conteudo ficam em `src/styles/_responsivo.scss`: tablet a partir de 768px, computador a partir de 1024px, conteudo com ate 1100px.
-- Em qualquer `.scss`, use `@use 'responsivo' as *;` e os mixins `a-partir-do-tablet`, `a-partir-do-pc` e `conteudo-centralizado`.
-- Nao use margem em porcentagem para posicionar blocos na vertical: ela e calculada pela largura da tela e cria buracos enormes no computador.
+- Os tamanhos de tela ficam em `src/styles/_responsivo.scss`: tablet a partir de 768px e computador a partir de 1024px.
+- Em qualquer `.scss`, coloque `@use 'responsivo' as *;` no topo e use `a-partir-do-tablet`, `a-partir-do-pc` e `conteudo-centralizado`.
+- No computador, a barra de baixo vira um menu na lateral, que abre e fecha. O app lembra como você deixou.
+- Evite margem em porcentagem para afastar blocos na vertical. Ela é calculada pela largura da tela e, no computador, abre buracos enormes.
 
 ## Build
 
@@ -184,7 +201,11 @@ Toda tela precisa funcionar no celular, no tablet e no computador. O celular e a
 ng build
 ```
 
-Os artefatos serao gerados em `dist/viaja`. O build de producao usa a URL de `src/environments/environment.ts`.
+Os artefatos serao gerados em `dist/viaja`. O build de produção usa o endereço da API que está em `src/environments/environment.ts`.
+
+## Publicar no Render
+
+O `render.yaml` já deixa o front pronto para virar um site estático no Render, de graça. Ele faz o build e manda qualquer endereço para o `index.html`, para o link de um passeio abrir direto. Ainda não publicamos: falta registrar o domínio `viaja-app.com.br`.
 
 ## Testes
 
