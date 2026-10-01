@@ -18,6 +18,11 @@ export class ChatMessageService implements OnDestroy {
   private reconexao?: ReturnType<typeof setTimeout>;
   readonly conexao = signal<'desconectado' | 'conectando' | 'conectado' | 'reconectando'>('desconectado');
   private readonly mensagemRecebida$ = new Subject<MensagensList>();
+  private readonly mensagemSalva$ = new Subject<number>();
+
+  get onMensagemSalva(): Observable<number> {
+    return this.mensagemSalva$.asObservable();
+  }
 
   get onMensagemRecebida(): Observable<MensagensList> {
     return this.mensagemRecebida$.asObservable();
@@ -39,6 +44,12 @@ export class ChatMessageService implements OnDestroy {
 
   enviarMensagem(chatId: number, conteudo: string): Observable<void> {
     return this.request.post<void>(`/chat/${chatId}/messages`, { content: conteudo });
+  }
+
+  enviarPeloWebSocket(chatId: number, texto: string, clientId: number): boolean {
+    if (!this.webSocketConectado || this.conexao() !== 'conectado') return false;
+    this.webSocket!.send(JSON.stringify({ type: 'message', chat_id: chatId, text: texto, client_id: clientId }));
+    return true;
   }
 
   conectarWebSocket(url: string, chatId: number): void {
@@ -66,6 +77,10 @@ export class ChatMessageService implements OnDestroy {
         if (dados?.type === 'ready') {
           this.tentativas = 0;
           this.conexao.set('conectado');
+          return;
+        }
+        if (dados?.type === 'sent') {
+          this.mensagemSalva$.next(Number(dados.client_id));
           return;
         }
         if (dados?.type !== 'message') return;
@@ -133,5 +148,6 @@ export class ChatMessageService implements OnDestroy {
   ngOnDestroy(): void {
     this.desconectarWebSocket();
     this.mensagemRecebida$.complete();
+    this.mensagemSalva$.complete();
   }
 }

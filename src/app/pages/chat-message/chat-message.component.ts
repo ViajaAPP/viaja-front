@@ -14,6 +14,8 @@ import { mensagemDeErro } from '../../shared/services/request/request-error';
 
 registerLocaleData(localePt, 'pt-BR');
 
+const ESPERA_DA_CONFIRMACAO = 8000;
+
 @Component({
   selector: 'app-chat-message',
   imports: [DatePipe, FormsModule, LoadingComponent, FalhaCarregarComponent],
@@ -41,6 +43,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   });
   private chatId: number | null = null;
   private mensagemSubscription?: Subscription;
+  private readonly esperas = new Map<number, ReturnType<typeof setTimeout>>();
 
   private ordenarMensagensParaExibicao(mensagens: ChatMessage['messages_list'] | undefined): ChatMessage['messages_list'] {
     return [...(mensagens ?? [])].reverse();
@@ -58,6 +61,13 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     this.mensagemSubscription = this.chatMessageService.onMensagemRecebida.subscribe((mensagem) => {
       if (mensagem.user_id !== this.currentUserId) this.adicionar(mensagem);
     });
+    this.mensagemSubscription.add(
+      this.chatMessageService.onMensagemSalva.subscribe((clientId) => {
+        clearTimeout(this.esperas.get(clientId));
+        this.esperas.delete(clientId);
+        this.atualizar(clientId, undefined);
+      })
+    );
 
     this.carregar(chatId);
   }
@@ -121,6 +131,14 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     const chatId = this.chatId;
     if (chatId === null) return;
 
+    if (this.chatMessageService.enviarPeloWebSocket(chatId, mensagem.text, mensagem.id)) {
+      this.esperas.set(mensagem.id, setTimeout(() => {
+        this.esperas.delete(mensagem.id);
+        this.atualizar(mensagem.id, 'falhou');
+      }, ESPERA_DA_CONFIRMACAO));
+      return;
+    }
+
     this.chatMessageService.enviarMensagem(chatId, mensagem.text).subscribe({
       next: () => this.atualizar(mensagem.id, undefined),
       error: (error) => {
@@ -162,6 +180,7 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.esperas.forEach((espera) => clearTimeout(espera));
     this.chatMessageService.desconectarWebSocket();
     this.mensagemSubscription?.unsubscribe();
   }
