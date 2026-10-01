@@ -1,0 +1,90 @@
+<section class="pagina painel">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">MODERAÇÃO</p>
+      <h1 class="pagina__titulo">Eventos para analisar</h1>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="carregar()" />
+  } @else if (carregando()) {
+    <div class="esqueleto" aria-busy="true" aria-label="Carregando"><span></span><span></span></div>
+  } @else {
+    @if (eventos().length) {
+      <p class="painel__resumo">{{ eventos().length }} {{ eventos().length === 1 ? 'evento esperando' : 'eventos esperando' }} sua análise. Os mais antigos aparecem primeiro.</p>
+    }
+    <ul class="cartoes">
+      @for (evento of eventos(); track evento.id) {
+        <li class="passeio-card">
+          <div class="analise__foto">
+            @if (evento.photo) {
+              <img [src]="evento.photo" [alt]="'Capa de ' + evento.title" loading="lazy" />
+            }
+          </div>
+          <div class="passeio-card__corpo">
+            <p class="passeio-card__titulo">{{ evento.title }}</p>
+            <p class="passeio-card__detalhe">Enviado por {{ evento.organizer.first_name || 'alguém sem nome' }}</p>
+            <ul class="analise__infos">
+              <li>
+                <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                {{ evento.start_time | date: "EEEE, d 'de' MMMM 'às' HH:mm" : '' : 'pt-BR' }}
+                @if (evento.end_time) {
+                  até {{ evento.end_time | date: 'HH:mm' }}
+                }
+              </li>
+              <li>
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                @if (evento.place_name) {
+                  {{ evento.place_name }},
+                }
+                {{ endereco(evento) }}
+              </li>
+              <li>
+                <i class="bi bi-cash" aria-hidden="true"></i>
+                {{ formatarPreco(evento.price) }}
+                @if (evento.capacity) {
+                  · até {{ evento.capacity }} pessoas
+                }
+              </li>
+            </ul>
+            <p class="analise__descricao">{{ evento.description }}</p>
+
+            @if (devolvendo() === evento.id) {
+              <form class="formulario analise__motivo" (ngSubmit)="devolver(evento)">
+                <label [for]="'motivo-' + evento.id">O que precisa mudar? <span class="obrigatorio">*</span></label>
+                <textarea
+                  [id]="'motivo-' + evento.id"
+                  name="motivo"
+                  rows="3"
+                  maxlength="500"
+                  [(ngModel)]="motivo"
+                  required
+                  placeholder="Ex.: a foto não mostra o evento, troque por uma do lugar."
+                ></textarea>
+                <small class="formulario__dica">A pessoa recebe esse texto num aviso, então explique com calma o que ajustar.</small>
+                <div class="passeio-card__acoes">
+                  <button class="btn-secundario" type="button" (click)="devolvendo.set(null)">Voltar</button>
+                  <button class="btn-recusar" type="submit" [disabled]="!motivo.trim() || enviando() === evento.id">Devolver</button>
+                </div>
+              </form>
+            } @else {
+              <div class="passeio-card__acoes">
+                <button class="btn-recusar" type="button" [disabled]="enviando() === evento.id" (click)="abrirDevolucao(evento)">Pedir ajustes</button>
+                <button class="btn-aceitar" type="button" [disabled]="enviando() === evento.id" (click)="aprovar(evento)">Aprovar</button>
+              </div>
+            }
+          </div>
+        </li>
+      } @empty {
+        <li class="vazio">
+          <i class="bi bi-check2-all" aria-hidden="true"></i>
+          <p>Tudo em dia! Nenhum evento esperando análise.</p>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,0 +1,157 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">EVENTO</p>
+      <h1 class="pagina__titulo">{{ evento()?.title }}</h1>
+      @if (evento(); as dados) {
+        <p class="passeio__nota passeio__nota--vazia">{{ dados.city }} - {{ dados.uf }}</p>
+      }
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  @if (evento(); as dados) {
+    @if (dados.is_owner) {
+      @switch (dados.status) {
+        @case ('IN_REVIEW') {
+          <div class="evento__estado" role="status">
+            <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+            <p>Seu evento está em análise. Assim que alguém da equipe aprovar, ele aparece para todo mundo e você recebe um aviso.</p>
+          </div>
+        }
+        @case ('REJECTED') {
+          <div class="evento__estado evento__estado--ajustes" role="status">
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+            <div>
+              <p><strong>Seu evento precisa de uns ajustes antes de entrar no ar.</strong></p>
+              @if (dados.review_note) {
+                <p>{{ dados.review_note }}</p>
+              }
+              <p>Quando você salvar as mudanças, ele volta para a análise.</p>
+            </div>
+          </div>
+        }
+      }
+    }
+    @if (dados.status === 'CANCELLED') {
+      <div class="evento__estado evento__estado--ajustes" role="status">
+        <i class="bi bi-x-circle" aria-hidden="true"></i>
+        <p>Esse evento foi cancelado pela organização.</p>
+      </div>
+    }
+
+    <div class="passeio__layout">
+      <div class="passeio__principal">
+        @if (dados.photo) {
+          <div class="galeria">
+            <div class="galeria__trilho">
+              <figure class="galeria__foto">
+                <img [src]="dados.photo" [alt]="dados.title" />
+                @if (dados.photo_credit) {
+                  <figcaption>Foto: {{ dados.photo_credit }}</figcaption>
+                }
+              </figure>
+            </div>
+          </div>
+        }
+
+        @if (dados.organizer.first_name) {
+          <div class="passeio__guia-bloco">
+            <p class="passeio__guia">Organizado por {{ dados.organizer.first_name }}</p>
+          </div>
+        }
+
+        <div class="cartao">
+          <p class="passeio__descricao">{{ dados.description }}</p>
+          <ul class="passeio__infos">
+            <li><i class="bi bi-cash" aria-hidden="true"></i> {{ formatarPreco(dados.price) }}</li>
+            <li>
+              <i class="bi bi-calendar-event" aria-hidden="true"></i>
+              {{ dados.start_time | date: "EEEE, d 'de' MMMM 'às' HH:mm" : '' : 'pt-BR' }}
+              @if (dados.end_time) {
+                até {{ dados.end_time | date: 'HH:mm' }}
+              }
+            </li>
+            @if (dados.place_name) {
+              <li><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ dados.place_name }}</li>
+            }
+            @if (dados.address) {
+              <li><i class="bi bi-map" aria-hidden="true"></i> {{ enderecoCompleto(dados) }}</li>
+            }
+          </ul>
+          @if (dados.is_owner && dados.status !== 'CANCELLED' && dados.status !== 'DONE') {
+            <div class="cartao__acoes evento__acoes-do-dono">
+              <button class="btn-primary" type="button" (click)="editar()">Editar evento</button>
+              <button class="btn-recusar" type="button" (click)="cancelar()">Cancelar evento</button>
+            </div>
+          }
+        </div>
+
+        @if (dados.address?.lat != null && dados.address?.lon != null) {
+          <h2 class="pagina__subtitulo">Onde é</h2>
+          <app-mapa [lat]="dados.address?.lat" [lon]="dados.address?.lon" rotulo="Mapa com o local do evento" />
+          <div class="passeio__chegar">
+            <a class="passeio__rota" [href]="linkDoMaps(dados)" target="_blank" rel="noopener">Ver como chegar</a>
+            <a class="passeio__uber" [href]="linkDoUber(dados)" target="_blank" rel="noopener" aria-label="Pedir um Uber até o evento">
+              <span aria-hidden="true">Pedir um</span>
+              <svg class="passeio__uber-logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M0 7.97v4.958c0 1.867 1.302 3.101 3 3.101.826 0 1.562-.316 2.094-.87v.736H6.27V7.97H5.082v4.888c0 1.257-.85 2.106-1.947 2.106-1.11 0-1.946-.827-1.946-2.106V7.971H0zm7.44 0v7.925h1.13v-.725c.521.532 1.257.86 2.06.86a3.006 3.006 0 0 0 3.034-3.01 3.01 3.01 0 0 0-3.033-3.024 2.86 2.86 0 0 0-2.049.861V7.971H7.439zm9.869 2.038c-1.687 0-2.965 1.37-2.965 3 0 1.72 1.334 3.01 3.066 3.01 1.053 0 1.913-.463 2.49-1.233l-.826-.611c-.43.577-.996.847-1.664.847-.973 0-1.753-.7-1.912-1.64h4.697v-.373c0-1.72-1.222-3-2.886-3zm6.295.068c-.634 0-1.098.294-1.381.758v-.713h-1.131v5.774h1.142V12.61c0-.894.544-1.47 1.291-1.47H24v-1.065h-.396zm-6.319.928c.85 0 1.564.588 1.756 1.47H15.52c.203-.882.916-1.47 1.765-1.47zm-6.732.012c1.086 0 1.98.883 1.98 2.004a1.993 1.993 0 0 1-1.98 2.001A1.989 1.989 0 0 1 8.56 13.02a1.99 1.99 0 0 1 1.992-2.004z"/></svg>
+            </a>
+          </div>
+        }
+      </div>
+
+      <div class="passeio__saidas">
+        <h2 class="pagina__subtitulo">Quem vai</h2>
+        <article class="cartao evento__presenca">
+          <div class="evento__dia" aria-hidden="true">
+            <span class="evento__mes">{{ dados.start_time | date: 'MMM' : '' : 'pt-BR' }}</span>
+            <span class="evento__numero">{{ dados.start_time | date: 'd' }}</span>
+          </div>
+          <div class="evento__presenca-textos">
+            <p class="passeio__quando">{{ textoDeQuemVai(dados) }}</p>
+            @if (vagasLivres() !== null) {
+              <p class="passeio__vagas">
+                {{ vagasLivres() === 0 ? 'Lotado' : vagasLivres() === 1 ? 'Só mais 1 lugar' : vagasLivres() + ' lugares livres' }}
+              </p>
+            }
+          </div>
+        </article>
+
+        @if (dados.going_people?.length) {
+          <ul class="evento__pessoas" aria-label="Algumas pessoas que vão">
+            @for (pessoa of dados.going_people; track $index) {
+              <li>
+                @if (pessoa.photo) {
+                  <img class="evento__pessoa" [src]="pessoa.photo" [alt]="pessoa.first_name || ''" loading="lazy" />
+                } @else {
+                  <span class="evento__pessoa evento__pessoa--inicial" [attr.aria-label]="pessoa.first_name">{{ (pessoa.first_name || '?').charAt(0) }}</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+
+        @if (dados.status === 'PUBLISHED' && !encerrado() && !dados.is_owner) {
+          @if (dados.going) {
+            <button class="btn-secundario evento__botao" type="button" [disabled]="salvando()" (click)="marcarPresenca(false)">
+              <i class="bi bi-check2-circle" aria-hidden="true"></i> Você vai · desmarcar
+            </button>
+          } @else if (vagasLivres() !== 0) {
+            <button class="btn-confirmar evento__botao" type="button" [disabled]="salvando()" (click)="marcarPresenca(true)">
+              {{ salvando() ? 'Salvando...' : 'Vou' }}
+            </button>
+          }
+          <p class="formulario__dica">Marcar que vai não cobra nada. É só para a organização saber quantas pessoas esperar e para você receber um aviso se algo mudar.</p>
+        } @else if (encerrado() && dados.status === 'PUBLISHED') {
+          <p class="pagina__vazio">Esse evento já aconteceu.</p>
+        }
+      </div>
+    </div>
+  }
+</section>

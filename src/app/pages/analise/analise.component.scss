@@ -1,0 +1,38 @@
+.analise__foto {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #3d5c00 0%, #1f2e00 100%);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.analise__infos {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 13px;
+  color: #3f3f3f;
+
+  i {
+    margin-right: 4px;
+    color: #3d5c00;
+  }
+}
+
+.analise__descricao {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+  color: #3f3f3f;
+}
+
+.analise__motivo {
+  margin-top: 14px;
+}

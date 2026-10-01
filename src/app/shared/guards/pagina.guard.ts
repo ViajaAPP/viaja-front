@@ -22,6 +22,6 @@ export const paginaGuard: CanActivateFn = (route) => {
     : voltouSemSessao ? 'login' : resolveAllowedPage(page, role);
   if (destino !== page) return router.parseUrl(caminhoDaPagina(destino));
 
-  store.abrirPagina(page, idDaRota(route.paramMap.get('tourId')), idDaRota(route.paramMap.get('chatId')));
+  store.abrirPagina(page, idDaRota(route.paramMap.get('tourId') ?? route.paramMap.get('eventoId')), idDaRota(route.paramMap.get('chatId')));
   return true;
 };

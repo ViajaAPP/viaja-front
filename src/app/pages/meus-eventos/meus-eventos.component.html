@@ -1,0 +1,30 @@
+<section class="pagina painel">
+  <header class="painel__topo">
+    <div class="meus-eventos__titulo">
+      @if (mostrarVoltar) {
+        <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+          <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        </button>
+      }
+      <div>
+        <p class="pagina__rotulo">SEUS EVENTOS</p>
+        <h1 class="pagina__titulo">Eventos</h1>
+      </div>
+    </div>
+    <button class="btn-primary painel__novo" type="button" (click)="novo()">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i> Novo evento
+    </button>
+  </header>
+
+  @if (erro()) {
+    <app-falha-carregar [mensagem]="erro()" (tentar)="carregar()" />
+  } @else if (carregando()) {
+    <div class="esqueleto" aria-busy="true" aria-label="Carregando"><span></span><span></span></div>
+  } @else {
+    <app-eventos-gestao [eventos]="ativos()" />
+    @if (antigos().length) {
+      <h2 class="pagina__subtitulo">Já passaram</h2>
+      <app-eventos-gestao [eventos]="antigos()" />
+    }
+  }
+</section>

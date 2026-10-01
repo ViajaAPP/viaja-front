@@ -26,7 +26,11 @@ export type AppPage =
   | 'passeio-gestao'
   | 'minhas-solicitacoes'
   | 'favoritos'
-  | 'perfil-editar';
+  | 'perfil-editar'
+  | 'evento'
+  | 'evento-form'
+  | 'meus-eventos'
+  | 'analise';
 
 const PAGES_WITHOUT_BOTTOM_NAV: AppPage[] = ['welcome', 'login', 'registrar', 'esqueci-senha', 'redefinir-senha', 'chat-tour', 'buscar'];
 
@@ -96,6 +100,9 @@ export const AppStore = signalStore(
     isChatTour: computed(() => store.currentPage() === 'chat-tour'),
     isGuide: computed(() => store.myRole() === 'GUIDE'),
     isTourist: computed(() => store.myRole() === 'TOURIST'),
+    isPromoter: computed(() => store.myRole() === 'EVENT_PROMOTER'),
+    isAdmin: computed(() => store.myRole() === 'ADMIN'),
+    canCreateEvents: computed(() => ['GUIDE', 'EVENT_PROMOTER', 'ADMIN'].includes(store.myRole() ?? '')),
     canManageTours: computed(() => store.myRole() === 'GUIDE' || store.myRole() === 'ADMIN'),
     showBottomNav: computed(() => !PAGES_WITHOUT_BOTTOM_NAV.includes(store.currentPage())),
   })),

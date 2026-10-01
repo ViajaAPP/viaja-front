@@ -18,6 +18,9 @@ export class AppFacade {
   selectedTourId = this.store.selectedTourId;
   isGuide = this.store.isGuide;
   isTourist = this.store.isTourist;
+  isPromoter = this.store.isPromoter;
+  isAdmin = this.store.isAdmin;
+  canCreateEvents = this.store.canCreateEvents;
   canManageTours = this.store.canManageTours;
   showBottomNav = this.store.showBottomNav;
 

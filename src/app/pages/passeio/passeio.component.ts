@@ -16,6 +16,7 @@ import {
   PRICE_FORMAT,
   REQUEST_STATUS_LABELS,
 } from '../../shared/config/tour.config';
+import { linkDoUber } from '../../shared/config/mapas.config';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -78,13 +79,7 @@ export class PasseioComponent implements OnInit {
   }
 
   linkDoUber(passeio: TourDetail): string {
-    const destino = {
-      latitude: passeio.address?.lat,
-      longitude: passeio.address?.lon,
-      addressLine1: passeio.meeting_point || passeio.title,
-      addressLine2: this.enderecoCompleto(passeio),
-    };
-    return `https://m.uber.com/looking?pickup=my_location&drop[0]=${encodeURIComponent(JSON.stringify(destino))}`;
+    return linkDoUber(passeio.address?.lat, passeio.address?.lon, passeio.meeting_point || passeio.title, this.enderecoCompleto(passeio));
   }
 
   enderecoCompleto(passeio: TourDetail): string {

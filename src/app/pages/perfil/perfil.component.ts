@@ -7,6 +7,7 @@ import { DadosClienteService } from '../../shared/services/dados-cliente/dados-c
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { Perfil } from '../../shared/enums/user.model';
 import { ROLE_LABELS } from '../../shared/config/tour.config';
+import { EventoService } from '../../shared/services/evento/evento.service';
 import { CartaoPerfilComponent } from '../../shared/components/cartao-perfil/cartao-perfil.component';
 
 @Component({
@@ -20,15 +21,20 @@ export class PerfilComponent implements OnInit {
   private readonly navigationService = inject(NavigationService);
   private readonly authService = inject(AuthService);
   private readonly dadosClienteService = inject(DadosClienteService);
+  private readonly eventoService = inject(EventoService);
 
   perfil = signal<Perfil | null>(null);
   erro = signal('');
+  eventosEmAnalise = signal(0);
   tipoDeConta = computed(() => {
     const role = this.perfil()?.role;
     return role ? ROLE_LABELS[role] : '';
   });
 
   ngOnInit(): void {
+    if (this.facade.myRole() === 'ADMIN') {
+      this.eventoService.paraAnalise().subscribe({ next: (eventos) => this.eventosEmAnalise.set(eventos.length), error: () => {} });
+    }
     this.dadosClienteService.getPerfil().subscribe({
       next: (perfil) => this.perfil.set(perfil),
       error: (error: HttpErrorResponse) =>
@@ -42,6 +48,10 @@ export class PerfilComponent implements OnInit {
 
   abrirMeusPasseios(): void {
     this.navigationService.navigateTo('meus-passeios');
+  }
+
+  abrirAnalise(): void {
+    this.navigationService.navigateTo('analise');
   }
 
   abrirAvisos(): void {

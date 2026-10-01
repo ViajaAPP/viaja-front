@@ -1,0 +1,127 @@
+<section class="pagina">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">SEUS EVENTOS</p>
+      <h1 class="pagina__titulo">{{ eventoId ? 'Editar evento' : 'Novo evento' }}</h1>
+    </div>
+  </header>
+
+  @if (!eventoId) {
+    <p class="formulario__dica">Todo evento passa por uma análise rápida da equipe antes de aparecer no app. Você recebe um aviso quando ele entrar no ar.</p>
+  } @else if (status() === 'PUBLISHED') {
+    <p class="formulario__dica">Se você mudar o dia, o local, o preço, a foto ou o texto, o evento volta para a análise e quem já confirmou recebe um aviso.</p>
+  }
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">{{ erro() }}</div>
+  }
+
+  <form class="formulario" #form="ngForm" appValidarFormulario (ngSubmit)="form.valid && salvar()">
+    <label>Foto de capa <span class="obrigatorio">*</span></label>
+    <app-campo-foto
+      formato="capa"
+      [foto]="previaDaCapa() || evento.photo"
+      [enviando]="enviandoCapa()"
+      (escolhida)="escolherCapa($event)"
+      (removida)="removerCapa()"
+    />
+
+    <label for="titulo">Nome do evento <span class="obrigatorio">*</span></label>
+    <input id="titulo" name="title" [(ngModel)]="evento.title" required maxlength="120" />
+    <small class="campo-erro">Dê um nome para o evento.</small>
+
+    <label for="descricao">Como vai ser <span class="obrigatorio">*</span></label>
+    <textarea id="descricao" name="description" rows="4" [(ngModel)]="evento.description" required></textarea>
+    <small class="campo-erro">Conte um pouco do que vai rolar.</small>
+
+    <h2 class="pagina__subtitulo" id="quando">Quando <span class="obrigatorio">*</span></h2>
+    <app-escolher-data-hora [valor]="evento.inicio" (mudou)="escolherInicio($event)" />
+    @if (semData()) {
+      <p class="campo-erro campo-erro--visivel" role="alert">Escolha o dia e o horário em que o evento começa.</p>
+    }
+
+    <label for="termino">Termina às</label>
+    <input id="termino" type="time" name="termino" [(ngModel)]="evento.termino" />
+    <small class="formulario__dica">Se passar da meia-noite, a gente entende que termina no dia seguinte.</small>
+
+    <div class="formulario__linha">
+      <div>
+        <label for="preco">Entrada (R$) <span class="obrigatorio">*</span></label>
+        <input id="preco" type="number" min="0" step="0.01" name="price" [(ngModel)]="evento.price" required />
+        <small class="campo-erro">Coloque o valor. Use 0 se for de graça.</small>
+      </div>
+      <div>
+        <label for="capacidade">Quantas pessoas cabem</label>
+        <input id="capacidade" type="number" inputmode="numeric" min="1" name="capacity" placeholder="Sem limite" [(ngModel)]="evento.capacity" />
+      </div>
+    </div>
+
+    <h2 class="pagina__subtitulo">Onde é</h2>
+    <button class="btn-secundario busca-local__minha-posicao" type="button" [disabled]="localizando()" (click)="usarMinhaLocalizacao()">
+      <i class="bi bi-crosshair" aria-hidden="true"></i>
+      {{ localizando() ? 'Procurando você...' : 'Usar minha localização' }}
+    </button>
+    <app-busca-local (escolhido)="usarLocal($event)" />
+    <app-mapa
+      [lat]="evento.lat"
+      [lon]="evento.lon"
+      [editavel]="true"
+      rotulo="Mapa para marcar onde é o evento"
+      (moveu)="moverPino($event)"
+    />
+    @if (semLocal()) {
+      <p class="campo-erro campo-erro--visivel" role="alert">Marque no mapa onde é o evento. Pode buscar pelo nome ou tocar no lugar.</p>
+    }
+
+    <label for="lugar">Nome do lugar</label>
+    <input id="lugar" name="place_name" placeholder="Ex.: Concha Acústica" [(ngModel)]="evento.place_name" />
+
+    <div class="formulario__linha">
+      <div>
+        <label for="cep">CEP</label>
+        <input id="cep" name="cep" inputmode="numeric" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" [(ngModel)]="evento.cep" />
+        <small class="campo-erro">Use os 8 números do CEP.</small>
+      </div>
+      <div>
+        <label for="uf">Estado <span class="obrigatorio">*</span></label>
+        <select id="uf" name="uf" [(ngModel)]="evento.uf" (ngModelChange)="trocarUf()">
+          @for (uf of ufs; track uf) {
+            <option [value]="uf">{{ uf }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <label for="cidade">Cidade <span class="obrigatorio">*</span></label>
+    <input id="cidade" name="city" list="cidades-sugeridas" autocomplete="off" [(ngModel)]="evento.city" (ngModelChange)="buscarCidades($event)" required />
+    <small class="campo-erro">Escolha a cidade.</small>
+    <datalist id="cidades-sugeridas">
+      @for (cidade of cidadesSugeridas(); track cidade) {
+        <option [value]="cidade"></option>
+      }
+    </datalist>
+
+    <label for="bairro">Bairro <span class="obrigatorio">*</span></label>
+    <input id="bairro" name="neighborhood" [(ngModel)]="evento.neighborhood" required />
+    <small class="campo-erro">Coloque o bairro.</small>
+
+    <div class="formulario__linha">
+      <div>
+        <label for="rua">Rua <span class="obrigatorio">*</span></label>
+        <input id="rua" name="street" [(ngModel)]="evento.street" required />
+        <small class="campo-erro">Coloque a rua.</small>
+      </div>
+      <div>
+        <label for="numero">Número</label>
+        <input id="numero" name="number" placeholder="S/N" [(ngModel)]="evento.number" />
+      </div>
+    </div>
+
+    <button class="btn-primary mt-1" type="submit" [disabled]="salvando() || enviandoCapa()">
+      {{ salvando() ? 'Salvando...' : eventoId ? 'Salvar alterações' : 'Enviar para análise' }}
+    </button>
+  </form>
+</section>

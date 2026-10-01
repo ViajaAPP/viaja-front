@@ -23,5 +23,9 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'passeio-form': return id ? `/meus-passeios/${id}/editar` : '/meus-passeios/novo';
     case 'passeio-gestao': return id ? `/meus-passeios/${id}` : '/meus-passeios';
     case 'minhas-solicitacoes': return '/reservas';
+    case 'evento': return id ? `/evento/${id}` : '/inicio';
+    case 'evento-form': return id ? `/meus-eventos/${id}/editar` : '/meus-eventos/novo';
+    case 'meus-eventos': return '/meus-eventos';
+    case 'analise': return '/analise';
   }
 }

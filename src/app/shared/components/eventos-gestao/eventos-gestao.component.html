@@ -1,0 +1,40 @@
+<ul class="cartoes cartoes--grade">
+  @for (evento of eventos(); track evento.id) {
+    <li class="passeio-card">
+      <button class="passeio-card__foto" type="button" [attr.aria-label]="'Ver ' + evento.title" (click)="ver(evento)">
+        @if (evento.photo) {
+          <img [src]="evento.photo" alt="" loading="lazy" />
+        }
+        <span
+          class="selo passeio-card__estado"
+          [class.selo--ativo]="evento.status === 'PUBLISHED'"
+          [class.selo--alerta]="evento.status === 'REJECTED' || evento.status === 'CANCELLED'"
+        >{{ rotulos[evento.status] }}</span>
+      </button>
+      <div class="passeio-card__corpo">
+        <p class="passeio-card__titulo">{{ evento.title }}</p>
+        <p class="passeio-card__detalhe">
+          {{ evento.start_time | date: "EEE, d 'de' MMM 'às' HH:mm" : '' : 'pt-BR' }}
+          @if (evento.status === 'PUBLISHED') {
+            · {{ evento.going_count }} {{ evento.going_count === 1 ? 'pessoa vai' : 'pessoas vão' }}
+          }
+        </p>
+        @if (evento.status === 'REJECTED' && evento.review_note) {
+          <p class="eventos-gestao__motivo"><i class="bi bi-chat-left-text" aria-hidden="true"></i> {{ evento.review_note }}</p>
+        }
+        <div class="passeio-card__acoes">
+          <button class="btn-secundario" type="button" (click)="ver(evento)">Ver</button>
+          @if (podeEditar(evento)) {
+            <button class="btn-primary" type="button" (click)="editar(evento)">{{ evento.status === 'REJECTED' ? 'Ajustar' : 'Editar' }}</button>
+          }
+        </div>
+      </div>
+    </li>
+  } @empty {
+    <li class="vazio">
+      <i class="bi bi-calendar-event" aria-hidden="true"></i>
+      <p>Você ainda não criou nenhum evento. Show, feira, festa ou encontro: tudo que é aberto ao público cabe aqui.</p>
+      <button class="btn-primary" type="button" (click)="novo()">Criar meu primeiro evento</button>
+    </li>
+  }
+</ul>
