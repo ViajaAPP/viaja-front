@@ -86,7 +86,7 @@ Quem decide é o `resolveAllowedPage`, em `shared/config/permissions.config.ts`.
 
 - Sem login, você só vê as boas-vindas, o login, o cadastro e a recuperação de senha. Qualquer outro endereço leva para o login.
 - A área de Passeios (pedidos, agenda e anúncios) e a criação de passeio são do guia.
-- Criar evento é do guia e do produtor de eventos. A fila de análise dos eventos é só do admin.
+- Criar evento é só de quem se cadastrou como produtor de eventos. A fila de análise dos eventos é só do admin.
 - O resto abre para qualquer pessoa logada.
 
 Se a pessoa não tem permissão, ela volta para o início. O backend confere as mesmas regras em todas as rotas. Esconder um botão no front nunca é a única proteção.

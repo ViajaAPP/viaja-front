@@ -9,8 +9,8 @@ export const PAGE_ROLES: Partial<Record<AppPage, UserRole[]>> = {
   'passeio-gestao': ['GUIDE'],
   'minhas-solicitacoes': ['TOURIST'],
   painel: ['GUIDE'],
-  'meus-eventos': ['GUIDE', 'EVENT_PROMOTER', 'ADMIN'],
-  'evento-form': ['GUIDE', 'EVENT_PROMOTER', 'ADMIN'],
+  'meus-eventos': ['EVENT_PROMOTER', 'ADMIN'],
+  'evento-form': ['EVENT_PROMOTER', 'ADMIN'],
   analise: ['ADMIN'],
 };
 

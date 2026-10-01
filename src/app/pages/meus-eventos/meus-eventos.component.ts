@@ -52,7 +52,7 @@ export class MeusEventosComponent implements OnInit {
   }
 
   voltar(): void {
-    this.navigationService.voltar('painel');
+    this.navigationService.voltar('perfil');
   }
 
   private jaPassou(evento: Evento): boolean {

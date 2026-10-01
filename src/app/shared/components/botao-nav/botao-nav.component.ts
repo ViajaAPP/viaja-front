@@ -44,7 +44,7 @@ export class BotaoNavComponent {
 
   readonly abaAtiva = computed(() => {
     const pagina = this.facade.currentPage();
-    if (pagina === 'meus-eventos' || pagina === 'evento-form') return this.facade.isPromoter() ? 'meus-eventos' : 'painel';
+    if (pagina === 'meus-eventos' || pagina === 'evento-form') return this.facade.isPromoter() ? 'meus-eventos' : 'perfil';
     return this.abaDaPagina[pagina] ?? pagina;
   });
 
