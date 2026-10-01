@@ -149,6 +149,10 @@ export class PasseioComponent implements OnInit {
     this.navigationService.navigateToTour('passeio-gestao', this.facade.selectedTourId());
   }
 
+  abrirPerfil(userId: number | null | undefined): void {
+    this.navigationService.abrirPerfil(userId);
+  }
+
   voltar(): void {
     this.navigationService.voltar('home');
   }

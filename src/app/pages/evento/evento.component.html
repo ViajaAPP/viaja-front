@@ -63,7 +63,7 @@
 
         @if (dados.organizer.first_name) {
           <div class="passeio__guia-bloco">
-            <p class="passeio__guia">Organizado por {{ dados.organizer.first_name }}</p>
+            <p class="passeio__guia">Organizado por <button class="link-perfil" type="button" (click)="abrirPerfil(dados.organizer.user_id)">{{ dados.organizer.first_name }}</button></p>
           </div>
         }
 
@@ -127,11 +127,13 @@
           <ul class="evento__pessoas" aria-label="Algumas pessoas que vão">
             @for (pessoa of dados.going_people; track $index) {
               <li>
-                @if (pessoa.photo) {
-                  <img class="evento__pessoa" [src]="pessoa.photo" [alt]="pessoa.first_name || ''" loading="lazy" />
-                } @else {
-                  <span class="evento__pessoa evento__pessoa--inicial" [attr.aria-label]="pessoa.first_name">{{ (pessoa.first_name || '?').charAt(0) }}</span>
-                }
+                <button class="evento__pessoa-botao" type="button" [attr.aria-label]="'Ver o perfil de ' + (pessoa.first_name || 'quem vai')" (click)="abrirPerfil(pessoa.user_id)">
+                  @if (pessoa.photo) {
+                    <img class="evento__pessoa" [src]="pessoa.photo" alt="" loading="lazy" />
+                  } @else {
+                    <span class="evento__pessoa evento__pessoa--inicial" aria-hidden="true">{{ (pessoa.first_name || '?').charAt(0) }}</span>
+                  }
+                </button>
               </li>
             }
           </ul>

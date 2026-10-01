@@ -38,7 +38,7 @@
 
       @for (msg of chat.messages_list; track msg.id; let i = $index) {
         @if (mostrarNome(i)) {
-          <span class="message-autor">{{ nomes().get(msg.user_id) || 'Alguém do grupo' }}</span>
+          <button class="message-autor" type="button" (click)="abrirPerfil(msg.user_id)">{{ nomes().get(msg.user_id) || 'Alguém do grupo' }}</button>
         }
         <div class="message-row" [class.mine]="msg.user_id === currentUserId">
           <div class="bubble"

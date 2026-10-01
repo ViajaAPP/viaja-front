@@ -124,6 +124,10 @@ export class EventoComponent implements OnInit {
     });
   }
 
+  abrirPerfil(userId: number | null | undefined): void {
+    this.navigationService.abrirPerfil(userId);
+  }
+
   voltar(): void {
     this.navigationService.voltar('home');
   }

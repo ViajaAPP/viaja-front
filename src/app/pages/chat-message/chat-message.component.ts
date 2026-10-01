@@ -168,6 +168,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
     return error.status === 403 || error.status === 404;
   }
 
+  abrirPerfil(userId: number | null | undefined): void {
+    this.navigationService.abrirPerfil(userId);
+  }
+
   voltar(): void {
     this.navigationService.voltar('chat');
   }

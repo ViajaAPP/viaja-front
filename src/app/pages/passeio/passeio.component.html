@@ -55,7 +55,7 @@
 
         @if (dados.guide) {
           <div class="passeio__guia-bloco">
-            <p class="passeio__guia">Com {{ dados.guide.first_name }} {{ dados.guide.last_name }}</p>
+            <p class="passeio__guia">Com <button class="link-perfil" type="button" (click)="abrirPerfil(dados.guide.user_id)">{{ dados.guide.first_name }} {{ dados.guide.last_name }}</button></p>
             @if (dados.guide_response; as resposta) {
               <p class="passeio__resposta"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> Costuma responder {{ resposta.label }}</p>
             }
@@ -173,15 +173,17 @@
           @for (avaliacao of dados.reviews; track avaliacao.id) {
             <li class="avaliacao">
               <div class="avaliacao__topo">
-                @if (avaliacao.author_photo) {
-                  <img class="avaliacao__foto" [src]="avaliacao.author_photo" alt="" loading="lazy" />
-                } @else {
-                  <span class="avaliacao__foto avaliacao__foto--inicial" aria-hidden="true">{{ avaliacao.author.charAt(0) }}</span>
-                }
-                <div>
-                  <p class="avaliacao__autor">{{ avaliacao.author }}</p>
-                  <p class="avaliacao__quando">{{ avaliacao.created_at | date: 'MMMM \'de\' y' : '' : 'pt-BR' }}</p>
-                </div>
+                <button class="avaliacao__pessoa" type="button" [attr.aria-label]="'Ver o perfil de ' + avaliacao.author" (click)="abrirPerfil(avaliacao.author_id)">
+                  @if (avaliacao.author_photo) {
+                    <img class="avaliacao__foto" [src]="avaliacao.author_photo" alt="" loading="lazy" />
+                  } @else {
+                    <span class="avaliacao__foto avaliacao__foto--inicial" aria-hidden="true">{{ avaliacao.author.charAt(0) }}</span>
+                  }
+                  <div>
+                    <p class="avaliacao__autor">{{ avaliacao.author }}</p>
+                    <p class="avaliacao__quando">{{ avaliacao.created_at | date: 'MMMM \'de\' y' : '' : 'pt-BR' }}</p>
+                  </div>
+                </button>
                 <span class="avaliacao__nota" [attr.aria-label]="'Nota ' + avaliacao.rating + ' de 5'">
                   @for (n of [1, 2, 3, 4, 5]; track n) {
                     <span [class.avaliacao__estrela--on]="n <= avaliacao.rating" aria-hidden="true">★</span>

@@ -23,7 +23,7 @@ export interface Evento {
   review_note?: string | null;
   description?: string;
   address?: (Address & { id?: number }) | null;
-  going_people?: { first_name: string | null; photo: string | null }[];
+  going_people?: { user_id: number; first_name: string | null; photo: string | null }[];
 }
 
 export interface EventoPayload extends Address {
