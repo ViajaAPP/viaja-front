@@ -67,6 +67,22 @@
           (ngModelChange)="alterar('phone', $event)"
         />
 
+        <label for="sobre-mim">Sobre você</label>
+        <textarea
+          id="sobre-mim"
+          name="bio"
+          rows="4"
+          placeholder="Conte um pouco do que você curte numa viagem, ou como são os seus passeios"
+          [attr.maxlength]="tamanhoDoSobreMim"
+          [class.campo-com-erro]="errosDosCampos().bio"
+          [ngModel]="sobreMim()"
+          (ngModelChange)="alterar('bio', $event)"
+        ></textarea>
+        <p class="editar__contador" aria-live="polite">{{ sobreMim().length }} de {{ tamanhoDoSobreMim }}</p>
+        @if (errosDosCampos().bio) {
+          <p class="erro-do-campo">{{ errosDosCampos().bio }}</p>
+        }
+
         <button class="btn-primary editar__salvar" type="submit" [disabled]="salvando() || enviandoFoto()">
           {{ salvando() ? 'Salvando...' : 'Salvar' }}
         </button>

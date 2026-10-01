@@ -35,7 +35,7 @@ export class DadosClienteService {
     return this.request.post<Perfil>('/pages/profile');
   }
 
-  atualizarPerfil(dados: Pick<Perfil, 'first_name' | 'last_name' | 'phone'>): Observable<{ message: string }> {
+  atualizarPerfil(dados: Pick<Perfil, 'first_name' | 'last_name' | 'phone' | 'bio'>): Observable<{ message: string }> {
     return this.request.patch<{ message: string }>('/users/me', dados);
   }
 

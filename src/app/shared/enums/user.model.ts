@@ -13,4 +13,5 @@ export interface Perfil {
   phone: string;
   photo: string;
   role: UserRole;
+  bio?: string | null;
 }

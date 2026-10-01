@@ -11,7 +11,9 @@ import { ROLE_LABELS } from '../../shared/config/tour.config';
 import { CampoFotoComponent } from '../../shared/components/campo-foto/campo-foto.component';
 import { CartaoPerfilComponent } from '../../shared/components/cartao-perfil/cartao-perfil.component';
 
-type CampoDoPerfil = 'first_name' | 'last_name' | 'phone';
+type CampoDoPerfil = 'first_name' | 'last_name' | 'phone' | 'bio';
+
+export const TAMANHO_DO_SOBRE_MIM = 300;
 
 @Component({
   selector: 'app-perfil-editar',
@@ -28,6 +30,8 @@ export class PerfilEditarComponent implements OnInit, ComAlteracoes {
   nome = signal('');
   sobrenome = signal('');
   telefone = signal('');
+  sobreMim = signal('');
+  readonly tamanhoDoSobreMim = TAMANHO_DO_SOBRE_MIM;
   foto = signal('');
   enviandoFoto = signal(false);
   salvando = signal(false);
@@ -50,6 +54,7 @@ export class PerfilEditarComponent implements OnInit, ComAlteracoes {
         this.nome.set(perfil.first_name);
         this.sobrenome.set(perfil.last_name);
         this.telefone.set(perfil.phone ?? '');
+        this.sobreMim.set(perfil.bio ?? '');
         this.foto.set(perfil.photo);
       },
       error: (error: HttpErrorResponse) =>
@@ -58,7 +63,7 @@ export class PerfilEditarComponent implements OnInit, ComAlteracoes {
   }
 
   alterar(campo: CampoDoPerfil, valor: string): void {
-    const sinais = { first_name: this.nome, last_name: this.sobrenome, phone: this.telefone };
+    const sinais = { first_name: this.nome, last_name: this.sobrenome, phone: this.telefone, bio: this.sobreMim };
     sinais[campo].set(valor);
     this.sucesso.set('');
     if (this.errosDosCampos()[campo]) {
@@ -104,6 +109,7 @@ export class PerfilEditarComponent implements OnInit, ComAlteracoes {
     const erros: Partial<Record<CampoDoPerfil, string>> = {};
     if (!this.nome().trim()) erros.first_name = 'Conta pra gente seu nome';
     if (!this.sobrenome().trim()) erros.last_name = 'Conta pra gente seu sobrenome';
+    if (this.sobreMim().trim().length > TAMANHO_DO_SOBRE_MIM) erros.bio = `Use até ${TAMANHO_DO_SOBRE_MIM} caracteres`;
     this.errosDosCampos.set(erros);
     if (Object.keys(erros).length) return;
 
@@ -114,6 +120,7 @@ export class PerfilEditarComponent implements OnInit, ComAlteracoes {
         first_name: this.nome().trim(),
         last_name: this.sobrenome().trim(),
         phone: this.telefone().trim(),
+        bio: this.sobreMim().trim(),
       })
       .subscribe({
         next: () => {
@@ -136,7 +143,8 @@ export class PerfilEditarComponent implements OnInit, ComAlteracoes {
     if (!perfil || this.salvo) return false;
     return this.nome() !== perfil.first_name
       || this.sobrenome() !== perfil.last_name
-      || this.telefone() !== (perfil.phone ?? '');
+      || this.telefone() !== (perfil.phone ?? '')
+      || this.sobreMim() !== (perfil.bio ?? '');
   }
 
   @HostListener('window:beforeunload', ['$event'])
