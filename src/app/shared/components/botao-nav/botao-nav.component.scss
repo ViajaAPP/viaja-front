@@ -134,6 +134,28 @@
     }
   }
 
+  .bottom-nav--aberta .bottom-nav__alternar {
+    order: 2;
+    width: 32px;
+    height: 32px;
+    margin-left: auto;
+    border: 1px solid #ece6d6;
+    border-radius: 50%;
+    background: #fff;
+    color: #6b6b6b;
+    font-size: 13px;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+
+    &:hover {
+      background: #f8f4ea;
+      color: #3d5c00;
+    }
+  }
+
+  .bottom-nav--aberta .bottom-nav__topo {
+    padding-left: 16px;
+  }
+
   .bottom-nav__marca {
     display: none;
     font-size: 22px;
