@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +16,9 @@ import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { REQUEST_STATUS_LABELS } from '../../shared/config/tour.config';
 import { Tour } from '../../shared/enums/tour.model';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
+import { EventosGestaoComponent } from '../../shared/components/eventos-gestao/eventos-gestao.component';
+import { EventoService } from '../../shared/services/evento/evento.service';
+import { Evento } from '../../shared/enums/evento.model';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -28,7 +31,7 @@ interface DiaDaAgenda {
 
 @Component({
   selector: 'app-painel',
-  imports: [DatePipe, FalhaCarregarComponent],
+  imports: [DatePipe, FalhaCarregarComponent, EventosGestaoComponent],
   templateUrl: './painel.component.html',
   styleUrl: './painel.component.scss',
 })
@@ -43,6 +46,7 @@ export class PainelComponent {
   private readonly feedback = inject(FeedbackService);
   private readonly avisos = inject(AvisosService);
   private readonly dadosCliente = inject(DadosClienteService);
+  private readonly eventoService = inject(EventoService);
 
   readonly rotulos = REQUEST_STATUS_LABELS;
   aba = signal<Aba>('pedidos');
@@ -52,6 +56,9 @@ export class PainelComponent {
   respondidos = signal<PedidoDoPainel[]>([]);
   dias = signal<DiaDaAgenda[]>([]);
   passeios = signal<Tour[]>([]);
+  eventos = signal<Evento[]>([]);
+  menuNovo = signal(false);
+  anuncios = signal<'passeios' | 'eventos'>('passeios');
   pedidosArquivados = signal<PedidoDoPainel[]>([]);
   datasArquivadas = signal<DataDaAgenda[]>([]);
   respondendo = signal<number | null>(null);
@@ -113,6 +120,7 @@ export class PainelComponent {
         },
         error: falhou,
       });
+      this.eventoService.meus().subscribe({ next: (eventos) => this.eventos.set(eventos), error: () => this.eventos.set([]) });
     }
   }
 
@@ -186,7 +194,18 @@ export class PainelComponent {
   }
 
   novoPasseio(): void {
+    this.menuNovo.set(false);
     this.navigationService.navigateToTour('passeio-form', null);
+  }
+
+  @HostListener('document:keydown.escape')
+  fecharMenuNovo(): void {
+    this.menuNovo.set(false);
+  }
+
+  novoEvento(): void {
+    this.menuNovo.set(false);
+    this.navigationService.navigateToTour('evento-form', null);
   }
 
   verPasseio(tourId: number): void {

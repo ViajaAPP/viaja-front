@@ -4,9 +4,24 @@
       <p class="pagina__rotulo">SEUS PASSEIOS</p>
       <h1 class="pagina__titulo">Olá, {{ nomeDoGuia() }}</h1>
     </div>
-    <button class="btn-primary painel__novo" type="button" (click)="novoPasseio()">
-      <i class="bi bi-plus-lg" aria-hidden="true"></i> Novo passeio
-    </button>
+    <div class="painel__criar">
+      <button class="btn-primary painel__novo" type="button" aria-haspopup="menu" [attr.aria-expanded]="menuNovo()" (click)="menuNovo.set(!menuNovo())">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> Novo
+      </button>
+      @if (menuNovo()) {
+        <div class="painel__fundo" (click)="menuNovo.set(false)" aria-hidden="true"></div>
+        <div class="painel__menu" role="menu">
+          <button class="painel__opcao" type="button" role="menuitem" (click)="novoPasseio()">
+            <i class="bi bi-compass" aria-hidden="true"></i>
+            <span><strong>Passeio</strong><small>Você guia o grupo e marca as datas</small></span>
+          </button>
+          <button class="painel__opcao" type="button" role="menuitem" (click)="novoEvento()">
+            <i class="bi bi-calendar-event" aria-hidden="true"></i>
+            <span><strong>Evento</strong><small>Show, feira ou encontro aberto ao público</small></span>
+          </button>
+        </div>
+      }
+    </div>
   </header>
 
   <div class="abas" role="tablist" aria-label="Seus passeios">
@@ -171,6 +186,17 @@
       }
 
       @case ('passeios') {
+        <div class="chave-tipo painel__tipo" role="tablist" aria-label="Seus anúncios">
+          <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="anuncios() === 'passeios'" role="tab" type="button" [attr.aria-selected]="anuncios() === 'passeios'" (click)="anuncios.set('passeios')">
+            <i class="bi bi-compass" aria-hidden="true"></i> Passeios
+          </button>
+          <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="anuncios() === 'eventos'" role="tab" type="button" [attr.aria-selected]="anuncios() === 'eventos'" (click)="anuncios.set('eventos')">
+            <i class="bi bi-calendar-event" aria-hidden="true"></i> Eventos
+          </button>
+        </div>
+        @if (anuncios() === 'eventos') {
+          <app-eventos-gestao [eventos]="eventos()" />
+        } @else {
         <ul class="cartoes cartoes--grade">
           @for (passeio of passeios(); track passeio.id) {
             <li class="passeio-card">
@@ -200,6 +226,7 @@
             </li>
           }
         </ul>
+        }
       }
     }
   }
