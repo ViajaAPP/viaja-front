@@ -4,7 +4,7 @@ import { UserRole } from '../enums/user.model';
 export const ROLE_LABELS: Record<UserRole, string> = {
   TOURIST: 'Viajante',
   GUIDE: 'Guia de turismo',
-  EVENT_PROMOTER: 'Promotor de eventos',
+  EVENT_PROMOTER: 'Produtor de eventos',
   ADMIN: 'Administração',
 };
 

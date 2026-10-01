@@ -71,7 +71,7 @@
     <small class="campo-erro">Coloque um telefone para contato.</small>
 
     @if (pedeCnpj()) {
-      <label for="cnpj">CNPJ da sua empresa de turismo <span class="obrigatorio">*</span></label>
+      <label for="cnpj">{{ cadastro.role === 'EVENT_PROMOTER' ? 'CNPJ da sua produtora de eventos' : 'CNPJ da sua empresa de turismo' }} <span class="obrigatorio">*</span></label>
       <input id="cnpj" name="cnpj" inputmode="numeric" [(ngModel)]="cadastro.cnpj" required />
       <small class="campo-erro">Coloque o CNPJ da empresa.</small>
     }

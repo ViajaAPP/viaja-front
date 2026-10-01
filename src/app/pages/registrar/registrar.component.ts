@@ -27,6 +27,7 @@ export class RegistrarComponent implements OnInit {
   readonly tiposDeConta: { role: UserRole; label: string }[] = [
     { role: 'TOURIST', label: ROLE_LABELS.TOURIST },
     { role: 'GUIDE', label: ROLE_LABELS.GUIDE },
+    { role: 'EVENT_PROMOTER', label: ROLE_LABELS.EVENT_PROMOTER },
   ];
 
   cadastro: RegisterRequest = {
