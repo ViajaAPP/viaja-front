@@ -10,6 +10,8 @@ import { PainelService, Viagem, Viagens } from '../../shared/services/painel/pai
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { REQUEST_STATUS_LABELS, PRICE_FORMAT } from '../../shared/config/tour.config';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
+import { EventoService } from '../../shared/services/evento/evento.service';
+import { Evento } from '../../shared/enums/evento.model';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -27,9 +29,12 @@ export class ViagensComponent {
   private readonly rota = inject(ActivatedRoute);
   private readonly navigationService = inject(NavigationService);
   private readonly painelService = inject(PainelService);
+  private readonly eventoService = inject(EventoService);
 
   readonly rotulos = REQUEST_STATUS_LABELS;
   aba = signal<Aba>('proximas');
+  tipo = signal<'passeios' | 'eventos'>('passeios');
+  eventos = signal<{ proximos: Evento[]; passados: Evento[] } | null>(null);
   viagens = signal<Viagens>({ proximas: [], esperando: [], passadas: [], encerradas: [] });
   carregando = signal(true);
   erro = signal('');
@@ -38,7 +43,10 @@ export class ViagensComponent {
     this.rota.queryParamMap.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe((params) => {
       this.facade.setLoading(false);
       const aba = params.get('aba');
+      this.tipo.set(params.get('tipo') === 'eventos' ? 'eventos' : 'passeios');
       this.aba.set(aba === 'esperando' || aba === 'passadas' ? aba : 'proximas');
+      if (this.tipo() === 'eventos' && this.aba() === 'esperando') this.aba.set('proximas');
+      if (this.tipo() === 'eventos') this.carregarEventos();
     });
     this.carregar();
   }
@@ -58,15 +66,35 @@ export class ViagensComponent {
     });
   }
 
+  carregarEventos(): void {
+    this.eventoService.ondeVou().subscribe({
+      next: (eventos) => this.eventos.set(eventos),
+      error: (error: HttpErrorResponse) => this.erro.set(mensagemDeErro(error, 'Não conseguimos carregar seus eventos.')),
+    });
+  }
+
+  trocarTipo(tipo: 'passeios' | 'eventos'): void {
+    this.router.navigate([], { relativeTo: this.rota, queryParams: tipo === 'eventos' ? { tipo } : {}, replaceUrl: true });
+  }
+
   trocarAba(aba: Aba): void {
-    this.router.navigate([], { relativeTo: this.rota, queryParams: aba === 'proximas' ? {} : { aba }, replaceUrl: true });
+    const tipo = this.tipo() === 'eventos' ? { tipo: 'eventos' } : {};
+    this.router.navigate([], { relativeTo: this.rota, queryParams: aba === 'proximas' ? tipo : { ...tipo, aba }, replaceUrl: true });
+  }
+
+  abrirEvento(evento: Evento): void {
+    this.navigationService.navigateToTour('evento', evento.id);
+  }
+
+  explorarEventos(): void {
+    this.navigationService.navigateTo('home');
   }
 
   horasRestantes(viagem: Viagem): number {
     return Math.max(Math.ceil((new Date(viagem.expires_at).getTime() - Date.now()) / 3600000), 0);
   }
 
-  diasAte(viagem: Viagem): string {
+  diasAte(viagem: { start_time: string }): string {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     const dia = new Date(viagem.start_time);

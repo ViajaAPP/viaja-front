@@ -11,6 +11,21 @@ import { NavigationService } from '../../shared/services/navigation';
 import { PRICE_FORMAT } from '../../shared/config/tour.config';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
+import { EventoService } from '../../shared/services/evento/evento.service';
+import { Evento, FiltrosDeEventos } from '../../shared/enums/evento.model';
+
+const CATEGORIAS_DE_EVENTOS = [
+  { id: 'todos', label: 'Todos' },
+  { id: 'gratis', label: 'De graça' },
+  { id: 'nearby', label: 'Mais perto' },
+  { id: 'populares', label: 'Mais procurados' },
+];
+
+const FILTROS_DE_EVENTOS: Record<string, FiltrosDeEventos> = {
+  todos: { ordem: 'data' },
+  gratis: { ordem: 'data', gratuito: true },
+  populares: { ordem: 'populares' },
+};
 
 const FILTROS_DA_CATEGORIA: Record<string, FiltrosDaBusca> = {
   all: { ordem: 'relevancia' },
@@ -33,12 +48,16 @@ export class HomeComponent implements OnInit {
   private readonly buscaService = inject(BuscaService);
   private readonly localizacao = inject(LocalizacaoService);
   private readonly navigationService = inject(NavigationService);
+  private readonly eventoService = inject(EventoService);
   readonly starIndexes = [0, 1, 2, 3, 4];
 
   dadosHome = signal<HomeResponse | null>(null);
   erro = signal('');
+  tipo = signal<'passeios' | 'eventos'>('passeios');
   selectedCategoryId = signal<string>('all');
-  categories = computed(() => this.dadosHome()?.categories ?? []);
+  categoriaDosPasseios = 'all';
+  categories = computed(() => (this.tipo() === 'eventos' ? CATEGORIAS_DE_EVENTOS : this.dadosHome()?.categories ?? []));
+  eventos = signal<Evento[]>([]);
   passeios = signal<PasseioEncontrado[]>([]);
   carregandoLista = signal(true);
   situacaoPerto = signal<'parado' | 'buscando' | 'sem-permissao' | 'erro' | 'pronto'>('parado');
@@ -46,6 +65,14 @@ export class HomeComponent implements OnInit {
   private posicao: { lat: number; lon: number } | null = null;
 
   tituloDaLista = computed(() => {
+    if (this.tipo() === 'eventos') {
+      switch (this.selectedCategoryId()) {
+        case 'nearby': return 'Eventos perto de você';
+        case 'gratis': return 'Eventos de graça';
+        case 'populares': return 'Os mais procurados';
+        default: return 'Próximos eventos';
+      }
+    }
     switch (this.selectedCategoryId()) {
       case 'nearby': return 'Perto de você';
       case 'for-you': return 'Escolhidos para você';
@@ -81,8 +108,15 @@ export class HomeComponent implements OnInit {
     this.buscarDadosHome();
   }
 
+  trocarTipo(tipo: 'passeios' | 'eventos'): void {
+    if (this.tipo() === tipo) return;
+    this.tipo.set(tipo);
+    this.selectCategory(tipo === 'eventos' ? 'todos' : this.categoriaDosPasseios);
+  }
+
   selectCategory(selectedId: string): void {
     this.selectedCategoryId.set(selectedId);
+    if (this.tipo() === 'passeios') this.categoriaDosPasseios = selectedId;
     if (selectedId === 'nearby') {
       this.buscarPasseiosPerto();
       return;
@@ -101,12 +135,30 @@ export class HomeComponent implements OnInit {
   }
 
   textoDaListaVazia(): string {
+    if (this.tipo() === 'eventos') {
+      switch (this.selectedCategoryId()) {
+        case 'nearby': return 'Nenhum evento perto de você por enquanto. Veja os outros enquanto isso.';
+        case 'gratis': return 'Nenhum evento de graça marcado por enquanto.';
+        default: return 'Ainda não tem eventos marcados por aqui. Volte daqui a pouco!';
+      }
+    }
     switch (this.selectedCategoryId()) {
       case 'best-rated': return 'Ainda não tem passeios avaliados por aqui.';
       case 'most-searched': return 'Ninguém pediu vaga em passeios ainda.';
       case 'nearby': return 'Ainda não tem passeio perto de você. Dá uma olhada nos outros enquanto isso.';
       default: return 'Ainda não tem passeios publicados por aqui.';
     }
+  }
+
+  abrirEvento(eventoId: number): void {
+    this.navigationService.navigateToTour('evento', eventoId);
+  }
+
+  textoDosLugares(evento: Evento): string | null {
+    if (!evento.capacity) return null;
+    const livres = Math.max(evento.capacity - evento.going_count, 0);
+    if (livres === 0) return 'Lotado';
+    return livres <= 5 ? (livres === 1 ? 'Último lugar' : `Últimos ${livres} lugares`) : null;
   }
 
   abrirPasseio(tourId: number): void {
@@ -141,12 +193,33 @@ export class HomeComponent implements OnInit {
     return FILTROS_DA_CATEGORIA[this.selectedCategoryId()] ?? FILTROS_DA_CATEGORIA['all'];
   }
 
+  private carregarEventos(filtros: FiltrosDeEventos): void {
+    const categoria = this.selectedCategoryId();
+    this.carregandoLista.set(true);
+    this.eventoService.listar({ ...filtros, limite: 12 }).subscribe({
+      next: (eventos) => {
+        if (this.selectedCategoryId() !== categoria || this.tipo() !== 'eventos') return;
+        this.eventos.set(filtros.ordem === 'populares' ? eventos.filter((e) => e.going_count > 0) : eventos);
+        this.carregandoLista.set(false);
+      },
+      error: () => {
+        this.eventos.set([]);
+        this.carregandoLista.set(false);
+      },
+    });
+  }
+
   private carregarLista(filtros: FiltrosDaBusca): void {
+    if (this.tipo() === 'eventos') {
+      const { lat, lon, raio } = filtros;
+      this.carregarEventos(this.selectedCategoryId() === 'nearby' ? { lat, lon, raio, ordem: 'perto' } : FILTROS_DE_EVENTOS[this.selectedCategoryId()] ?? FILTROS_DE_EVENTOS['todos']);
+      return;
+    }
     const categoria = this.selectedCategoryId();
     this.carregandoLista.set(true);
     this.buscaService.passeios({ ...filtros, limite: 12 }).subscribe({
       next: (passeios) => {
-        if (this.selectedCategoryId() !== categoria) return;
+        if (this.selectedCategoryId() !== categoria || this.tipo() !== 'passeios') return;
         const uteis = filtros.ordem === 'nota'
           ? passeios.filter((p) => p.reviewCount > 0)
           : filtros.ordem === 'procurados' ? passeios.filter((p) => p.searches > 0) : passeios;
@@ -163,6 +236,7 @@ export class HomeComponent implements OnInit {
   private buscarPasseiosPerto(): void {
     this.situacaoPerto.set('buscando');
     this.passeios.set([]);
+    this.eventos.set([]);
     this.localizacao.acompanhar().subscribe({
       next: (posicao) => {
         this.posicao = posicao;

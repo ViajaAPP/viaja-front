@@ -2,7 +2,16 @@
   <app-header [dados]="data" />
 
   <section class="home__section" aria-labelledby="section-title">
-    <nav class="home__categories" aria-label="Categorias de passeios">
+    <div class="chave-tipo home__tipo" role="tablist" aria-label="O que você quer ver">
+      <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="tipo() === 'passeios'" role="tab" type="button" [attr.aria-selected]="tipo() === 'passeios'" (click)="trocarTipo('passeios')">
+        <i class="bi bi-compass" aria-hidden="true"></i> Passeios
+      </button>
+      <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="tipo() === 'eventos'" role="tab" type="button" [attr.aria-selected]="tipo() === 'eventos'" (click)="trocarTipo('eventos')">
+        <i class="bi bi-calendar-event" aria-hidden="true"></i> Eventos
+      </button>
+    </div>
+
+    <nav class="home__categories" [attr.aria-label]="tipo() === 'eventos' ? 'Categorias de eventos' : 'Categorias de passeios'">
       <div class="home__categories-scroll" role="list">
         @for (cat of categories(); track cat.id) {
           <button
@@ -21,7 +30,7 @@
 
     <div class="home__titulo-linha">
       <h2 class="home__section-title" id="section-title">{{ tituloDaLista() }}</h2>
-      @if (passeios().length) {
+      @if (tipo() === 'passeios' && passeios().length) {
         <button class="home__ver-lista" type="button" (click)="verTodos()">
           <i class="bi bi-list-ul" aria-hidden="true"></i> Ver em lista
         </button>
@@ -31,7 +40,7 @@
     @if (mostrandoPerto()) {
       @switch (situacaoPerto()) {
         @case ('buscando') {
-          <p class="home__aviso" role="status">Procurando passeios perto de você...</p>
+          <p class="home__aviso" role="status">Procurando {{ tipo() === 'eventos' ? 'eventos' : 'passeios' }} perto de você...</p>
         }
         @case ('sem-permissao') {
           <p class="home__aviso" role="status">
@@ -48,9 +57,66 @@
     }
 
     @if (carregandoLista()) {
-      <ul class="home__activities" aria-busy="true" aria-label="Carregando passeios">
+      <ul class="home__activities" aria-busy="true" aria-label="Carregando">
         @for (i of [1, 2]; track i) {
           <li class="home__esqueleto"></li>
+        }
+      </ul>
+    } @else if (tipo() === 'eventos') {
+      <ul class="home__activities" role="list">
+        @for (evento of eventos(); track evento.id) {
+          <li class="activity-card" role="listitem" (click)="abrirEvento(evento.id)">
+            <div class="activity-card__photo">
+              @if (evento.photo) {
+                <img class="activity-card__image" [src]="evento.photo" [alt]="evento.title" loading="lazy" />
+              }
+              <div class="activity-card__top-row">
+                <span class="activity-card__tag">{{ formatarPreco(evento.price) }}</span>
+              </div>
+            </div>
+
+            <div class="activity-card__body">
+              <div class="activity-card__guide-row">
+                @if (evento.organizer.photo) {
+                  <img class="activity-card__avatar" [src]="evento.organizer.photo" [alt]="'Foto de ' + evento.organizer.first_name" loading="lazy" />
+                } @else {
+                  <span class="activity-card__avatar activity-card__avatar--inicial" aria-hidden="true">{{ (evento.organizer.first_name || '?').charAt(0) }}</span>
+                }
+                <div class="activity-card__guide-info">
+                  <span class="activity-card__guide-name">{{ evento.organizer.first_name }}</span>
+                  @if (evento.going_count) {
+                    <span class="activity-card__avaliacao"><strong>{{ evento.going_count }}</strong> {{ evento.going_count === 1 ? 'pessoa vai' : 'pessoas vão' }}@if (evento.going) { · você também }</span>
+                  } @else {
+                    <span class="activity-card__avaliacao activity-card__avaliacao--novo">Seja a primeira pessoa a confirmar</span>
+                  }
+                </div>
+              </div>
+
+              <div class="activity-card__bottom-row">
+                <div>
+                  <h3 class="activity-card__title">{{ evento.title }}</h3>
+                  <div class="activity-card__selos">
+                    <span class="activity-card__selo"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ evento.city }} - {{ evento.uf }}@if (evento.distance_km != null) { · {{ evento.distance_km }} km }</span>
+                    <span class="activity-card__selo"><i class="bi bi-calendar-event" aria-hidden="true"></i> {{ proximaData(evento.start_time) }}</span>
+                    @if (textoDosLugares(evento); as lugares) {
+                      <span class="activity-card__selo" [class.activity-card__selo--lotado]="lugares === 'Lotado'" [class.activity-card__selo--ultimas]="lugares !== 'Lotado'">{{ lugares }}</span>
+                    }
+                  </div>
+                </div>
+                <button class="activity-card__arrow" type="button" [attr.aria-label]="'Ver detalhes de ' + evento.title">
+                  <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </li>
+        } @empty {
+          @if (!mostrandoPerto() || situacaoPerto() === 'pronto') {
+            <li class="home__aviso" role="status">{{ textoDaListaVazia() }}</li>
+          }
         }
       </ul>
     } @else {

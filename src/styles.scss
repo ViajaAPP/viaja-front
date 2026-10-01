@@ -733,3 +733,34 @@ form.ng-submitted {
 .obrigatorio {
   color: #d93025;
 }
+
+.chave-tipo {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #f1eee4;
+}
+
+.chave-tipo__opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  &--ativa {
+    background: #fff;
+    color: #3d5c00;
+    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+  }
+}
