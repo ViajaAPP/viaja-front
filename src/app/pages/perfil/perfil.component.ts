@@ -58,6 +58,10 @@ export class PerfilComponent implements OnInit {
     this.navigationService.navigateTo('avisos');
   }
 
+  abrirPerfilPublico(): void {
+    this.navigationService.abrirPerfil(this.facade.myUserId());
+  }
+
   abrirFavoritos(): void {
     this.navigationService.navigateTo('favoritos');
   }

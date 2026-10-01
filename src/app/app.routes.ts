@@ -96,6 +96,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/perfil-editar/perfil-editar.component').then((m) => m.PerfilEditarComponent),
   },
   {
+    path: 'perfil/:userId',
+    data: { page: 'perfil-publico' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/perfil-publico/perfil-publico.component').then((m) => m.PerfilPublicoComponent),
+  },
+  {
     path: 'favoritos',
     data: { page: 'favoritos' },
     canActivate: [paginaGuard],

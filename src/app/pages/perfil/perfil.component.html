@@ -32,6 +32,16 @@
       <h2 class="perfil__secao">Sua conta</h2>
       <ul class="opcoes">
         <li>
+          <button class="opcao" type="button" (click)="abrirPerfilPublico()">
+            <span class="opcao__icone"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
+            <span class="opcao__textos">
+              <span class="opcao__titulo">Seu perfil público</span>
+              <span class="opcao__detalhe">Como as outras pessoas veem você</span>
+            </span>
+            <i class="bi bi-chevron-right opcao__seta" aria-hidden="true"></i>
+          </button>
+        </li>
+        <li>
           <button class="opcao" type="button" (click)="abrirFavoritos()">
             <span class="opcao__icone"><i class="bi bi-heart" aria-hidden="true"></i></span>
             <span class="opcao__textos">

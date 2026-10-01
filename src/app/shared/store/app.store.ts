@@ -27,6 +27,7 @@ export type AppPage =
   | 'minhas-solicitacoes'
   | 'favoritos'
   | 'perfil-editar'
+  | 'perfil-publico'
   | 'evento'
   | 'evento-form'
   | 'meus-eventos'

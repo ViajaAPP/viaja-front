@@ -17,6 +17,7 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'chat-tour': return id ? `/mensagens/${id}` : '/mensagens';
     case 'perfil': return '/perfil';
     case 'perfil-editar': return '/perfil/editar';
+    case 'perfil-publico': return id ? `/perfil/${id}` : '/perfil';
     case 'favoritos': return '/favoritos';
     case 'passeio': return id ? `/passeio/${id}` : '/inicio';
     case 'meus-passeios': return '/meus-passeios';

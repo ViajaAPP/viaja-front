@@ -31,6 +31,10 @@ export class NavigationService {
     this.store.navigateToTour(page, tourId);
   }
 
+  abrirPerfil(userId: number | null | undefined) {
+    if (userId) this.store.navigateToTour('perfil-publico', userId);
+  }
+
   voltar(paginaPadrao: AppPage) {
     if (this.profundidade > 1) {
       this.location.back();
