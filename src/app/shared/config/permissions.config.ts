@@ -3,6 +3,8 @@ import { UserRole } from '../enums/user.model';
 
 export const PUBLIC_PAGES: AppPage[] = ['welcome', 'login', 'registrar', 'esqueci-senha', 'redefinir-senha'];
 
+export const VISITOR_PAGES: AppPage[] = ['buscar', 'resultados'];
+
 export const PAGE_ROLES: Partial<Record<AppPage, UserRole[]>> = {
   'meus-passeios': ['GUIDE', 'ADMIN'],
   'passeio-form': ['GUIDE'],
@@ -15,7 +17,7 @@ export const PAGE_ROLES: Partial<Record<AppPage, UserRole[]>> = {
 };
 
 export function canAccessPage(page: AppPage, role: UserRole | null): boolean {
-  if (PUBLIC_PAGES.includes(page)) return true;
+  if (PUBLIC_PAGES.includes(page) || VISITOR_PAGES.includes(page)) return true;
   if (!role) return false;
   const allowedRoles = PAGE_ROLES[page];
   return !allowedRoles || allowedRoles.includes(role);

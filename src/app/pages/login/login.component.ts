@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { caminhoDeVolta } from '../../shared/guards/pagina.guard';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation/navigation.service';
 import { ApiService } from '../../shared/services/api/api.service';
@@ -22,6 +23,7 @@ export class LoginComponent implements OnInit {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   credentials = {
     email: '',
@@ -39,7 +41,9 @@ export class LoginComponent implements OnInit {
         this.isLoggingIn.set(false);
         this.authService.setToken(response.token);
         this.facade.startSession(response.user_id, response.role);
-        this.navigationService.navigateTo('home');
+        const voltar = caminhoDeVolta(this.route.snapshot.queryParamMap.get('voltar'));
+        if (voltar) this.router.navigateByUrl(voltar);
+        else this.navigationService.navigateTo('home');
       },
       error: (error) => {
         this.isLoggingIn.set(false);

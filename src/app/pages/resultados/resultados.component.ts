@@ -157,7 +157,7 @@ export class ResultadosComponent {
   }
 
   voltar(): void {
-    this.navigationService.voltar('home');
+    this.navigationService.voltar(this.facade.myRole() ? 'home' : 'welcome');
   }
 
   buscar(): void {

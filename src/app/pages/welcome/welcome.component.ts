@@ -23,6 +23,10 @@ export class WelcomeComponent implements OnInit {
     this.navigationService.navigateTo('login');
   }
 
+  navigateToBuscar(){
+    this.navigationService.navigateTo('buscar');
+  }
+
   navigateToRegistrar(){
     this.navigationService.navigateTo('registrar');
   }

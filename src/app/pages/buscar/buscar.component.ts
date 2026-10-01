@@ -170,7 +170,7 @@ export class BuscarComponent implements OnInit, AfterViewInit {
   }
 
   voltar(): void {
-    this.navigationService.voltar('home');
+    this.navigationService.voltar(this.facade.myRole() ? 'home' : 'welcome');
   }
 
   private carregarCarrosseis(): void {

@@ -104,7 +104,7 @@ export const AppStore = signalStore(
     isAdmin: computed(() => store.myRole() === 'ADMIN'),
     canCreateEvents: computed(() => ['EVENT_PROMOTER', 'ADMIN'].includes(store.myRole() ?? '')),
     canManageTours: computed(() => store.myRole() === 'GUIDE' || store.myRole() === 'ADMIN'),
-    showBottomNav: computed(() => !PAGES_WITHOUT_BOTTOM_NAV.includes(store.currentPage())),
+    showBottomNav: computed(() => !!store.myRole() && !PAGES_WITHOUT_BOTTOM_NAV.includes(store.currentPage())),
   })),
   withHooks({
     onInit(store) {

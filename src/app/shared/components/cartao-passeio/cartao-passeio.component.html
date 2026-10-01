@@ -4,7 +4,9 @@
       @if (passeio.imageUrl) {
         <img [src]="passeio.imageUrl" alt="" loading="lazy" />
       }
-      <app-botao-favorito class="item__favorito" [tourId]="passeio.id" [titulo]="passeio.title" [favorito]="passeio.favorite" />
+      @if (logado()) {
+        <app-botao-favorito class="item__favorito" [tourId]="passeio.id" [titulo]="passeio.title" [favorito]="passeio.favorite" />
+      }
     </div>
     <div class="item__corpo">
       <p class="item__titulo">{{ passeio.title }}</p>
