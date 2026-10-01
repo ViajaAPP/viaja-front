@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit, OnDestroy, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -80,7 +81,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
           this.chatMessageService.conectarWebSocket(data.socket_connection_url, chatId);
         }
       },
-      error: (error) => this.erro.set(mensagemDeErro(error, 'Não conseguimos abrir essa conversa agora.')),
+      error: (error) => {
+        if (this.conversaDeOutraPessoa(error)) return this.voltar();
+        this.erro.set(mensagemDeErro(error, 'Não conseguimos abrir essa conversa agora.'));
+      },
     });
   }
 
@@ -119,7 +123,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
 
     this.chatMessageService.enviarMensagem(chatId, mensagem.text).subscribe({
       next: () => this.atualizar(mensagem.id, undefined),
-      error: () => this.atualizar(mensagem.id, 'falhou'),
+      error: (error) => {
+        if (this.conversaDeOutraPessoa(error)) return this.voltar();
+        this.atualizar(mensagem.id, 'falhou');
+      },
     });
   }
 
@@ -137,6 +144,10 @@ export class ChatMessageComponent implements OnInit, OnDestroy {
       ...atual,
       messages_list: atual.messages_list.map((m) => (m.id === id ? { ...m, estado } : m)),
     });
+  }
+
+  private conversaDeOutraPessoa(error: HttpErrorResponse): boolean {
+    return error.status === 403 || error.status === 404;
   }
 
   voltar(): void {
