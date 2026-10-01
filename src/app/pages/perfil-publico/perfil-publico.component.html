@@ -16,15 +16,34 @@
       <div class="perfil__cartao">
         @if (perfil(); as dados) {
           <app-cartao-perfil [nome]="dados.first_name + ' ' + dados.last_name" [foto]="dados.photo || ''" [tipoDeConta]="tipoDeConta()">
+            @if (dados.bio) {
+              <p class="sobre">{{ dados.bio }}</p>
+            }
+            @if (numeros().length) {
+            <ul class="numeros" aria-label="Números do perfil" [style.grid-template-columns]="'repeat(' + colunasDosNumeros() + ', minmax(0, 1fr))'">
+              @for (numero of numeros(); track numero.rotulo) {
+                <li class="numeros__item">
+                  <span class="numeros__valor">{{ numero.valor }}</span>
+                  <span class="numeros__rotulo">{{ numero.rotulo }}</span>
+                </li>
+              }
+            </ul>
+            }
             <ul class="resumo">
-              <li><i class="bi bi-calendar-heart" aria-hidden="true"></i> No Viajá desde {{ dados.member_since | date: 'MMMM \'de\' y' : '' : 'pt-BR' }}</li>
               @if (dados.rating; as nota) {
                 <li><span class="resumo__estrela" aria-hidden="true">★</span> {{ nota.average }} em {{ nota.count }} {{ nota.count === 1 ? 'avaliação' : 'avaliações' }}</li>
               }
               @if (dados.response_time; as resposta) {
                 <li><i class="bi bi-lightning-charge-fill resumo__raio" aria-hidden="true"></i> Costuma responder {{ resposta.label }}</li>
               }
+              <li><i class="bi bi-calendar-heart" aria-hidden="true"></i> No Viajá desde {{ dados.member_since | date: 'MMMM \'de\' y' : '' : 'pt-BR' }}</li>
             </ul>
+            <ul class="selos">
+              <li class="selos__item selos__item--em-breve"><i class="bi bi-shield-check" aria-hidden="true"></i> Identidade verificada em breve</li>
+            </ul>
+            @if (dados.is_me && !dados.bio) {
+              <p class="sobre sobre--vazio">Conte um pouco sobre você em Editar perfil. Quem vai viajar com você gosta de saber.</p>
+            }
             @if (dados.is_me) {
               <button class="btn-secundario perfil__editar" type="button" (click)="editarPerfil()">
                 <i class="bi bi-pencil" aria-hidden="true"></i> Editar perfil
@@ -38,6 +57,15 @@
 
       @if (perfil(); as dados) {
         <div class="perfil__lado">
+          @if (dados.stats.traveler?.cities?.length) {
+            <h2 class="perfil__secao">Por onde {{ dados.is_me ? 'você já passou' : dados.first_name + ' já passou' }}</h2>
+            <ul class="cidades">
+              @for (cidade of dados.stats.traveler!.cities; track cidade.city) {
+                <li class="cidades__item"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ cidade.city }}@if (cidade.uf) { - {{ cidade.uf }} } <span class="cidades__vezes">{{ cidade.count }}x</span></li>
+              }
+            </ul>
+          }
+
           @if (dados.tours.length) {
             <h2 class="perfil__secao">Passeios com {{ dados.is_me ? 'você' : dados.first_name }}</h2>
             <ul class="lista-passeios">

@@ -33,6 +33,35 @@ export class PerfilPublicoComponent implements OnInit {
   erro = signal('');
   private userId: number | null = null;
 
+  numeros = computed(() => {
+    const dados = this.perfil();
+    if (!dados) return [];
+    const { traveler, guide, promoter } = dados.stats;
+    const itens: { valor: string | number; rotulo: string }[] = [];
+    if (guide) {
+      itens.push({ valor: guide.travelers_guided, rotulo: guide.travelers_guided === 1 ? 'viajante guiado' : 'viajantes guiados' });
+      itens.push({ valor: guide.tours_done, rotulo: guide.tours_done === 1 ? 'passeio realizado' : 'passeios realizados' });
+      itens.push({ valor: guide.tours_active, rotulo: guide.tours_active === 1 ? 'passeio no ar' : 'passeios no ar' });
+    }
+    if (promoter) {
+      itens.push({ valor: promoter.events_done, rotulo: promoter.events_done === 1 ? 'evento realizado' : 'eventos realizados' });
+      itens.push({ valor: promoter.people_attended, rotulo: promoter.people_attended === 1 ? 'pessoa foi' : 'pessoas foram' });
+      itens.push({ valor: promoter.events_upcoming, rotulo: promoter.events_upcoming === 1 ? 'evento chegando' : 'eventos chegando' });
+    }
+    if (traveler) {
+      itens.push({ valor: traveler.trips, rotulo: traveler.trips === 1 ? 'viagem' : 'viagens' });
+      itens.push({ valor: traveler.events_attended, rotulo: traveler.events_attended === 1 ? 'evento' : 'eventos' });
+      itens.push({ valor: traveler.cities.length, rotulo: traveler.cities.length === 1 ? 'cidade' : 'cidades' });
+      itens.push({ valor: traveler.reviews_written, rotulo: traveler.reviews_written === 1 ? 'avaliação' : 'avaliações' });
+    }
+    return itens;
+  });
+
+  colunasDosNumeros = computed(() => {
+    const total = this.numeros().length;
+    return total === 2 || total === 4 ? 2 : Math.min(total, 3);
+  });
+
   tipoDeConta = computed(() => {
     const role = this.perfil()?.role;
     return role ? ROLE_LABELS[role] : '';

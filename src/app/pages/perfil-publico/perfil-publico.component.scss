@@ -248,3 +248,106 @@
   color: #3d5c00;
   cursor: pointer;
 }
+
+.sobre {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #3a3a3a;
+  text-align: center;
+
+  &--vazio {
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #f7f5ee;
+    font-size: 13px;
+    color: #6b6b6b;
+  }
+}
+
+.numeros {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 12px 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 8px;
+  border-top: 1px solid #f0ede4;
+  border-bottom: 1px solid #f0ede4;
+}
+
+.numeros__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  text-align: center;
+}
+
+.numeros__valor {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.numeros__rotulo {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.selos {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.selos__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef7d4;
+  font-size: 12px;
+  color: #3d5c00;
+
+  &--em-breve {
+    background: #f1eee4;
+    color: #8a8a8a;
+  }
+}
+
+.cidades {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cidades__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #ebebeb;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+
+  i {
+    color: #3d5c00;
+  }
+}
+
+.cidades__vezes {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a8a8a;
+}
