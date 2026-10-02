@@ -14,121 +14,118 @@
   <img src="https://img.shields.io/badge/Vitest-testes-6E9F18?logo=vitest&logoColor=white" alt="Vitest">
 </p>
 
-O Viajá conecta os serviços de turismo de um lugar: os passeios dos guias, os eventos dos produtores, as reservas e o chat de cada grupo. Este é o app, pensado primeiro para o celular. A API fica no [viaja_flaskapp](https://github.com/ViajaAPP/viaja_flaskapp).
+Aplicacao mobile-first de turismo colaborativo construida com Angular 21 e NgRx Signals.
 
-A versão que está valendo fica na branch `staging`.
+## Tecnologias
 
----
+- **Angular** 21.1
+- **NgRx Signals** para gerenciamento de estado
+- **RxJS** para fluxos reativos
+- **Bootstrap Icons** para icones
+- **WebSocket** para chat em tempo real
+- **Leaflet** para os mapas
+- **Vitest** para testes unitarios
 
-## O que você precisa ter
+## Estrutura do Projeto
 
-| Programa | Para quê |
-| --- | --- |
-| [Node.js](https://nodejs.org/) 20.19 ou mais novo | o Angular 21 não roda nas versões antigas |
-| [Git](https://git-scm.com/downloads) | baixar o projeto |
-
----
-
-## Rodar na sua máquina
-
-### 1. Clone o projeto
-
-```bash
-git clone https://github.com/ViajaAPP/viaja-front.git
-cd viaja-front
-git checkout staging
+```
+src/app/
+  main/                          # Componente principal (container de paginas)
+  app.routes.ts                  # Endereco de cada pagina
+  pages/
+    welcome/                     # Tela de boas-vindas
+    login/                       # Tela de login
+    registrar/                   # Tela de cadastro
+    esqueci-senha/               # Pedir o link para trocar a senha
+    redefinir-senha/             # Trocar a senha pelo link
+    home/                        # Tela inicial com atividades
+    buscar/ resultados/          # Busca e resultados com filtros
+    passeio/ passeio-form/       # Pagina e formulario do passeio
+    passeio-gestao/              # Datas, vagas e pedidos do passeio
+    evento/ evento-form/         # Pagina e formulario do evento
+    meus-passeios/ meus-eventos/ # Listas do guia e do produtor
+    painel/                      # Area do guia: pedidos e agenda
+    analise/                     # Fila de eventos para o admin aprovar
+    viagens/ minhas-solicitacoes/# Reservas e pedidos do viajante
+    favoritos/ avisos/           # Passeios salvos e notificacoes
+    perfil/ perfil-editar/       # Perfil e edicao
+    perfil-publico/              # Perfil que os outros veem
+    chat/                        # Lista de grupos de chat
+    chat-message/                # Tela de conversa individual
+  shared/
+    components/                  # Header, barra de navegacao, mapa, cards e outros
+    config/
+      api.config.ts              # URL base da API e WebSocket
+      app.config.ts              # Configuracoes gerais (modo mock)
+      permissions.config.ts      # Quais papeis abrem cada pagina
+    enums/                       # Interfaces dos dados
+    facade/
+      app.facade.ts              # Facade para acesso simplificado ao store
+    guards/                      # Pagina aberta e formulario com mudancas
+    interceptors/                # Token, cache, conexao e sessao
+    mock/
+      chat.mock.ts               # Dados mock do chat
+      home.mock.ts               # Dados mock da home
+    services/                    # Um servico por assunto (api, auth, chat, tour, evento, busca...)
+    store/
+      app.store.ts               # Store global com NgRx Signals
 ```
 
-### 2. Instale as dependências
+## Navegacao
+
+A aplicacao usa o Angular Router: cada pagina tem seu endereco em `app.routes.ts`. O `AppStore` guarda a pagina atual e o `MainComponent` renderiza a pagina correspondente.
+
+## Servicos
+
+### `ChatMessageService`
+Servico dedicado para operacoes de chat:
+- `buscarPaginaChat()` — lista os grupos de chat disponiveis
+- `buscarChat(chatId)` — busca mensagens e dados de um chat especifico
+- `enviarMensagem(chatId, conteudo)` — envia mensagem via HTTP
+- `enviarPeloWebSocket(chatId, texto, clientId)` — envia mensagem via WebSocket
+- `enviarLocalizacao(chatId, lat, lon)` / `desligarLocalizacao(chatId)` — localizacao ao vivo no mapa do grupo
+- `conectarWebSocket(url, chatId)` — abre conexao WebSocket
+- `desconectarWebSocket()` — fecha conexao WebSocket
+- `onMensagemRecebida` — observable de mensagens recebidas em tempo real
+
+### `DadosClienteService`
+Servico para dados da pagina inicial e do perfil:
+- `getHome()` — busca dados da home (usuario, categorias, atividades)
+- `getPerfil()` / `atualizarPerfil(dados)` / `enviarFoto(foto)` / `removerFoto()`
+
+### `AuthService`
+Gerencia o token JWT via localStorage:
+- `setToken(token)` / `getToken()` / `clearToken()` / `isAuthenticated()` / `sair()`
+
+### `ApiService`
+Chamadas de API para autenticacao e chat:
+- `login(payload)` / `register(payload, foto)`
+- `esqueciSenha(email)` / `redefinirSenha(codigo, password)`
+- `startChat(tourInstanceId)`
+
+## Modo Mock
+
+Para desenvolvimento sem backend, defina `MOCK: true` em `src/app/shared/config/app.config.ts`. Isso faz os servicos retornarem dados mock ao inves de chamar a API.
+
+## Desenvolvimento
 
 ```bash
 npm install
+ng serve
 ```
 
-### 3. Escolha de onde vêm os dados
+Acesse `http://localhost:4200/`. Com `MOCK: false`, suba antes o [viaja_flaskapp](https://github.com/ViajaAPP/viaja_flaskapp/tree/staging#readme).
 
-| Modo | Como ligar | Precisa do back? |
-| --- | --- | --- |
-| Mock | `MOCK: true` em `src/app/shared/config/app.config.ts` | Não. Os dados vêm de `src/app/shared/mock` |
-| Local | `MOCK: false` e o back rodando com `python run.py --local` | Sim, com o banco na sua máquina |
-| Produção | `MOCK: false` e o back rodando com `python run.py` | Sim, com o banco de produção |
-
-O mock é o jeito mais rápido de ver as telas. Para usar o app de verdade, suba o back antes seguindo o [README do viaja_flaskapp](https://github.com/ViajaAPP/viaja_flaskapp/tree/staging#readme).
-
-### 4. Suba o app
+## Build
 
 ```bash
-npm start
+ng build
 ```
 
-### Deu certo?
+Os artefatos serao gerados em `dist/viaja`.
 
-Abra [http://localhost:4200](http://localhost:4200). Se aparecer a tela de boas-vindas, está rodando.
+## Testes
 
-Para entrar, use uma das contas de teste do modo local. A senha de todas é `viaja123`:
-
-| E-mail | Quem é |
-| --- | --- |
-| `guia@viaja.local` | a Fabi, guia com passeios publicados |
-| `viajante@viaja.local` | o Tito, que reserva passeios |
-| `produtor@viaja.local` | a Lia, que cadastra eventos |
-| `admin@viaja.local` | quem modera e aprova os eventos |
-
----
-
-## Quando algo dá errado
-
-| O que aparece | O que fazer |
-| --- | --- |
-| `The Angular CLI requires a minimum Node.js version` | Atualize o Node para a 20.19 ou mais nova. |
-| `Port 4200 is already in use` | Já tem um `npm start` aberto. Feche o outro terminal ou use `npm start -- --port 4300`. |
-| O login não responde | O back não está rodando. Confira se [http://localhost:5000/docs](http://localhost:5000/docs) abre. |
-| O "mais perto" sempre dá erro | O navegador só libera a localização em `localhost` ou `https`. Pelo IP da rede não funciona. |
-
----
-
-## Como o app funciona
-
-- **Navegação.** Cada página tem o seu endereço (`/inicio`, `/passeio/12`, `/reservas`), definido em `app.routes.ts`. Dá para atualizar, voltar pelo navegador e mandar o link de um passeio. O `AppStore` sabe sempre qual página está aberta.
-- **Permissões.** O `resolveAllowedPage`, em `shared/config/permissions.config.ts`, decide quem abre cada página. Sem login, só as boas-vindas, o login, o cadastro e a recuperação de senha. A área de Passeios é do guia, criar evento é do produtor e a análise dos eventos é do admin. O back confere as mesmas regras, então esconder um botão nunca é a única proteção.
-- **Endereço e mapa.** O front nunca fala direto com serviços de fora: endereço, cidades e distância passam pelo back. O mapa usa Leaflet com o OpenStreetMap, e o "Ver como chegar" abre o Google Maps ou o Uber.
-- **Cache.** As respostas ficam guardadas por até 10 minutos, e qualquer mudança (reservar, salvar, responder um pedido) limpa tudo. O contador de avisos e o login nunca passam pelo cache.
-
-## Responsividade
-
-Toda tela precisa funcionar no celular, no tablet e no computador, inclusive a área do guia. Comece pelo celular e acrescente o resto por cima.
-
-- Os tamanhos ficam em `src/styles/_responsivo.scss`: tablet a partir de 768px e computador a partir de 1024px.
-- Em qualquer `.scss`, coloque `@use 'responsivo' as *;` no topo e use `a-partir-do-tablet`, `a-partir-do-pc` e `conteudo-centralizado`.
-- No computador, a barra de baixo vira um menu na lateral.
-- Evite margem em porcentagem para afastar blocos na vertical, porque no computador ela abre buracos enormes.
-
-## Como o projeto está organizado
-
-```text
-src/
-├── app/
-│   ├── pages/              uma pasta por tela
-│   └── shared/
-│       ├── components/     peças reaproveitadas (header, mapa, cartões...)
-│       ├── config/         API, modo mock e permissões
-│       ├── interceptors/   login, sessão, conexão e cache
-│       ├── mock/           dados do modo mock
-│       ├── services/       um serviço por assunto (passeio, busca, avisos...)
-│       └── store/          estado global com NgRx Signals
-├── environments/           endereço da API no local e na produção
-└── styles/                 estilos globais e tamanhos de tela
+```bash
+ng test
 ```
-
-## Outros comandos
-
-| Comando | O que faz |
-| --- | --- |
-| `npm test` | roda os testes |
-| `npm run build` | gera a versão de produção em `dist/viaja`, apontando para a API de `src/environments/environment.ts` |
-
-O `render.yaml` já deixa o app pronto para virar um site estático no Render. Ainda não publicamos, porque falta registrar o domínio `viaja-app.com.br`.
-
-## Grupo
-
-Daniel Ferreira Pinheiro da Silva, Érika Maria de Sousa, Giovanna Nassar Lara Santos, Marcos Rebouças Duarte da Silva e Sophia Verardo de Araújo.
