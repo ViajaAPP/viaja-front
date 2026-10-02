@@ -72,6 +72,12 @@
               }
               <div class="activity-card__top-row">
                 <span class="activity-card__tag">{{ formatarPreco(evento.price) }}</span>
+                @if (diaDoCartao(evento.start_time); as dia) {
+                  <span class="activity-card__dia" [class.activity-card__dia--logo]="dia.logo" aria-hidden="true">
+                    <span class="activity-card__dia-semana">{{ dia.semana }}</span>
+                    <span class="activity-card__dia-numero">{{ dia.numero }}</span>
+                  </span>
+                }
               </div>
             </div>
 
@@ -97,7 +103,7 @@
                   <h3 class="activity-card__title">{{ evento.title }}</h3>
                   <div class="activity-card__selos">
                     <span class="activity-card__selo"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ evento.city }} - {{ evento.uf }}@if (evento.distance_km != null) { · {{ evento.distance_km }} km }</span>
-                    <span class="activity-card__selo"><i class="bi bi-calendar-event" aria-hidden="true"></i> {{ proximaData(evento.start_time) }}</span>
+                    <span class="activity-card__selo"><i class="bi bi-clock" aria-hidden="true"></i> {{ horaDoEvento(evento) }}</span>
                     @if (textoDosLugares(evento); as lugares) {
                       <span class="activity-card__selo" [class.activity-card__selo--lotado]="lugares === 'Lotado'" [class.activity-card__selo--ultimas]="lugares !== 'Lotado'">{{ lugares }}</span>
                     }

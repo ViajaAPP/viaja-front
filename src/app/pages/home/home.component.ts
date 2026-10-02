@@ -154,6 +154,22 @@ export class HomeComponent implements OnInit {
     this.navigationService.navigateToTour('evento', eventoId);
   }
 
+  diaDoCartao(inicio: string): { semana: string; numero: string; logo: boolean } {
+    const data = new Date(inicio);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dia = new Date(data);
+    dia.setHours(0, 0, 0, 0);
+    const dias = Math.round((dia.getTime() - hoje.getTime()) / 86400000);
+    const semana = dias === 0 ? 'Hoje' : dias === 1 ? 'Amanhã' : data.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+    return { semana, numero: String(data.getDate()).padStart(2, '0'), logo: dias <= 1 };
+  }
+
+  horaDoEvento(evento: Evento): string {
+    const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return evento.end_time ? `${hora(evento.start_time)} às ${hora(evento.end_time)}` : `A partir das ${hora(evento.start_time)}`;
+  }
+
   textoDosLugares(evento: Evento): string | null {
     if (!evento.capacity) return null;
     const livres = Math.max(evento.capacity - evento.going_count, 0);

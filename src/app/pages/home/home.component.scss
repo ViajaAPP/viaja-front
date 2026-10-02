@@ -150,6 +150,39 @@
   color: #5C5C5C;
 }
 
+.activity-card__dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  padding: 6px 8px 7px;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+  color: #1f1f1f;
+  line-height: 1;
+  text-align: center;
+
+  &--logo {
+    background: #D9F18C;
+    color: #2e4500;
+  }
+}
+
+.activity-card__dia-semana {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.activity-card__dia-numero {
+  margin-top: 3px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
 .activity-card__favorito {
   margin-left: auto;
 }
