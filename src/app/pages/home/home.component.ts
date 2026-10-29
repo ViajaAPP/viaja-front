@@ -126,6 +126,10 @@ export class HomeComponent implements OnInit {
     this.carregarLista(posicao ? { ...filtros, ...posicao } : filtros);
   }
 
+  montarRoteiro(): void {
+    this.navigationService.navigateTo('roteiro');
+  }
+
   verNoMapa(): void {
     this.navigationService.navigateTo('mapa');
   }

@@ -11,6 +11,12 @@
       </button>
     </div>
 
+    <button class="home__roteiro" type="button" (click)="montarRoteiro()">
+      <i class="bi bi-signpost-2" aria-hidden="true"></i>
+      <span><strong>Monte um roteiro</strong><small>Passeios e eventos da cidade, dia a dia e sem choque de horário</small></span>
+      <i class="bi bi-chevron-right" aria-hidden="true"></i>
+    </button>
+
     <nav class="home__categories" [attr.aria-label]="tipo() === 'eventos' ? 'Categorias de eventos' : 'Categorias de passeios'">
       <div class="home__categories-scroll" role="list">
         @for (cat of categories(); track cat.id) {
