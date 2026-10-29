@@ -1,4 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { AgendaService } from '../../shared/services/agenda/agenda.service';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +37,7 @@ export class PasseioComponent implements OnInit {
   readonly formatoData = DATE_TIME_FORMAT;
   readonly rotulosDaSolicitacao = REQUEST_STATUS_LABELS;
 
+  private readonly agenda = inject(AgendaService);
   passeio = signal<TourDetail | null>(null);
   erro = signal('');
   sucesso = signal('');
@@ -129,9 +132,14 @@ export class PasseioComponent implements OnInit {
     return !this.passeio()?.is_owner && !!data.open_for_requests && !data.my_request_status;
   }
 
-  pedirVaga(data: TourInstance): void {
+  async pedirVaga(data: TourInstance): Promise<void> {
     this.enviandoPara.set(data.id);
     this.erro.set('');
+    const conflitos = await firstValueFrom(this.agenda.conflitos({ instancia: data.id }));
+    if (!(await this.agenda.podeSeguir(conflitos, 'pedir a vaga'))) {
+      this.enviandoPara.set(null);
+      return;
+    }
     this.tourService.solicitarVaga(data.id, '').subscribe({
       next: (resposta) => {
         this.enviandoPara.set(null);
