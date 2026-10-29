@@ -9,6 +9,9 @@ import { EventoService } from '../../shared/services/evento/evento.service';
 import { FeedbackService } from '../../shared/services/feedback/feedback.service';
 import { mensagemDeErro } from '../../shared/services/request/request-error';
 import { Evento } from '../../shared/enums/evento.model';
+import { PedidoDePapel, UserRole } from '../../shared/enums/user.model';
+import { PapelService } from '../../shared/services/papel/papel.service';
+import { ROLE_LABELS } from '../../shared/config/tour.config';
 import { PRICE_FORMAT } from '../../shared/config/tour.config';
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
 
@@ -25,8 +28,11 @@ export class AnaliseComponent implements OnInit {
   private readonly navigationService = inject(NavigationService);
   private readonly eventoService = inject(EventoService);
   private readonly feedback = inject(FeedbackService);
+  private readonly papelService = inject(PapelService);
 
   eventos = signal<Evento[]>([]);
+  papeis = signal<PedidoDePapel[]>([]);
+  devolvendoPapel = signal<number | null>(null);
   carregando = signal(true);
   erro = signal('');
   devolvendo = signal<number | null>(null);
@@ -41,6 +47,7 @@ export class AnaliseComponent implements OnInit {
   carregar(): void {
     this.carregando.set(true);
     this.erro.set('');
+    this.papelService.paraAnalise().subscribe({ next: (papeis) => this.papeis.set(papeis), error: () => this.papeis.set([]) });
     this.eventoService.paraAnalise().subscribe({
       next: (eventos) => {
         this.eventos.set(eventos);
@@ -76,6 +83,26 @@ export class AnaliseComponent implements OnInit {
     const motivo = this.motivo.trim();
     if (!motivo) return;
     this.responder(evento, false, motivo);
+  }
+
+  nomeDoPapel(role: UserRole | undefined): string {
+    return role ? ROLE_LABELS[role].toLowerCase() : '';
+  }
+
+  devolverPapel(id: number): void {
+    const motivo = this.motivo.trim();
+    if (motivo) this.analisarPapel(id, false, motivo);
+  }
+
+  analisarPapel(id: number, aprovar: boolean, motivo: string): void {
+    this.papelService.analisar(id, aprovar, motivo).subscribe({
+      next: () => {
+        this.devolvendoPapel.set(null);
+        this.papeis.update((papeis) => papeis.filter((p) => p.id !== id));
+        this.feedback.sucesso(aprovar ? 'Papel aprovado. A pessoa recebe um aviso.' : 'Pedido devolvido. A pessoa recebe o motivo num aviso.');
+      },
+      error: (error: HttpErrorResponse) => this.feedback.erro(mensagemDeErro(error, 'Não conseguimos salvar a análise. Tente de novo.')),
+    });
   }
 
   voltar(): void {

@@ -5,7 +5,7 @@
     </button>
     <div>
       <p class="pagina__rotulo">MODERAÇÃO</p>
-      <h1 class="pagina__titulo">Eventos para analisar</h1>
+      <h1 class="pagina__titulo">Para analisar</h1>
     </div>
   </header>
 
@@ -14,6 +14,35 @@
   } @else if (carregando()) {
     <div class="esqueleto" aria-busy="true" aria-label="Carregando"><span></span><span></span></div>
   } @else {
+    @if (papeis().length) {
+      <h2 class="analise__secao">Pedidos de papel</h2>
+      <ul class="cartoes">
+        @for (pedido of papeis(); track pedido.id) {
+          <li class="passeio-card">
+            <div class="passeio-card__corpo">
+              <p class="passeio-card__titulo">{{ pedido.user?.first_name }} {{ pedido.user?.last_name }} quer ser também {{ nomeDoPapel(pedido.role) }}</p>
+              <p class="passeio-card__detalhe">Hoje é {{ nomeDoPapel(pedido.user?.role) }} · CNPJ conferido na Receita</p>
+              @if (devolvendoPapel() === pedido.id) {
+                <form class="formulario analise__motivo" (ngSubmit)="devolverPapel(pedido.id)">
+                  <label [for]="'motivo-papel-' + pedido.id">O que precisa mudar? <span class="obrigatorio">*</span></label>
+                  <textarea [id]="'motivo-papel-' + pedido.id" name="motivoPapel" rows="2" maxlength="500" [(ngModel)]="motivo" required></textarea>
+                  <div class="passeio-card__acoes">
+                    <button class="btn-secundario" type="button" (click)="devolvendoPapel.set(null)">Voltar</button>
+                    <button class="btn-recusar" type="submit" [disabled]="!motivo.trim()">Devolver</button>
+                  </div>
+                </form>
+              } @else {
+                <div class="passeio-card__acoes">
+                  <button class="btn-recusar" type="button" (click)="motivo = ''; devolvendoPapel.set(pedido.id)">Pedir ajustes</button>
+                  <button class="btn-aceitar" type="button" (click)="analisarPapel(pedido.id, true, '')">Aprovar</button>
+                </div>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+      <h2 class="analise__secao">Eventos</h2>
+    }
     @if (eventos().length) {
       <p class="painel__resumo">{{ eventos().length }} {{ eventos().length === 1 ? 'evento esperando' : 'eventos esperando' }} sua análise. Os mais antigos aparecem primeiro.</p>
     }
