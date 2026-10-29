@@ -30,11 +30,16 @@
 
     <div class="home__titulo-linha">
       <h2 class="home__section-title" id="section-title">{{ tituloDaLista() }}</h2>
-      @if (tipo() === 'passeios' && passeios().length) {
-        <button class="home__ver-lista" type="button" (click)="verTodos()">
-          <i class="bi bi-list-ul" aria-hidden="true"></i> Ver em lista
+      <div class="home__atalhos">
+        <button class="home__ver-lista" type="button" (click)="verNoMapa()">
+          <i class="bi bi-map" aria-hidden="true"></i> Mapa
         </button>
-      }
+        @if (tipo() === 'passeios' && passeios().length) {
+          <button class="home__ver-lista" type="button" (click)="verTodos()">
+            <i class="bi bi-list-ul" aria-hidden="true"></i> Lista
+          </button>
+        }
+      </div>
     </div>
 
     @if (mostrandoPerto()) {

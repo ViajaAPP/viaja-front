@@ -126,6 +126,10 @@ export class HomeComponent implements OnInit {
     this.carregarLista(posicao ? { ...filtros, ...posicao } : filtros);
   }
 
+  verNoMapa(): void {
+    this.navigationService.navigateTo('mapa');
+  }
+
   verTodos(): void {
     const filtros = this.filtrosAtuais();
     if (!filtros) return;

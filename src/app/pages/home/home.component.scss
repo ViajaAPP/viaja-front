@@ -369,3 +369,14 @@
   border-radius: 20px;
   background: #f1eee4;
 }
+
+.home__atalhos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+
+  .home__ver-lista {
+    white-space: nowrap;
+  }
+}
