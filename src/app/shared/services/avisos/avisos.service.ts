@@ -4,6 +4,8 @@ import { Observable, filter, tap } from 'rxjs';
 import { RequestService } from '../request/request.service';
 import { AuthService } from '../auth/auth.service';
 import { AppStore } from '../../store/app.store';
+import { FeedbackService } from '../feedback/feedback.service';
+import { environment } from '../../../../environments/environment';
 
 export interface Aviso {
   id: number;
@@ -15,7 +17,8 @@ export interface Aviso {
   read_at: string | null;
 }
 
-const INTERVALO = 45000;
+const INTERVALO = 120000;
+const ESPERA_PARA_RECONECTAR = 5000;
 
 @Injectable({ providedIn: 'root' })
 export class AvisosService {
@@ -23,8 +26,11 @@ export class AvisosService {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly store = inject(AppStore);
+  private readonly feedback = inject(FeedbackService);
   private iniciado = false;
   private ultimaConsulta = 0;
+  private socket: WebSocket | null = null;
+  private tokenDoSocket: string | null = null;
 
   readonly naoLidas = signal(0);
   readonly pedidosPendentes = signal(0);
@@ -35,6 +41,38 @@ export class AvisosService {
     this.router.events.pipe(filter((evento) => evento instanceof NavigationEnd)).subscribe(() => this.atualizar());
     setInterval(() => this.atualizar(true), INTERVALO);
     this.atualizar(true);
+    this.auth.token$.subscribe(() => this.conectar());
+  }
+
+  private conectar(): void {
+    const token = this.auth.getToken();
+    if (token === this.tokenDoSocket && this.socket) return;
+    this.socket?.close();
+    this.socket = null;
+    this.tokenDoSocket = token;
+    if (!token) return;
+    const socket = new WebSocket(environment.apiUrl.replace(/^http/, 'ws') + '/ws/avisos');
+    this.socket = socket;
+    socket.onopen = () => socket.send(JSON.stringify({ type: 'auth', token }));
+    socket.onmessage = (evento) => {
+      try {
+        const dados = JSON.parse(evento.data);
+        if (dados.type !== 'aviso') return;
+        this.naoLidas.update((total) => total + 1);
+        this.feedback.sucesso(dados.title);
+        if (dados.kind === 'pedido_novo') this.atualizar(true);
+      } catch {}
+    };
+    socket.onclose = () => {
+      if (this.socket !== socket) return;
+      this.socket = null;
+      setTimeout(() => {
+        if (!this.socket && this.auth.getToken()) {
+          this.tokenDoSocket = null;
+          this.conectar();
+        }
+      }, ESPERA_PARA_RECONECTAR);
+    };
   }
 
   atualizar(forcar = false): void {
