@@ -139,3 +139,37 @@
 .opcao__seta {
   color: #b0b0a8;
 }
+
+.papel__form {
+  padding: 0 16px 16px 72px;
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  @media (max-width: 480px) {
+    padding-left: 16px;
+  }
+}
+
+.papel__linha {
+  display: flex;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .btn-primary {
+    flex-shrink: 0;
+    padding-inline: 20px;
+  }
+}
+
+.obrigatorio {
+  color: #c24141;
+}

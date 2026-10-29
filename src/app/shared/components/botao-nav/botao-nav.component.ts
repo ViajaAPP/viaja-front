@@ -20,7 +20,7 @@ export class BotaoNavComponent {
   readonly navItems = computed<{ id: AppPage; icon: string; label: string }[]>(() => [
     { id: 'home', icon: 'bi bi-house-door-fill', label: 'Início' },
     ...(this.facade.isGuide() ? [{ id: 'painel' as AppPage, icon: 'bi bi-compass-fill', label: 'Passeios' }] : []),
-    ...(this.facade.isPromoter() ? [{ id: 'meus-eventos' as AppPage, icon: 'bi bi-calendar-event-fill', label: 'Eventos' }] : []),
+    ...(this.facade.isPromoter() && !this.facade.isGuide() ? [{ id: 'meus-eventos' as AppPage, icon: 'bi bi-calendar-event-fill', label: 'Eventos' }] : []),
     { id: 'reservas', icon: 'bi bi-ticket-perforated-fill', label: 'Reservas' },
     { id: 'chat', icon: 'bi bi-chat-dots-fill', label: 'Mensagens' },
     ...(this.facade.isGuide() || this.facade.isPromoter() ? [] : [{ id: 'favoritos' as AppPage, icon: 'bi bi-heart', label: 'Favoritos' }]),
@@ -44,7 +44,7 @@ export class BotaoNavComponent {
 
   readonly abaAtiva = computed(() => {
     const pagina = this.facade.currentPage();
-    if (pagina === 'meus-eventos' || pagina === 'evento-form') return this.facade.isPromoter() ? 'meus-eventos' : 'perfil';
+    if (pagina === 'meus-eventos' || pagina === 'evento-form') return this.facade.isGuide() ? 'painel' : this.facade.isPromoter() ? 'meus-eventos' : 'perfil';
     return this.abaDaPagina[pagina] ?? pagina;
   });
 

@@ -16,14 +16,14 @@ export const PAGE_ROLES: Partial<Record<AppPage, UserRole[]>> = {
   analise: ['ADMIN'],
 };
 
-export function canAccessPage(page: AppPage, role: UserRole | null): boolean {
+export function canAccessPage(page: AppPage, role: UserRole | null, extraRoles: UserRole[] = []): boolean {
   if (PUBLIC_PAGES.includes(page) || VISITOR_PAGES.includes(page)) return true;
   if (!role) return false;
   const allowedRoles = PAGE_ROLES[page];
-  return !allowedRoles || allowedRoles.includes(role);
+  return !allowedRoles || [role, ...extraRoles].some((papel) => allowedRoles.includes(papel));
 }
 
-export function resolveAllowedPage(page: AppPage, role: UserRole | null): AppPage {
-  if (canAccessPage(page, role)) return page;
+export function resolveAllowedPage(page: AppPage, role: UserRole | null, extraRoles: UserRole[] = []): AppPage {
+  if (canAccessPage(page, role, extraRoles)) return page;
   return role ? 'home' : 'login';
 }

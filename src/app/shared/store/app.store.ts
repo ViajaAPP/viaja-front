@@ -43,6 +43,7 @@ interface AppState {
   selectedTourId: number | null;
   myUserId: number | null;
   myRole: UserRole | null;
+  extraRoles: UserRole[];
 }
 
 const initialState: AppState = {
@@ -53,6 +54,7 @@ const initialState: AppState = {
   selectedTourId: null,
   myUserId: null,
   myRole: null,
+  extraRoles: [],
 };
 
 export const AppStore = signalStore(
@@ -85,8 +87,11 @@ export const AppStore = signalStore(
         patchState(store, { loading: false });
       }, 2000);
     },
-    startSession(userId: number, role: UserRole) {
-      patchState(store, { myUserId: userId, myRole: role });
+    startSession(userId: number, role: UserRole, extraRoles: UserRole[] = []) {
+      patchState(store, { myUserId: userId, myRole: role, extraRoles });
+    },
+    setExtraRoles(extraRoles: UserRole[]) {
+      patchState(store, { extraRoles });
     },
     endSession(destino = '/') {
       patchState(store, { ...initialState, loading: false });
@@ -99,18 +104,18 @@ export const AppStore = signalStore(
     isHome: computed(() => store.currentPage() === 'home'),
     isChat: computed(() => store.currentPage() === 'chat'),
     isChatTour: computed(() => store.currentPage() === 'chat-tour'),
-    isGuide: computed(() => store.myRole() === 'GUIDE'),
+    isGuide: computed(() => store.myRole() === 'GUIDE' || store.extraRoles().includes('GUIDE')),
     isTourist: computed(() => store.myRole() === 'TOURIST'),
-    isPromoter: computed(() => store.myRole() === 'EVENT_PROMOTER'),
+    isPromoter: computed(() => store.myRole() === 'EVENT_PROMOTER' || store.extraRoles().includes('EVENT_PROMOTER')),
     isAdmin: computed(() => store.myRole() === 'ADMIN'),
-    canCreateEvents: computed(() => ['EVENT_PROMOTER', 'ADMIN'].includes(store.myRole() ?? '')),
-    canManageTours: computed(() => store.myRole() === 'GUIDE' || store.myRole() === 'ADMIN'),
+    canCreateEvents: computed(() => ['EVENT_PROMOTER', 'ADMIN'].includes(store.myRole() ?? '') || store.extraRoles().includes('EVENT_PROMOTER')),
+    canManageTours: computed(() => store.myRole() === 'GUIDE' || store.myRole() === 'ADMIN' || store.extraRoles().includes('GUIDE')),
     showBottomNav: computed(() => !!store.myRole() && !PAGES_WITHOUT_BOTTOM_NAV.includes(store.currentPage())),
   })),
   withHooks({
     onInit(store) {
       const sessao = inject(AuthService).lerSessao();
-      if (sessao) patchState(store, { myUserId: sessao.userId, myRole: sessao.role });
+      if (sessao) patchState(store, { myUserId: sessao.userId, myRole: sessao.role, extraRoles: sessao.extraRoles });
     },
   })
 );

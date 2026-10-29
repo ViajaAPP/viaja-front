@@ -32,8 +32,12 @@ export class AppFacade {
     this.store.setLoading(value);
   }
 
-  startSession(userId: number, role: UserRole) {
-    this.store.startSession(userId, role);
+  startSession(userId: number, role: UserRole, extraRoles: UserRole[] = []) {
+    this.store.startSession(userId, role, extraRoles);
+  }
+
+  setExtraRoles(extraRoles: UserRole[]) {
+    this.store.setExtraRoles(extraRoles);
   }
 
   endSession() {

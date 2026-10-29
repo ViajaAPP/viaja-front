@@ -6,6 +6,7 @@ import { limparCacheDeRespostas } from '../../interceptors/cache.interceptor';
 export interface SessaoSalva {
   userId: number;
   role: UserRole;
+  extraRoles: UserRole[];
 }
 
 @Injectable({
@@ -43,7 +44,7 @@ export class AuthService {
       const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
       const dados = JSON.parse(atob(base64));
       if (dados.user_id && dados.role && dados.exp * 1000 > Date.now()) {
-        return { userId: dados.user_id, role: dados.role };
+        return { userId: dados.user_id, role: dados.role, extraRoles: dados.extra_roles ?? [] };
       }
     } catch {}
 

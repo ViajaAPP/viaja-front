@@ -71,6 +71,28 @@
             <span class="selo">Em breve</span>
           </div>
         </li>
+        @if (papelExtra(); as extra) {
+          <li class="papel">
+            <div class="opcao opcao--parada">
+              <span class="opcao__icone"><i class="bi {{ extra.icone }}" aria-hidden="true"></i></span>
+              <span class="opcao__textos">
+                <span class="opcao__titulo">{{ extra.titulo }}</span>
+                <span class="opcao__detalhe">{{ statusDoPapel() }}</span>
+              </span>
+            </div>
+            @if (podePedirPapel()) {
+              <form class="papel__form" (ngSubmit)="pedirPapel(extra.role)">
+                <label for="cnpj-extra">CNPJ de {{ extra.nome }} <span class="obrigatorio">*</span></label>
+                <div class="papel__linha">
+                  <input id="cnpj-extra" name="cnpj" inputmode="numeric" placeholder="00.000.000/0000-00" [(ngModel)]="cnpjExtra" />
+                  <button class="btn-primary" type="submit" [disabled]="pedindoPapel() || !cnpjExtra.trim()">
+                    {{ pedindoPapel() ? 'Enviando...' : 'Pedir' }}
+                  </button>
+                </div>
+              </form>
+            }
+          </li>
+        }
         @if (facade.myRole() === 'ADMIN') {
           <li>
             <button class="opcao" type="button" (click)="abrirMeusPasseios()">
@@ -86,8 +108,8 @@
             <button class="opcao" type="button" (click)="abrirAnalise()">
               <span class="opcao__icone"><i class="bi bi-calendar-check" aria-hidden="true"></i></span>
               <span class="opcao__textos">
-                <span class="opcao__titulo">Eventos para analisar</span>
-                <span class="opcao__detalhe">{{ eventosEmAnalise() === 1 ? '1 evento esperando' : eventosEmAnalise() ? eventosEmAnalise() + ' eventos esperando' : 'Nenhum esperando agora' }}</span>
+                <span class="opcao__titulo">Para analisar</span>
+                <span class="opcao__detalhe">{{ eventosEmAnalise() === 1 ? '1 pedido esperando' : eventosEmAnalise() ? eventosEmAnalise() + ' pedidos esperando' : 'Nenhum esperando agora' }}</span>
               </span>
               <i class="bi bi-chevron-right opcao__seta" aria-hidden="true"></i>
             </button>

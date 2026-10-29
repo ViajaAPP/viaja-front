@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.isLoggingIn.set(false);
         this.authService.setToken(response.token);
-        this.facade.startSession(response.user_id, response.role);
+        this.facade.startSession(response.user_id, response.role, response.extra_roles ?? []);
         const voltar = caminhoDeVolta(this.route.snapshot.queryParamMap.get('voltar'));
         if (voltar) this.router.navigateByUrl(voltar);
         else this.navigationService.navigateTo('home');
