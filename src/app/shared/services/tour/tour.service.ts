@@ -84,7 +84,7 @@ export class TourService {
     return this.request.delete<void>(`/tour/${tourId}/photos/${fotoId}`);
   }
 
-  avaliar(tourId: number, rating: number, comment: string): Observable<{ message: string }> {
-    return this.request.post<{ message: string }>(`/tour/${tourId}/reviews`, { rating, comment });
+  avaliar(tourId: number, rating: number, guideRating: number, comment: string): Observable<{ message: string }> {
+    return this.request.post<{ message: string }>(`/tour/${tourId}/reviews`, { rating, guide_rating: guideRating, comment });
   }
 }

@@ -41,6 +41,7 @@ export class PasseioComponent implements OnInit {
   enviandoPara = signal<number | null>(null);
   fotoAtual = signal(0);
   minhaNota = signal(0);
+  notaDoGuia = signal(0);
   meuComentario = '';
   avaliando = signal(false);
   fotos = computed(() => {
@@ -94,12 +95,13 @@ export class PasseioComponent implements OnInit {
   }
 
   avaliar(tourId: number): void {
-    if (!this.minhaNota() || this.avaliando()) return;
+    if (!this.minhaNota() || !this.notaDoGuia() || this.avaliando()) return;
     this.avaliando.set(true);
-    this.tourService.avaliar(tourId, this.minhaNota(), this.meuComentario.trim()).subscribe({
+    this.tourService.avaliar(tourId, this.minhaNota(), this.notaDoGuia(), this.meuComentario.trim()).subscribe({
       next: () => {
         this.avaliando.set(false);
         this.minhaNota.set(0);
+        this.notaDoGuia.set(0);
         this.meuComentario = '';
         this.feedback.sucesso('Obrigado pela avaliação!');
         this.buscarPasseio();

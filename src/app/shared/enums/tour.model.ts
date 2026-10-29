@@ -35,6 +35,7 @@ export interface TourPhoto {
 export interface TourReview {
   id: number;
   rating: number;
+  guide_rating: number | null;
   comment: string | null;
   created_at: string;
   author_id: number;

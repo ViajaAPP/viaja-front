@@ -162,9 +162,23 @@
                 >★</button>
               }
             </div>
+            <p class="avaliar__titulo">E o guia, {{ dados.guide?.first_name || 'quem guiou' }}?</p>
+            <div class="avaliar__estrelas" role="radiogroup" aria-label="Nota para o guia">
+              @for (n of [1, 2, 3, 4, 5]; track n) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="avaliar__estrela"
+                  [class.avaliar__estrela--on]="n <= notaDoGuia()"
+                  [attr.aria-checked]="n === notaDoGuia()"
+                  [attr.aria-label]="n + (n === 1 ? ' estrela' : ' estrelas') + ' para o guia'"
+                  (click)="notaDoGuia.set(n)"
+                >★</button>
+              }
+            </div>
             <label for="comentario">Conte como foi, se quiser</label>
             <textarea id="comentario" name="comentario" rows="3" maxlength="1000" [(ngModel)]="meuComentario"></textarea>
-            <button class="btn-primary" type="submit" [disabled]="!minhaNota() || avaliando()">
+            <button class="btn-primary" type="submit" [disabled]="!minhaNota() || !notaDoGuia() || avaliando()">
               {{ avaliando() ? 'Enviando...' : 'Enviar avaliação' }}
             </button>
           </form>
@@ -190,6 +204,9 @@
                   }
                 </span>
               </div>
+              @if (avaliacao.guide_rating) {
+                <p class="avaliacao__guia">Nota para o guia: {{ avaliacao.guide_rating }} de 5</p>
+              }
               @if (avaliacao.comment) {
                 <p class="avaliacao__texto">{{ avaliacao.comment }}</p>
               }

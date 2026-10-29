@@ -5,6 +5,7 @@ import { PasseioEncontrado } from '../services/busca/busca.service';
 export interface AvaliacaoRecebida {
   id: number;
   rating: number;
+  guide_rating: number | null;
   comment: string | null;
   created_at: string;
   tour_id: number;
@@ -46,6 +47,7 @@ export interface PerfilPublico {
   member_since: string;
   is_me: boolean;
   rating: { average: number; count: number } | null;
+  guide_rating: { average: number; count: number } | null;
   response_time: { label: string } | null;
   tours: PasseioEncontrado[];
   events: Evento[];
