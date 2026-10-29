@@ -47,6 +47,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/buscar/buscar.component').then((m) => m.BuscarComponent),
   },
   {
+    path: 'mapa',
+    data: { page: 'mapa' },
+    canActivate: [paginaGuard],
+    loadComponent: () => import('./pages/mapa/mapa.component').then((m) => m.MapaPertoComponent),
+  },
+  {
     path: 'buscar/resultados',
     data: { page: 'resultados' },
     canActivate: [paginaGuard],

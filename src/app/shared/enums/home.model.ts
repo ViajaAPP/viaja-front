@@ -23,6 +23,9 @@ export interface Activity {
   tag?: string;
   tagType?: 'recommended' | 'popular' | 'new' | 'nearby';
   distance_km?: number;
+  lat?: number;
+  lon?: number;
+  price?: number;
   city?: string;
   uf?: string;
   favorite?: boolean;

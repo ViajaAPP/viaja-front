@@ -16,6 +16,8 @@ export interface Evento {
   city: string | null;
   uf: string | null;
   distance_km: number | null;
+  lat?: number | null;
+  lon?: number | null;
   going_count: number;
   going: boolean;
   organizer: { user_id: number | null; first_name: string | null; photo: string | null };

@@ -28,5 +28,6 @@ export function caminhoDaPagina(page: AppPage, id?: number | null): string {
     case 'evento-form': return id ? `/meus-eventos/${id}/editar` : '/meus-eventos/novo';
     case 'meus-eventos': return '/meus-eventos';
     case 'analise': return '/analise';
+    case 'mapa': return '/mapa';
   }
 }

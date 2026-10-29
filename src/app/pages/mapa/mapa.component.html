@@ -1,0 +1,70 @@
+<section class="mapa-perto">
+  <header class="mapa-perto__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div class="mapa-perto__titulos">
+      <p class="pagina__rotulo">NO MAPA</p>
+      <h1 class="pagina__titulo">Perto de você</h1>
+    </div>
+  </header>
+
+  <div class="chave-tipo mapa-perto__filtros" role="tablist" aria-label="O que mostrar no mapa">
+    <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="filtro() === 'tudo'" role="tab" type="button" [attr.aria-selected]="filtro() === 'tudo'" (click)="filtro.set('tudo')">
+      Tudo
+    </button>
+    <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="filtro() === 'passeios'" role="tab" type="button" [attr.aria-selected]="filtro() === 'passeios'" (click)="filtro.set('passeios')">
+      <i class="bi bi-compass" aria-hidden="true"></i> Passeios {{ contagem().passeios }}
+    </button>
+    <button class="chave-tipo__opcao" [class.chave-tipo__opcao--ativa]="filtro() === 'eventos'" role="tab" type="button" [attr.aria-selected]="filtro() === 'eventos'" (click)="filtro.set('eventos')">
+      <i class="bi bi-calendar-event" aria-hidden="true"></i> Eventos {{ contagem().eventos }}
+    </button>
+  </div>
+
+  <div class="mapa-perto__area">
+    <div #area class="mapa-perto__mapa" role="application" aria-label="Mapa com passeios e eventos perto de você"></div>
+
+    @if (semLocalizacao()) {
+      <p class="mapa-perto__aviso">Sem acesso à sua localização, mostramos a Baixada Santista. Libere a localização para ver o que está perto de você.</p>
+    }
+    @if (carregando()) {
+      <p class="mapa-perto__aviso">Procurando passeios e eventos por perto...</p>
+    }
+
+    @if (!semLocalizacao()) {
+      <button class="mapa-perto__voce" type="button" aria-label="Voltar para onde você está" (click)="centralizar()">
+        <i class="bi bi-crosshair" aria-hidden="true"></i>
+      </button>
+    }
+
+    @if (selecionado(); as ponto) {
+      <article class="mapa-perto__cartao" [class.mapa-perto__cartao--evento]="ponto.tipo === 'evento'">
+        @if (ponto.foto) {
+          <img class="mapa-perto__foto" [src]="ponto.foto" alt="" />
+        }
+        <div class="mapa-perto__info">
+          <span class="mapa-perto__tipo">{{ ponto.tipo === 'passeio' ? 'Passeio' : 'Evento' }}</span>
+          <p class="mapa-perto__nome">{{ ponto.titulo }}</p>
+          <p class="mapa-perto__meta">
+            @if (ponto.quando) {
+              {{ ponto.quando | date: "EEE, d 'de' MMM 'às' HH:mm" : '' : 'pt-BR' }} ·
+            }
+            @if (ponto.nota) {
+              <span class="mapa-perto__estrela" aria-hidden="true">★</span> {{ ponto.nota }} ·
+            }
+            {{ formatarPreco(ponto.preco) }}
+            @if (ponto.distancia != null) {
+              · {{ ponto.distancia }} km
+            }
+          </p>
+          <button class="btn-primary mapa-perto__ver" type="button" (click)="abrir(ponto)">
+            Ver {{ ponto.tipo === 'passeio' ? 'passeio' : 'evento' }}
+          </button>
+        </div>
+        <button class="mapa-perto__fechar" type="button" aria-label="Fechar" (click)="selecionado.set(null)">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+      </article>
+    }
+  </div>
+</section>
