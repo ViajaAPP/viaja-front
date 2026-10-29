@@ -1,0 +1,95 @@
+<section class="pagina roteiro">
+  <header class="pagina__topo">
+    <button class="pagina__voltar" type="button" aria-label="Voltar" (click)="voltar()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div>
+      <p class="pagina__rotulo">ROTEIRO SUGERIDO</p>
+      <h1 class="pagina__titulo">Monte sua viagem</h1>
+    </div>
+  </header>
+
+  <form class="cartao formulario roteiro__form" (ngSubmit)="montar()">
+    <p class="roteiro__intro">A gente junta passeios e eventos da cidade num roteiro sem choque de horário, começando pelos mais bem avaliados.</p>
+    <div>
+      <label for="cidade">Para onde você vai <span class="obrigatorio">*</span></label>
+      <select id="cidade" name="cidade" [ngModel]="cidade()" (ngModelChange)="cidade.set($event)">
+        @for (opcao of cidades(); track chave(opcao)) {
+          <option [value]="chave(opcao)">{{ opcao.nome }} - {{ opcao.uf }}</option>
+        }
+      </select>
+    </div>
+    <div class="formulario__linha">
+      <div>
+        <label for="inicio">Chego em <span class="obrigatorio">*</span></label>
+        <input id="inicio" name="inicio" type="date" [min]="hoje" [ngModel]="inicio()" (ngModelChange)="inicio.set($event)" />
+      </div>
+      <div>
+        <label for="dias">Fico por</label>
+        <select id="dias" name="dias" [ngModel]="dias()" (ngModelChange)="dias.set(+$event)">
+          @for (n of opcoesDeDias; track n) {
+            <option [value]="n">{{ n }} {{ n === 1 ? 'dia' : 'dias' }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary" type="submit" [disabled]="montando() || !cidade()">
+      {{ montando() ? 'Montando...' : 'Montar roteiro' }}
+    </button>
+  </form>
+
+  @if (erro()) {
+    <p class="roteiro__erro">{{ erro() }}</p>
+  }
+
+  @if (roteiro(); as dados) {
+    <p class="roteiro__resumo">
+      @if (totalDeParadas()) {
+        {{ totalDeParadas() }} {{ totalDeParadas() === 1 ? 'parada' : 'paradas' }} em {{ dados.cidade }}. Toque numa delas para reservar.
+      } @else {
+        Ainda não tem passeio nem evento marcado em {{ dados.cidade }} nesses dias. Tente outras datas.
+      }
+    </p>
+    @for (dia of dados.dias; track dia.data; let n = $index) {
+      <section class="roteiro__dia">
+        <h2 class="roteiro__data">Dia {{ n + 1 }} · {{ dia.data + 'T12:00:00' | date: "EEEE, d 'de' MMMM" : '' : 'pt-BR' }}</h2>
+        <ol class="roteiro__linha">
+          @for (parada of dia.itens; track parada.tipo + parada.id + parada.inicio) {
+            <li class="parada">
+              <span class="parada__hora">{{ parada.inicio | date: 'HH:mm' }}</span>
+              <div class="parada__cartao">
+                @if (parada.km_do_anterior != null) {
+                  <p class="parada__trajeto"><i class="bi bi-signpost-split" aria-hidden="true"></i> {{ parada.km_do_anterior | number: '1.0-1' : 'pt-BR' }} km da parada anterior</p>
+                }
+                <button class="parada__conteudo" type="button" (click)="abrir(parada)">
+                  @if (parada.foto) {
+                    <img class="parada__foto" [src]="parada.foto" alt="" loading="lazy" />
+                  }
+                  <span class="parada__textos">
+                    <span class="parada__tipo" [class.parada__tipo--evento]="parada.tipo === 'evento'">{{ parada.tipo === 'passeio' ? 'Passeio' : 'Evento' }}</span>
+                    <span class="parada__titulo">{{ parada.titulo }}</span>
+                    <span class="parada__meta">
+                      até {{ parada.fim | date: 'HH:mm' }} ·
+                      @if (parada.nota) {
+                        <span class="parada__estrela" aria-hidden="true">★</span> {{ parada.nota | number: '1.1-1' : 'pt-BR' }} ·
+                      }
+                      {{ formatarPreco(parada.preco) }}
+                    </span>
+                    @if (parada.lugar) {
+                      <span class="parada__meta"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ parada.lugar }}</span>
+                    }
+                  </span>
+                </button>
+                <button class="parada__agenda" type="button" (click)="naAgenda(parada)">
+                  <i class="bi bi-calendar-plus" aria-hidden="true"></i> Google Agenda
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li class="parada parada--livre">Dia livre. Nenhum passeio ou evento marcado na cidade.</li>
+          }
+        </ol>
+      </section>
+    }
+  }
+</section>

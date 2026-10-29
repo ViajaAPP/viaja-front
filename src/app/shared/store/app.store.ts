@@ -32,7 +32,8 @@ export type AppPage =
   | 'evento-form'
   | 'meus-eventos'
   | 'analise'
-  | 'mapa';
+  | 'mapa'
+  | 'roteiro';
 
 const PAGES_WITHOUT_BOTTOM_NAV: AppPage[] = ['welcome', 'login', 'registrar', 'esqueci-senha', 'redefinir-senha', 'chat-tour', 'buscar'];
 
