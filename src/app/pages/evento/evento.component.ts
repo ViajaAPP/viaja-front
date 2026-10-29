@@ -2,6 +2,8 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { AgendaService } from '../../shared/services/agenda/agenda.service';
 import { AppFacade } from '../../shared/facade';
 import { NavigationService } from '../../shared/services/navigation';
 import { EventoService } from '../../shared/services/evento/evento.service';
@@ -81,10 +83,31 @@ export class EventoComponent implements OnInit {
     return evento.going_count === 1 ? '1 pessoa vai' : `${evento.going_count} pessoas vão`;
   }
 
-  marcarPresenca(vou: boolean): void {
+  private readonly agenda = inject(AgendaService);
+
+  colocarNaAgenda(): void {
+    const evento = this.evento();
+    if (!evento) return;
+    this.agenda.abrirNoGoogle({
+      titulo: evento.title,
+      inicio: evento.start_time,
+      fim: evento.end_time,
+      local: evento.place_name || [evento.city, evento.uf].filter(Boolean).join(' - '),
+      detalhes: 'Evento que você marcou no Viajá.',
+    });
+  }
+
+  async marcarPresenca(vou: boolean): Promise<void> {
     const evento = this.evento();
     if (!evento || this.salvando()) return;
     this.salvando.set(true);
+    if (vou) {
+      const conflitos = await firstValueFrom(this.agenda.conflitos({ evento: evento.id }));
+      if (!(await this.agenda.podeSeguir(conflitos, 'marcar que vai'))) {
+        this.salvando.set(false);
+        return;
+      }
+    }
     this.eventoService.marcarPresenca(evento.id, vou).subscribe({
       next: () => {
         this.salvando.set(false);

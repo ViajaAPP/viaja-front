@@ -42,6 +42,7 @@ export interface Viagem {
   created_at: string;
   instance_id: number;
   start_time: string;
+  duration_minutes?: number | null;
   instance_status: TourStatus;
   tour_id: number;
   tour_title: string;

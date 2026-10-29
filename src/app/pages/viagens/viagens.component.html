@@ -67,6 +67,7 @@
               <p class="viagem__guia">{{ evento.going_count === 1 ? 'Só você confirmou até agora' : evento.going_count + ' pessoas vão' }}</p>
               <div class="viagem__acoes">
                 <button class="btn-secundario" type="button" (click)="abrirEvento(evento)">Como chegar</button>
+                <button class="btn-secundario viagem__agenda" type="button" (click)="eventoNaAgenda(evento)"><i class="bi bi-calendar-plus" aria-hidden="true"></i> Google Agenda</button>
               </div>
             </div>
           </li>
@@ -125,6 +126,7 @@
                       <button class="btn-primary" type="button" (click)="abrirChat(viagem)"><i class="bi bi-chat-dots" aria-hidden="true"></i> Chat do grupo</button>
                     }
                     <button class="btn-secundario" type="button" (click)="abrirPasseio(viagem)">Como chegar</button>
+                    <button class="btn-secundario viagem__agenda" type="button" (click)="passeioNaAgenda(viagem)"><i class="bi bi-calendar-plus" aria-hidden="true"></i> Google Agenda</button>
                   </div>
                 </div>
               </li>

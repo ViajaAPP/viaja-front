@@ -12,6 +12,7 @@ import { REQUEST_STATUS_LABELS, PRICE_FORMAT } from '../../shared/config/tour.co
 import { FalhaCarregarComponent } from '../../shared/components/falha-carregar/falha-carregar.component';
 import { EventoService } from '../../shared/services/evento/evento.service';
 import { Evento } from '../../shared/enums/evento.model';
+import { AgendaService } from '../../shared/services/agenda/agenda.service';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -80,6 +81,28 @@ export class ViagensComponent {
   trocarAba(aba: Aba): void {
     const tipo = this.tipo() === 'eventos' ? { tipo: 'eventos' } : {};
     this.router.navigate([], { relativeTo: this.rota, queryParams: aba === 'proximas' ? tipo : { ...tipo, aba }, replaceUrl: true });
+  }
+
+  private readonly agenda = inject(AgendaService);
+
+  passeioNaAgenda(viagem: Viagem): void {
+    this.agenda.abrirNoGoogle({
+      titulo: viagem.tour_title,
+      inicio: viagem.start_time,
+      duracaoMinutos: viagem.duration_minutes,
+      local: viagem.meeting_point,
+      detalhes: `Passeio reservado no Viajá${viagem.guide ? ' com ' + viagem.guide.first_name : ''}. Ponto de encontro: ${viagem.meeting_point}.`,
+    });
+  }
+
+  eventoNaAgenda(evento: Evento): void {
+    this.agenda.abrirNoGoogle({
+      titulo: evento.title,
+      inicio: evento.start_time,
+      fim: evento.end_time,
+      local: evento.place_name || [evento.city, evento.uf].filter(Boolean).join(' - '),
+      detalhes: 'Evento que você marcou no Viajá.',
+    });
   }
 
   abrirEvento(evento: Evento): void {

@@ -144,6 +144,9 @@
             <button class="btn-secundario evento__botao" type="button" [disabled]="salvando()" (click)="marcarPresenca(false)">
               <i class="bi bi-check2-circle" aria-hidden="true"></i> Você vai · desmarcar
             </button>
+            <button class="btn-secundario evento__botao" type="button" (click)="colocarNaAgenda()">
+              <i class="bi bi-calendar-plus" aria-hidden="true"></i> Adicionar ao Google Agenda
+            </button>
           } @else if (vagasLivres() !== 0) {
             <button class="btn-confirmar evento__botao" type="button" [disabled]="salvando()" (click)="marcarPresenca(true)">
               {{ salvando() ? 'Salvando...' : 'Vou' }}
